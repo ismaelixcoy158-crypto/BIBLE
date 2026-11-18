@@ -75,5 +75,15 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     getPlaylistItems: (playlistId) => ipcRenderer.invoke('choruses:get-playlist-items', playlistId),
     addToPlaylist: (playlistId, chorusId) => ipcRenderer.invoke('choruses:add-to-playlist', { playlistId, chorusId }),
     deletePlaylist: (playlistId) => ipcRenderer.invoke('choruses:delete-playlist', playlistId)
+  },
+
+  // Predicación (Presentaciones PDF y PowerPoint)
+  preaching: {
+    getAll: () => ipcRenderer.invoke('preaching:get-all'),
+    getById: (id) => ipcRenderer.invoke('preaching:get-by-id', id),
+    importFile: () => ipcRenderer.invoke('preaching:import-file'),
+    projectSlide: (preachingId, slideIndex) => ipcRenderer.invoke('preaching:project-slide', { preachingId, slideIndex }),
+    resume: () => ipcRenderer.invoke('preaching:resume'),
+    delete: (id) => ipcRenderer.invoke('preaching:delete', id)
   }
 });

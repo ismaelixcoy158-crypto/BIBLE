@@ -174,6 +174,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 4: Predicación (Presentaciones PDF y PowerPoint)
+    if (moduleName === 'preaching') {
+      try {
+        const response = await fetch('../modules/preaching/preaching.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { PreachingController } = await import('../modules/preaching/js/preaching.js');
+        new PreachingController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Predicación:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">

@@ -1,0 +1,67 @@
+<div class="preaching-workspace">
+  <!-- Barra Superior -->
+  <header class="preaching-header-bar">
+    <div class="preaching-info-title">
+      <h2 id="currentPreachingTitle">Presentaciones de Predicación</h2>
+      <span id="currentPreachingMeta">Sermones y diapositivas de culto</span>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <!-- Botón de Alternancia Rápida a la Biblia -->
+      <button id="btnSwitchToBible" class="bible-switch-pill" title="Abre la Biblia sin interrumpir la proyección actual (Ctrl+T)">
+        📖 Alternar con Biblia (Ctrl+T)
+      </button>
+
+      <button id="btnImportPresentation" class="btn btn-primary">
+        📁 Importar Presentación (PDF / PPTX)
+      </button>
+    </div>
+  </header>
+
+  <!-- Malla Principal -->
+  <div class="preaching-main-grid">
+    <!-- Columna Izquierda: Lista de Presentaciones Importadas -->
+    <div class="preaching-sidebar-card">
+      <div class="column-header">
+        <span>Biblioteca de Sermones</span>
+      </div>
+      <div id="presentationsListContainer" class="presentations-list">
+        <!-- Renderizado dinámico de presentaciones -->
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Diapositivas de la Presentación -->
+    <div class="presentation-viewer-card">
+      <div class="viewer-controls-bar">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button id="btnPrevSlide" class="btn" style="padding: 6px 10px; font-size: 12px;">
+            ◀ Anterior
+          </button>
+          <button id="btnNextSlide" class="btn" style="padding: 6px 10px; font-size: 12px;">
+            Siguiente ▶
+          </button>
+          <span id="slideIndicatorBadge" style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-left: 6px;">
+            Diapositiva 1 de 3
+          </span>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button id="btnResumePreaching" class="btn" style="color: var(--accent-primary); border-color: rgba(37, 99, 235, 0.4);">
+            ▶ Reanudar Proyección
+          </button>
+          <button id="btnDeletePreaching" class="btn" style="color: var(--status-blackout); border-color: rgba(239, 68, 68, 0.3);">
+            🗑️
+          </button>
+          <button id="btnProjectSlideDirect" class="btn btn-primary" style="font-weight: 600;">
+            🖥️ Proyectar Diapositiva (Enter)
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Diapositivas -->
+      <div id="deckSlidesContainer" class="viewer-slides-grid">
+        <!-- Renderizado dinámico de diapositivas -->
+      </div>
+    </div>
+  </div>
+</div>

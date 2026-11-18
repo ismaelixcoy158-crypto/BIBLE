@@ -1,0 +1,220 @@
+/* BIBLE — Estilos del Módulo de Predicación */
+
+.preaching-workspace {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 84px);
+  gap: 12px;
+}
+
+/* Barra Superior */
+.preaching-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+}
+
+.preaching-info-title h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.preaching-info-title span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.bible-switch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--accent-surface);
+  color: var(--accent-primary);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.bible-switch-pill:hover {
+  background-color: var(--accent-primary);
+  color: #FFFFFF;
+}
+
+/* Malla Principal */
+.preaching-main-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  flex: 1;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* Columna Izquierda: Lista de Presentaciones */
+.preaching-sidebar-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.presentations-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.presentation-item-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.presentation-item-card:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--text-muted);
+}
+
+.presentation-item-card.active {
+  background-color: var(--accent-surface);
+  border-color: var(--accent-primary);
+}
+
+.presentation-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.presentation-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.format-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  color: var(--accent-primary);
+}
+
+.format-badge.pdf {
+  color: #EF4444;
+}
+
+.format-badge.pptx {
+  color: #F97316;
+}
+
+/* Columna Derecha: Cuadrícula de Diapositivas */
+.presentation-viewer-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.viewer-controls-bar {
+  padding: 10px 16px;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viewer-slides-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  align-content: start;
+}
+
+.deck-slide-card {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #161B22 0%, #0D1117 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.deck-slide-card:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+
+.deck-slide-card.active {
+  border-color: var(--accent-primary);
+}
+
+.deck-slide-card.projected {
+  border: 2px solid var(--status-live);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
+}
+
+.deck-slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.deck-slide-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.deck-slide-card.projected .deck-slide-num {
+  color: var(--status-live);
+}
+
+.deck-slide-body {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin: auto 0;
+}
+
+.deck-slide-notes {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

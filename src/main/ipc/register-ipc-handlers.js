@@ -2,6 +2,7 @@ const { ipcMain } = require('electron');
 const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
+const preachingService = require('../services/preaching-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
 const windowManager = require('../windows/window-manager.js');
@@ -223,6 +224,32 @@ function registerIpcHandlers() {
 
   ipcMain.handle('choruses:delete-playlist', async (_event, playlistId) => {
     return chorusesRepo.deletePlaylist(playlistId);
+  });
+
+  // --- 7. PREDICACIÓN (PRESENTACIONES Y DOCUMENTOS) ---
+  ipcMain.handle('preaching:get-all', async () => {
+    return preachingService.getAll();
+  });
+
+  ipcMain.handle('preaching:get-by-id', async (_event, id) => {
+    return preachingService.getById(id);
+  });
+
+  ipcMain.handle('preaching:import-file', async () => {
+    const parentWin = windowManager.getWindows().operatorWindow;
+    return preachingService.selectAndImportPresentation(parentWin);
+  });
+
+  ipcMain.handle('preaching:project-slide', async (_event, { preachingId, slideIndex }) => {
+    return preachingService.projectSlide(preachingId, slideIndex);
+  });
+
+  ipcMain.handle('preaching:resume', async () => {
+    return preachingService.resumeActivePreaching();
+  });
+
+  ipcMain.handle('preaching:delete', async (_event, id) => {
+    return preachingService.delete(id);
   });
 }
 
