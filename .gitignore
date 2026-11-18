@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+package-lock.json
+
+# Compilación y empaquetado para distribución (Windows/Linux)
+dist/
+build/
+out/
+
+# Datos en caliente y almacenamiento local de desarrollo
+userData/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+backups/
+
+# Registros de depuración y logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de entorno y configuración sensible
+.env
+.env.local
+
+# Archivos del sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
