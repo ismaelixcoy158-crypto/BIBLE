@@ -39,5 +39,15 @@ contextBridge.exposeInMainWorld('bibleAPI', {
   // Pantallas y hardware
   system: {
     getDisplays: () => ipcRenderer.invoke('system:get-displays')
+  },
+
+  // Identidad de la iglesia
+  church: {
+    getIdentity: () => ipcRenderer.invoke('church:get-identity'),
+    updateName: (name) => ipcRenderer.invoke('church:update-name', name),
+    selectLocalLogo: () => ipcRenderer.invoke('church:select-local-logo'),
+    downloadLogoUrl: (url) => ipcRenderer.invoke('church:download-logo-url', url),
+    deleteLogo: () => ipcRenderer.invoke('church:delete-logo'),
+    reset: () => ipcRenderer.invoke('church:reset')
   }
 });

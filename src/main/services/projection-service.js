@@ -12,6 +12,7 @@ class ProjectionService {
       activeContent: null,      // { module, title, text, reference, background, customStyles, meta }
       isBlackout: false,        // Pantalla a negro
       isLogo: false,            // Logotipo de la iglesia / fondo institucional
+      churchIdentity: null,     // { name, logoUrl }
       isClearText: false,       // Oculta el texto pero mantiene el fondo activo
       isFrozen: false,          // Congela la emisión actual
       lastUpdated: Date.now()
@@ -31,6 +32,16 @@ class ProjectionService {
    */
   getState() {
     return { ...this.state };
+  }
+
+  /**
+   * Actualiza los datos de la identidad institucional disponibles para proyección
+   */
+  setChurchIdentity(identity) {
+    this.state.churchIdentity = identity;
+    if (this.state.isLogo) {
+      this.emitState();
+    }
   }
 
   /**

@@ -1,0 +1,108 @@
+<div class="identity-container">
+  <!-- Cabecera del Módulo -->
+  <header class="identity-header">
+    <h2>Identidad de la Iglesia</h2>
+    <p>Personaliza el nombre y logotipo de tu congregación para su proyección en pantalla.</p>
+  </header>
+
+  <!-- Notificación de estado -->
+  <div id="identityAlert" class="identity-alert"></div>
+
+  <!-- Sección 1: Nombre de la Iglesia -->
+  <section class="identity-card">
+    <div class="card-title">
+      <span>Nombre Oficial de la Congregación</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="churchNameInput">
+        Nombre que se mostrará en las proyecciones y encabezados:
+      </label>
+      <div class="form-row">
+        <input 
+          type="text" 
+          id="churchNameInput" 
+          class="input-text" 
+          placeholder="Ej: Iglesia Evangélica Pentecostal"
+          maxlength="120"
+        >
+        <button id="btnSaveChurchName" class="btn btn-primary">
+          Guardar Nombre
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 2: Logotipo Oficial -->
+  <section class="identity-card">
+    <div class="card-title">
+      <span>Logotipo de la Iglesia</span>
+      <span id="logoSourceBadge" style="font-size: 11px; font-weight: normal; color: var(--text-muted);">
+        Sin logotipo cargado
+      </span>
+    </div>
+
+    <div class="logo-manager">
+      <!-- Caja de previsualización -->
+      <div id="logoPreviewBox" class="logo-preview-box">
+        <div id="logoPlaceholder" class="logo-placeholder">
+          <span class="logo-placeholder-icon">🏛️</span>
+          <span>Sin logotipo</span>
+        </div>
+        <img id="logoPreviewImg" class="logo-preview-img" alt="Vista previa del logo" style="display: none;">
+      </div>
+
+      <!-- Opciones y Botones de Carga -->
+      <div class="logo-actions">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Opción 1: Archivo local -->
+          <button id="btnSelectLocalLogo" class="btn">
+            📁 Cargar desde este equipo (PNG, JPG, WEBP)
+          </button>
+
+          <!-- Opción 2: URL web -->
+          <div class="url-input-box">
+            <span class="form-label">O descargar desde enlace web:</span>
+            <div class="url-row">
+              <input 
+                type="url" 
+                id="logoUrlInput" 
+                class="input-text" 
+                placeholder="https://ejemplo.com/logo.png"
+                style="font-size: 12px;"
+              >
+              <button id="btnDownloadUrlLogo" class="btn">
+                Descargar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones sobre el logo existente -->
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <button id="btnTestProjectLogo" class="btn btn-primary" style="flex: 1;">
+            🖥️ Proyectar Logo en TV
+          </button>
+          <button id="btnDeleteLogo" class="btn" style="color: var(--status-blackout); border-color: rgba(239, 68, 68, 0.3);">
+            🗑️ Quitar Logo
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 3: Zona de Peligro / Restablecimiento -->
+  <section class="identity-card danger-zone">
+    <div class="card-title" style="color: var(--status-blackout);">
+      <span>Restablecer Identidad</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <p style="font-size: 12px; color: var(--text-secondary); max-width: 500px;">
+        Restaura el nombre por defecto ("Mi Iglesia") y elimina permanentemente el logotipo almacenado en el equipo.
+      </p>
+      <button id="btnResetIdentity" class="btn" style="border-color: var(--status-blackout); color: var(--status-blackout);">
+        Restablecer Todo
+      </button>
+    </div>
+  </section>
+</div>

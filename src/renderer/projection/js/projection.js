@@ -29,6 +29,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Manejo de Logotipo Institucional
     if (state.isLogo) {
       logoLayer.classList.add('active');
+      if (state.churchIdentity) {
+        if (state.churchIdentity.logoUrl) {
+          churchLogoImg.src = state.churchIdentity.logoUrl;
+          churchLogoImg.style.display = 'block';
+        } else {
+          churchLogoImg.style.display = 'none';
+        }
+
+        if (state.churchIdentity.name) {
+          churchNameTitle.textContent = state.churchIdentity.name;
+          churchNameTitle.style.display = 'block';
+        } else {
+          churchNameTitle.style.display = 'none';
+        }
+      }
     } else {
       logoLayer.classList.remove('active');
     }

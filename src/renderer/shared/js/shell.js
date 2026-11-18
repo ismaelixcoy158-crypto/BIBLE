@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /**
    * Cambia de módulo en el espacio de trabajo
    */
-  function switchModule(moduleName) {
+  async function switchModule(moduleName) {
     currentActiveModule = moduleName;
     navButtons.forEach(btn => {
       if (btn.dataset.module === moduleName) {
@@ -132,7 +132,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Cargar la vista correspondiente en el workspace
+    // Módulo 1: Identidad de la Iglesia
+    if (moduleName === 'church-identity') {
+      try {
+        const response = await fetch('../modules/church-identity/church-identity.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { ChurchIdentityController } = await import('../modules/church-identity/js/church-identity.js');
+        new ChurchIdentityController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de identidad:', err);
+      }
+    }
+
+    // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">
         <div style="border-bottom: 1px solid var(--border-default); padding-bottom: 12px;">
@@ -149,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
     `;
 
-    // Disparar evento personalizado para que el módulo cargado se inicialice si lo requiere
+    // Disparar evento personalizado
     window.dispatchEvent(new CustomEvent('module-switched', { detail: { module: moduleName } }));
   }
 

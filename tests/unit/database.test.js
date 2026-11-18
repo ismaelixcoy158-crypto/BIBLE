@@ -54,9 +54,10 @@ test('DatabaseManager - Inicialización, WAL y Migraciones', async (t) => {
 
   await t.test('no debe reaplicar migraciones ya ejecutadas', () => {
     const db = manager.getInstance();
+    const countBefore = db.prepare('SELECT COUNT(*) as count FROM _migrations').get().count;
     // Ejecutar de nuevo el método de migraciones
     assert.doesNotThrow(() => manager.runMigrations());
-    const count = db.prepare('SELECT COUNT(*) as count FROM _migrations').get();
-    assert.equal(count.count, 1, 'Debe haber exactamente 1 migración registrada');
+    const countAfter = db.prepare('SELECT COUNT(*) as count FROM _migrations').get().count;
+    assert.equal(countAfter, countBefore, 'El número de migraciones registradas debe mantenerse idéntico');
   });
 });

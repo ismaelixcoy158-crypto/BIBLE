@@ -1,6 +1,7 @@
 const { ipcMain } = require('electron');
 const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
+const churchService = require('../services/church-service.js');
 const windowManager = require('../windows/window-manager.js');
 
 /**
@@ -8,6 +9,13 @@ const windowManager = require('../windows/window-manager.js');
  */
 function registerIpcHandlers() {
   const db = dbManager.getInstance();
+
+  // Sincronizar identidad inicial con el servicio de proyección
+  try {
+    projectionService.setChurchIdentity(churchService.getIdentity());
+  } catch (err) {
+    console.warn('[IPC] No se pudo cargar identidad inicial para proyección:', err);
+  }
 
   // --- 1. PROYECCIÓN ---
   ipcMain.handle('projection:project', async (_event, payload) => {
@@ -83,6 +91,44 @@ function registerIpcHandlers() {
   // --- 3. PANTALLAS ---
   ipcMain.handle('system:get-displays', async () => {
     return windowManager.getDisplays();
+  });
+
+  // --- 4. IDENTIDAD DE LA IGLESIA ---
+  ipcMain.handle('church:get-identity', async () => {
+    return churchService.getIdentity();
+  });
+
+  ipcMain.handle('church:update-name', async (_event, name) => {
+    const updated = churchService.updateName(name);
+    projectionService.setChurchIdentity(updated);
+    return updated;
+  });
+
+  ipcMain.handle('church:select-local-logo', async (event) => {
+    const parentWin = windowManager.getWindows().operatorWindow;
+    const updated = await churchService.selectLocalLogo(parentWin);
+    if (updated) {
+      projectionService.setChurchIdentity(updated);
+    }
+    return updated;
+  });
+
+  ipcMain.handle('church:download-logo-url', async (_event, url) => {
+    const updated = await churchService.downloadLogoUrl(url);
+    projectionService.setChurchIdentity(updated);
+    return updated;
+  });
+
+  ipcMain.handle('church:delete-logo', async () => {
+    const updated = churchService.deleteLogo();
+    projectionService.setChurchIdentity(updated);
+    return updated;
+  });
+
+  ipcMain.handle('church:reset', async () => {
+    const updated = churchService.reset();
+    projectionService.setChurchIdentity(updated);
+    return updated;
   });
 }
 
