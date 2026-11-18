@@ -33,3 +33,4 @@ Permite gestionar cientos de coritos (600+), organizarlos por categorías (*Cori
 - 5 fondos predeterminados incluidos.
 - Asignación de fondo individual por corito o uso del fondo global.
 - Persistencia completa en SQLite.
+

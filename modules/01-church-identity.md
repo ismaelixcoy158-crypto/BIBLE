@@ -29,3 +29,4 @@ Los datos y archivos se almacenan 100% de forma local en el equipo.
 - La tabla `church_identity` en SQLite mantiene un registro único (`id = 1`).
 - Los logotipos antiguos se eliminan del disco al cargar uno nuevo para no acumular basura digital.
 - Si no hay logo configurado, la pantalla de proyección mostrará el nombre de la iglesia con tipografía destacada.
+
