@@ -4,6 +4,7 @@ const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
 const preachingService = require('../services/preaching-service.js');
 const spotsService = require('../services/spots-service.js');
+const countdownService = require('../services/countdown-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
 const RouletteRepository = require('../../database/repositories/roulette.repository.js');
@@ -325,6 +326,31 @@ function registerIpcHandlers() {
       customStyles: { color: color || '#FCD34D' },
       isSpinning: false
     });
+  });
+
+  // --- 10. CUENTA REGRESIVA ---
+  ipcMain.handle('countdown:get-presets', async () => {
+    return countdownService.getPresets();
+  });
+
+  ipcMain.handle('countdown:get-state', async () => {
+    return countdownService.getState();
+  });
+
+  ipcMain.handle('countdown:start', async (_event, { seconds, endMessage, background }) => {
+    return countdownService.start(seconds, endMessage, background);
+  });
+
+  ipcMain.handle('countdown:pause', async () => {
+    return countdownService.pause();
+  });
+
+  ipcMain.handle('countdown:resume', async () => {
+    return countdownService.resume();
+  });
+
+  ipcMain.handle('countdown:reset', async () => {
+    return countdownService.reset();
   });
 }
 

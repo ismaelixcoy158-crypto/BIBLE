@@ -1,0 +1,54 @@
+<div class="countdown-workspace">
+  <!-- Barra Superior -->
+  <header class="countdown-header-bar">
+    <div class="countdown-header-title">
+      <h2>Cuenta Regresiva</h2>
+      <span>Reloj visual de bienvenida y aviso previo para el inicio del servicio</span>
+    </div>
+  </header>
+
+  <!-- Escenario del Reloj Digital -->
+  <main class="timer-stage-card">
+    <!-- Pantalla Digital -->
+    <div id="digitalClockDisplay" class="digital-clock-display">
+      00:05:00
+    </div>
+
+    <!-- Preajustes Rápidos -->
+    <div id="presetsRow" class="presets-row">
+      <!-- Generado dinámicamente -->
+    </div>
+
+    <!-- Controles Maestros -->
+    <div class="timer-action-controls">
+      <button id="btnStartCountdown" class="btn btn-primary btn-timer-main">
+        ▶ Iniciar
+      </button>
+      <button id="btnPauseCountdown" class="btn btn-timer-main" style="display: none;">
+        ⏸ Pausar
+      </button>
+      <button id="btnResumeCountdown" class="btn btn-primary btn-timer-main" style="display: none;">
+        ▶ Reanudar
+      </button>
+      <button id="btnResetCountdown" class="btn btn-timer-main">
+        🔄 Reiniciar
+      </button>
+    </div>
+  </main>
+
+  <!-- Ajustes de Mensaje y Fondo -->
+  <section class="timer-settings-card">
+    <div class="card-title">
+      <span>Mensaje al finalizar el tiempo:</span>
+    </div>
+    <div class="form-row">
+      <input 
+        type="text" 
+        id="inputEndMessage" 
+        class="input-text" 
+        value="¡Bienvenidos a la Casa de Dios! El culto ha comenzado"
+        placeholder="Texto que aparecerá cuando el reloj llegue a 00:00:00"
+      >
+    </div>
+  </section>
+</div>

@@ -106,5 +106,15 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     deleteList: (id) => ipcRenderer.invoke('roulette:delete-list', id),
     projectSpin: (payload) => ipcRenderer.invoke('roulette:project-spin', payload),
     projectWinner: (payload) => ipcRenderer.invoke('roulette:project-winner', payload)
+  },
+
+  // Cuenta Regresiva
+  countdown: {
+    getPresets: () => ipcRenderer.invoke('countdown:get-presets'),
+    getState: () => ipcRenderer.invoke('countdown:get-state'),
+    start: (payload) => ipcRenderer.invoke('countdown:start', payload),
+    pause: () => ipcRenderer.invoke('countdown:pause'),
+    resume: () => ipcRenderer.invoke('countdown:resume'),
+    reset: () => ipcRenderer.invoke('countdown:reset')
   }
 });

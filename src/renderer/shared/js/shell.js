@@ -216,6 +216,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 7: Cuenta Regresiva
+    if (moduleName === 'countdown') {
+      try {
+        const response = await fetch('../modules/countdown/countdown.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { CountdownController } = await import('../modules/countdown/js/countdown.js');
+        new CountdownController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Cuenta Regresiva:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">
