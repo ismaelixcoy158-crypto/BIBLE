@@ -82,3 +82,4 @@ El motor de proyección central reside en el proceso principal (`src/main/servic
 - **Modo:** WAL (`Write-Ahead Logging`), que permite lecturas concurrentes sin bloqueo y resistencia ante apagones inesperados.
 - **Versionado:** Tabla `_migrations` para aplicar cambios de esquema incrementales y reproducibles.
 - **Patrón de Acceso:** Repositorios (`src/database/repositories/`) encargados de ejecutar consultas SQL preparadas (parametrizadas al 100%).
+

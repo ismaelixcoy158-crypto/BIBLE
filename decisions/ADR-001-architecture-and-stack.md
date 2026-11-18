@@ -36,3 +36,4 @@ Se adopta una pila tecnológica pura y sin dependencias superfluas:
   - Aplicación ligera y portátil para Windows 11.
 - **Compromisos:**
   - La modularidad y la reactividad de la interfaz deben gestionarse mediante componentes web sencillos y buenas prácticas de manipulación del DOM nativo, lo cual requiere disciplina en la organización de carpetas y código.
+
