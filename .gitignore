@@ -1,6 +1,5 @@
 # Dependencias
 node_modules/
-package-lock.json
 
 # Compilación y empaquetado para distribución (Windows/Linux)
 dist/
@@ -30,3 +29,4 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+
