@@ -117,3 +117,4 @@ class RouletteRepository {
 }
 
 module.exports = RouletteRepository;
+

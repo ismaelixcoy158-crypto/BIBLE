@@ -27,3 +27,4 @@ Permitir a pastores y predicadores proyectar sus sermones y presentaciones prepa
 - Controles de avance: `Flecha Derecha` (Siguiente), `Flecha Izquierda` (Anterior).
 - Indicador visual de diapositiva proyectada en vivo.
 - Pausa y reanudación de la presentación.
+

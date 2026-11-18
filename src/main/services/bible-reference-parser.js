@@ -173,3 +173,4 @@ class BibleReferenceParser {
 }
 
 module.exports = BibleReferenceParser;
+

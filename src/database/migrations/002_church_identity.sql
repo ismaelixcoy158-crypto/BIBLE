@@ -12,3 +12,4 @@ CREATE TABLE IF NOT EXISTS church_identity (
 -- Insertar registro inicial por defecto
 INSERT OR IGNORE INTO church_identity (id, name, logo_filename, logo_source_type)
 VALUES (1, 'Mi Iglesia', NULL, 'none');
+

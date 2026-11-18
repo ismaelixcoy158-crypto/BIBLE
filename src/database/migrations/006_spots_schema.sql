@@ -22,3 +22,4 @@ INSERT OR IGNORE INTO spots (id, title, file_type, original_filename, stored_fil
 VALUES 
 (1, 'Campamento Nacional de Jóvenes 2026', 'image', 'campamento.png', 'sample_campamento.png', 'image/png', 2048500, 0),
 (2, 'Gran Vigilia de Oración y Avivamiento', 'video', 'vigilia_spot.mp4', 'sample_vigilia.mp4', 'video/mp4', 15480000, 1);
+

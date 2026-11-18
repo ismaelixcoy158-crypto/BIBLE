@@ -41,3 +41,4 @@ El operador puede escribir en cualquier momento en el campo de búsqueda rápida
   - Color de texto y color de resaltado de referencia.
   - Fondos predeterminados y fondos fotográficos personalizados.
   - Persistencia local de todas las preferencias en SQLite.
+

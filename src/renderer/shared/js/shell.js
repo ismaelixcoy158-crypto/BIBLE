@@ -135,8 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 1: Identidad de la Iglesia
     if (moduleName === 'church-identity') {
       try {
-        const response = await fetch('../modules/church-identity/church-identity.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('church-identity');
         workspaceContainer.innerHTML = html;
         const { ChurchIdentityController } = await import('../modules/church-identity/js/church-identity.js');
         new ChurchIdentityController();
@@ -149,8 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 2: Biblia (RV1909)
     if (moduleName === 'bible') {
       try {
-        const response = await fetch('../modules/bible/bible.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('bible');
         workspaceContainer.innerHTML = html;
         const { BibleController } = await import('../modules/bible/js/bible.js');
         new BibleController();
@@ -163,8 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 3: Coritos Pentecostales y de Adoración
     if (moduleName === 'choruses') {
       try {
-        const response = await fetch('../modules/choruses/choruses.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('choruses');
         workspaceContainer.innerHTML = html;
         const { ChorusesController } = await import('../modules/choruses/js/choruses.js');
         new ChorusesController();
@@ -177,8 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 4: Predicación (Presentaciones PDF y PowerPoint)
     if (moduleName === 'preaching') {
       try {
-        const response = await fetch('../modules/preaching/preaching.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('preaching');
         workspaceContainer.innerHTML = html;
         const { PreachingController } = await import('../modules/preaching/js/preaching.js');
         new PreachingController();
@@ -191,8 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 5: Spots Multimedia (Fotos y Videos)
     if (moduleName === 'spots') {
       try {
-        const response = await fetch('../modules/spots/spots.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('spots');
         workspaceContainer.innerHTML = html;
         const { SpotsController } = await import('../modules/spots/js/spots.js');
         new SpotsController();
@@ -205,8 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 6: Ruleta Dinámica
     if (moduleName === 'roulette') {
       try {
-        const response = await fetch('../modules/roulette/roulette.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('roulette');
         workspaceContainer.innerHTML = html;
         const { RouletteController } = await import('../modules/roulette/js/roulette.js');
         new RouletteController();
@@ -219,8 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 7: Cuenta Regresiva
     if (moduleName === 'countdown') {
       try {
-        const response = await fetch('../modules/countdown/countdown.html');
-        const html = await response.text();
+        const html = await window.bibleAPI.system.getModuleHtml('countdown');
         workspaceContainer.innerHTML = html;
         const { CountdownController } = await import('../modules/countdown/js/countdown.js');
         new CountdownController();

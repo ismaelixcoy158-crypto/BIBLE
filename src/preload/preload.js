@@ -38,7 +38,8 @@ contextBridge.exposeInMainWorld('bibleAPI', {
 
   // Pantallas y hardware
   system: {
-    getDisplays: () => ipcRenderer.invoke('system:get-displays')
+    getDisplays: () => ipcRenderer.invoke('system:get-displays'),
+    getModuleHtml: (moduleName) => ipcRenderer.invoke('system:get-module-html', moduleName)
   },
 
   // Identidad de la iglesia

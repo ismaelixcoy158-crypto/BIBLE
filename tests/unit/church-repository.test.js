@@ -68,3 +68,4 @@ test('ChurchRepository - Gestión de Identidad de la Iglesia', async (t) => {
     assert.equal(resetIdentity.logo_source_type, 'none');
   });
 });
+

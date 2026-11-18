@@ -133,3 +133,4 @@ class DatabaseManager {
 const defaultInstance = new DatabaseManager();
 module.exports = defaultInstance;
 module.exports.DatabaseManager = DatabaseManager;
+

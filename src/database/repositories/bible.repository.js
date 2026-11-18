@@ -132,3 +132,4 @@ class BibleRepository {
 }
 
 module.exports = BibleRepository;
+

@@ -1,4 +1,6 @@
 const { ipcMain } = require('electron');
+const path = require('path');
+const fs = require('fs');
 const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
@@ -100,6 +102,17 @@ function registerIpcHandlers() {
   // --- 3. PANTALLAS ---
   ipcMain.handle('system:get-displays', async () => {
     return windowManager.getDisplays();
+  });
+
+  ipcMain.handle('system:get-module-html', async (_event, moduleName) => {
+    const validModules = ['church-identity', 'bible', 'choruses', 'preaching', 'spots', 'roulette', 'countdown'];
+    if (!validModules.includes(moduleName)) return '<p>Módulo no válido</p>';
+    const filePath = path.join(__dirname, `../../renderer/modules/${moduleName}/${moduleName}.html`);
+    const fs = require('fs');
+    if (fs.existsSync(filePath)) {
+      return fs.readFileSync(filePath, 'utf-8');
+    }
+    return `<p>Vista para ${moduleName} no encontrada</p>`;
   });
 
   // --- 4. IDENTIDAD DE LA IGLESIA ---

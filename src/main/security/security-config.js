@@ -101,3 +101,4 @@ class SecurityConfig {
 }
 
 module.exports = SecurityConfig;
+

@@ -19,3 +19,4 @@ Permite proyectar el giro de la ruleta y el resultado ganador de manera sincroni
   - Al presionar **[GIRAR]** o la barra espaciadora, la pantalla pública inicia el giro simultáneamente.
   - Al detenerse, se muestra un banner de felicitación con el elemento ganador en alta visibilidad.
 - Atajo de teclado: `Ctrl + R`.
+

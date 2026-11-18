@@ -187,3 +187,4 @@ class ChurchService {
 }
 
 module.exports = new ChurchService();
+

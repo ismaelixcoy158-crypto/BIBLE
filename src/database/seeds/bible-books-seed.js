@@ -75,3 +75,4 @@ const BIBLE_BOOKS = [
 ];
 
 module.exports = BIBLE_BOOKS;
+

@@ -21,3 +21,4 @@ Muestra un cronómetro grande, solemne y elegante que se visualiza con nitidez a
 ## 4. Personalización Visual
 - Reloj digital en formato grande `HH:MM:SS` con números tabulares de ancho fijo.
 - Tipografía personalizable y soporte de fondos institucionales o de alabanza.
+

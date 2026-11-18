@@ -76,3 +76,4 @@ INSERT OR IGNORE INTO choruses (id, title, lyrics, category_id) VALUES
 (3, 'Una mirada de fe', 'Una mirada de fe, una mirada de fe\nEs la que puede salvar al pecador\n\nY si tú vienes a Cristo Jesús\nÉl te perdonará\nPorque una mirada de fe\nEs la que te puede salvar', 1),
 (4, 'Como el ciervo brama', 'Como el ciervo brama por las corrientes de las aguas\nAsí clama por ti, oh Dios, el alma mía\n\nMi alma tiene sed del Dios vivo\n¿Cuándo vendré y me presentaré delante de Dios?', 2),
 (5, 'Yo me alegré con los que me decían', 'Yo me alegré con los que me decían\nA la casa de Jehová iremos\n\nAllí estaré, allí estaré\nA la casa de Jehová iremos', 1);
+

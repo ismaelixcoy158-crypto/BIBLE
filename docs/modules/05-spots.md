@@ -22,3 +22,4 @@ No requiere editar videos dentro de BIBLE: el operador simplemente importa el ar
   - Pausar / Reanudar video en la pantalla pública.
   - Silenciar / Activar audio en el sistema del templo.
 - Atajo de teclado directo: `Ctrl + S`.
+

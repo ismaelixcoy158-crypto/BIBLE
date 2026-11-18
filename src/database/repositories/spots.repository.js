@@ -83,3 +83,4 @@ class SpotsRepository {
 }
 
 module.exports = SpotsRepository;
+

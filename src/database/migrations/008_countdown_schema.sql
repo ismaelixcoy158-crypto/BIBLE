@@ -17,3 +17,4 @@ VALUES
 (2, 'Aviso Previo (10 min)', 600, '¡Bienvenidos! Iniciamos en unos momentos', 0),
 (3, 'Apertura Solemne (15 min)', 900, 'Tiempo de Oración y Alabanza', 0),
 (4, 'Antesala de Servicio (30 min)', 1800, 'Bienvenidos a la Casa del Señor', 0);
+

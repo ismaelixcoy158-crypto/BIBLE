@@ -41,3 +41,4 @@ INSERT OR IGNORE INTO roulette_items (list_id, label, color, position) VALUES
 (2, 'Número 6', '#3B82F6', 6),
 (2, 'Número 7', '#8B5CF6', 7),
 (2, 'Número 8', '#EC4899', 8);
+

@@ -126,3 +126,4 @@ class WindowManager {
 }
 
 module.exports = new WindowManager();
+

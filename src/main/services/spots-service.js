@@ -128,3 +128,4 @@ class SpotsService {
 }
 
 module.exports = new SpotsService();
+

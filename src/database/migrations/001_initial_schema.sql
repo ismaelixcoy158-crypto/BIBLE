@@ -28,3 +28,4 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
 ('projection.default_background', '"bg-default-1.jpg"'),
 ('projection.transition', '"fade"'),
 ('projection.transition_duration_ms', '300');
+

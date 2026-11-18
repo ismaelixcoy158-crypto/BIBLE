@@ -34,3 +34,4 @@ VALUES
 (1, 0, 'sample_slide_1.jpg', 'Introducción: Definición de la fe bíblica'),
 (1, 1, 'sample_slide_2.jpg', 'Punto 1: La constancia en la oración secreta'),
 (1, 2, 'sample_slide_3.jpg', 'Conclusión: Resultados y testimonios de la fe');
+
