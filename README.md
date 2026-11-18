@@ -64,3 +64,4 @@ BIBLE/
 - **Desarrollo:** Linux Mint
 - **Destino de Distribución:** Windows 11 (64 bits, instalador ejecutable `.exe`)
 - **Control de Versiones:** Git / GitHub
+

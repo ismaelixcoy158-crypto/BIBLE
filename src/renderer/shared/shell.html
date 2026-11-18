@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIBLE — Panel del Operador</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/shell.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Barra Superior -->
+    <header class="top-bar">
+      <div class="brand-badge">
+        <span>BIBLE</span> Church Media System
+      </div>
+      <div class="top-bar-actions">
+        <div id="tallyStatusBadge" class="badge-status badge-standby">Standby</div>
+      </div>
+    </header>
+
+    <!-- Navegación Lateral Izquierda (Módulos) -->
+    <nav class="nav-sidebar">
+      <button class="nav-item active" data-module="church-identity">
+        <span class="nav-item-label">🏛️ Identidad</span>
+      </button>
+
+      <button class="nav-item" data-module="bible">
+        <span class="nav-item-label">📖 Biblia</span>
+        <span class="nav-shortcut">Ctrl+T</span>
+      </button>
+
+      <button class="nav-item" data-module="choruses">
+        <span class="nav-item-label">🎵 Coritos</span>
+        <span class="nav-shortcut">Ctrl+C</span>
+      </button>
+
+      <button class="nav-item" data-module="preaching">
+        <span class="nav-item-label">📊 Predicación</span>
+      </button>
+
+      <button class="nav-item" data-module="spots">
+        <span class="nav-item-label">🎬 Spots</span>
+        <span class="nav-shortcut">Ctrl+S</span>
+      </button>
+
+      <button class="nav-item" data-module="roulette">
+        <span class="nav-item-label">🎡 Ruleta</span>
+        <span class="nav-shortcut">Ctrl+R</span>
+      </button>
+
+      <button class="nav-item" data-module="countdown">
+        <span class="nav-item-label">⏱️ Regresiva</span>
+      </button>
+    </nav>
+
+    <!-- Espacio de Trabajo Dinámico Central -->
+    <main id="workspaceContainer" class="workspace-area">
+      <!-- El contenido de cada módulo se inyecta o gestiona dinámicamente aquí -->
+    </main>
+
+    <!-- Monitor de Salida y Controles de Proyección (Derecha) -->
+    <aside class="output-sidebar">
+      <div class="panel-header">
+        <span>Monitor de Emisión</span>
+        <span id="outputResLabel" style="font-size: 10px; color: var(--text-muted);">1080p</span>
+      </div>
+
+      <!-- Vista previa 16:9 -->
+      <div class="preview-screen">
+        <div id="previewBg" class="preview-background"></div>
+        <div id="previewContent" class="preview-content">
+          <div id="previewTitle" class="preview-title">Sin Emisión Activa</div>
+          <div id="previewText" class="preview-text">Selecciona un elemento para proyectar</div>
+        </div>
+        <div id="previewBlackoutOverlay" class="preview-overlay" style="color: var(--status-blackout);">
+          PANTALLA A NEGRO
+        </div>
+        <div id="previewLogoOverlay" class="preview-overlay" style="color: #FFFFFF;">
+          LOGOTIPO ACTIVO
+        </div>
+      </div>
+
+      <!-- Botones de Pánico y Acciones Maestras -->
+      <div class="panel-header">
+        <span>Acciones de Pánico</span>
+      </div>
+
+      <div class="panic-grid">
+        <button id="btnPanicBlackout" class="btn btn-panic">
+          ◼ Negro
+        </button>
+        <button id="btnPanicLogo" class="btn btn-panic">
+          🏛 Logo
+        </button>
+        <button id="btnPanicClear" class="btn btn-panic">
+          ✕ Ocultar Texto
+        </button>
+        <button id="btnPanicFreeze" class="btn btn-panic">
+          ❄ Congelar
+        </button>
+      </div>
+
+      <!-- Información de la proyección actual -->
+      <div class="current-info-card">
+        <div class="current-info-title">Módulo activo:</div>
+        <div id="activeModuleInfo" class="current-info-value">—</div>
+
+        <div class="current-info-title" style="margin-top: 4px;">Elemento proyectado:</div>
+        <div id="activeItemInfo" class="current-info-value" style="font-size: 12px; color: var(--text-secondary);">Ninguno</div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="js/shell.js"></script>
+</body>
+</html>

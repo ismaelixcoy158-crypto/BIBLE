@@ -1,0 +1,47 @@
+/* BIBLE — Design Tokens: Pro Studio Dark System */
+:root {
+  /* Fondos principales */
+  --bg-app: #090D12;
+  --bg-primary: #0D1117;
+  --bg-secondary: #161B22;
+  --bg-surface: #21262D;
+  --bg-surface-hover: #2B323B;
+  --bg-surface-active: #343B45;
+
+  /* Bordes y divisores */
+  --border-subtle: #21262D;
+  --border-default: #30363D;
+  --border-focus: #3B82F6;
+
+  /* Tipografía y textos */
+  --text-primary: #F0F6FC;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
+  --text-inverse: #0D1117;
+
+  /* Acentos de interfaz */
+  --accent-primary: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-surface: rgba(37, 99, 235, 0.15);
+
+  /* Estados de emisión y botones de pánico */
+  --status-live: #22C55E;
+  --status-live-surface: rgba(34, 197, 94, 0.15);
+  --status-blackout: #EF4444;
+  --status-blackout-surface: rgba(239, 68, 68, 0.2);
+  --status-freeze: #3B82F6;
+  --status-warning: #F59E0B;
+
+  /* Tipografías */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  
+  /* Radios de borde */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}

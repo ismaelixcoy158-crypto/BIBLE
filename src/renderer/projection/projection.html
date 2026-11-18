@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIBLE — Pantalla Pública</title>
+  <link rel="stylesheet" href="css/projection.css">
+</head>
+<body>
+  <div class="projection-container">
+    <!-- Capa de Fondo Dinámico -->
+    <div id="bgLayer" class="projection-background"></div>
+    <div class="projection-scrim"></div>
+
+    <!-- Capa de Contenido -->
+    <main id="contentLayer" class="projection-content">
+      <div id="refTop" class="projection-reference pos-top" style="display: none;"></div>
+      <div id="mainText" class="projection-text"></div>
+      <div id="refBottom" class="projection-reference pos-bottom" style="display: none;"></div>
+    </main>
+
+    <!-- Capa de Logotipo Institucional -->
+    <div id="logoLayer" class="projection-logo-layer">
+      <img id="churchLogoImg" class="projection-logo-img" alt="Logo de la Iglesia" style="display: none;">
+      <h1 id="churchNameTitle" class="projection-church-title" style="display: none;"></h1>
+    </div>
+
+    <!-- Capa de Pantalla a Negro (Blackout) -->
+    <div id="blackoutLayer" class="projection-blackout-layer"></div>
+  </div>
+
+  <script type="module" src="js/projection.js"></script>
+</body>
+</html>

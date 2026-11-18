@@ -1,0 +1,123 @@
+/* BIBLE — Componentes Reutilizables Compartidos */
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.btn:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--text-muted);
+}
+
+.btn:active {
+  background-color: var(--bg-surface-active);
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-panic {
+  background-color: var(--bg-surface);
+  border-color: var(--border-default);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-panic.active-blackout {
+  background-color: var(--status-blackout);
+  border-color: var(--status-blackout);
+  color: #FFFFFF;
+}
+
+.btn-panic.active-freeze {
+  background-color: var(--status-freeze);
+  border-color: var(--status-freeze);
+  color: #FFFFFF;
+}
+
+.btn-panic.active-toggle {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #FFFFFF;
+}
+
+/* Campos de entrada */
+.input-text {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.input-text:focus {
+  border-color: var(--border-focus);
+}
+
+/* Indicadores de Estado (Tally / Live Badge) */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge-status::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.badge-live {
+  background-color: var(--status-live-surface);
+  color: var(--status-live);
+}
+
+.badge-blackout {
+  background-color: var(--status-blackout-surface);
+  color: var(--status-blackout);
+}
+
+.badge-standby {
+  background-color: var(--bg-surface);
+  color: var(--text-muted);
+}

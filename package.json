@@ -6,8 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "electron .",
-    "test": "node --test tests/unit/**/*.test.js",
-    "test:all": "node --test tests/**/*.test.js"
+    "test": "node --test tests/unit/",
+    "test:all": "node --test tests/"
   },
   "keywords": [
     "church",
@@ -26,3 +26,4 @@
     "better-sqlite3": "^11.5.0"
   }
 }
+
