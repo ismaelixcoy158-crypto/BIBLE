@@ -3,6 +3,7 @@ const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
+const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
 const windowManager = require('../windows/window-manager.js');
 
 /**
@@ -11,6 +12,7 @@ const windowManager = require('../windows/window-manager.js');
 function registerIpcHandlers() {
   const db = dbManager.getInstance();
   const bibleRepo = new BibleRepository(db);
+  const chorusesRepo = new ChorusesRepository(db);
 
   // Sincronizar identidad inicial con el servicio de proyección
   try {
@@ -161,6 +163,66 @@ function registerIpcHandlers() {
       background: background || null,
       customStyles: customStyles || null
     });
+  });
+
+  // --- 6. CORITOS ---
+  ipcMain.handle('choruses:get-all', async (_event, categoryId) => {
+    return chorusesRepo.getAll(categoryId || null);
+  });
+
+  ipcMain.handle('choruses:get-by-id', async (_event, id) => {
+    return chorusesRepo.getById(id);
+  });
+
+  ipcMain.handle('choruses:get-categories', async () => {
+    return chorusesRepo.getAllCategories();
+  });
+
+  ipcMain.handle('choruses:search-spontaneous', async (_event, { query, limit }) => {
+    return chorusesRepo.searchSpontaneous(query, limit);
+  });
+
+  ipcMain.handle('choruses:create', async (_event, data) => {
+    return chorusesRepo.create(data);
+  });
+
+  ipcMain.handle('choruses:update', async (_event, { id, data }) => {
+    return chorusesRepo.update(id, data);
+  });
+
+  ipcMain.handle('choruses:delete', async (_event, id) => {
+    return chorusesRepo.delete(id);
+  });
+
+  ipcMain.handle('choruses:project-slide', async (_event, { title, slideText, background }) => {
+    return projectionService.project({
+      module: 'choruses',
+      title,
+      text: slideText,
+      reference: title,
+      refPosition: 'top',
+      background: background || null
+    });
+  });
+
+  ipcMain.handle('choruses:get-playlists', async () => {
+    return chorusesRepo.getPlaylists();
+  });
+
+  ipcMain.handle('choruses:create-playlist', async (_event, name) => {
+    return chorusesRepo.createPlaylist(name);
+  });
+
+  ipcMain.handle('choruses:get-playlist-items', async (_event, playlistId) => {
+    return chorusesRepo.getPlaylistItems(playlistId);
+  });
+
+  ipcMain.handle('choruses:add-to-playlist', async (_event, { playlistId, chorusId }) => {
+    return chorusesRepo.addChorusToPlaylist(playlistId, chorusId);
+  });
+
+  ipcMain.handle('choruses:delete-playlist', async (_event, playlistId) => {
+    return chorusesRepo.deletePlaylist(playlistId);
   });
 }
 

@@ -160,6 +160,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 3: Coritos Pentecostales y de Adoración
+    if (moduleName === 'choruses') {
+      try {
+        const response = await fetch('../modules/choruses/choruses.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { ChorusesController } = await import('../modules/choruses/js/choruses.js');
+        new ChorusesController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Coritos:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">

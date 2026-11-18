@@ -58,5 +58,22 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     searchReference: (rawRef) => ipcRenderer.invoke('bible:search-reference', rawRef),
     searchText: (keyword, limit = 50) => ipcRenderer.invoke('bible:search-text', { keyword, limit }),
     projectVerse: (payload) => ipcRenderer.invoke('bible:project-verse', payload)
+  },
+
+  // Coritos (Pentecostales y Adoración)
+  choruses: {
+    getAll: (categoryId) => ipcRenderer.invoke('choruses:get-all', categoryId),
+    getById: (id) => ipcRenderer.invoke('choruses:get-by-id', id),
+    getCategories: () => ipcRenderer.invoke('choruses:get-categories'),
+    searchSpontaneous: (query, limit = 30) => ipcRenderer.invoke('choruses:search-spontaneous', { query, limit }),
+    create: (data) => ipcRenderer.invoke('choruses:create', data),
+    update: (id, data) => ipcRenderer.invoke('choruses:update', { id, data }),
+    delete: (id) => ipcRenderer.invoke('choruses:delete', id),
+    projectSlide: (payload) => ipcRenderer.invoke('choruses:project-slide', payload),
+    getPlaylists: () => ipcRenderer.invoke('choruses:get-playlists'),
+    createPlaylist: (name) => ipcRenderer.invoke('choruses:create-playlist', name),
+    getPlaylistItems: (playlistId) => ipcRenderer.invoke('choruses:get-playlist-items', playlistId),
+    addToPlaylist: (playlistId, chorusId) => ipcRenderer.invoke('choruses:add-to-playlist', { playlistId, chorusId }),
+    deletePlaylist: (playlistId) => ipcRenderer.invoke('choruses:delete-playlist', playlistId)
   }
 });
