@@ -6,6 +6,7 @@ const preachingService = require('../services/preaching-service.js');
 const spotsService = require('../services/spots-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
+const RouletteRepository = require('../../database/repositories/roulette.repository.js');
 const windowManager = require('../windows/window-manager.js');
 
 /**
@@ -15,6 +16,7 @@ function registerIpcHandlers() {
   const db = dbManager.getInstance();
   const bibleRepo = new BibleRepository(db);
   const chorusesRepo = new ChorusesRepository(db);
+  const rouletteRepo = new RouletteRepository(db);
 
   // Sincronizar identidad inicial con el servicio de proyección
   try {
@@ -273,6 +275,56 @@ function registerIpcHandlers() {
 
   ipcMain.handle('spots:delete', async (_event, id) => {
     return spotsService.delete(id);
+  });
+
+  // --- 9. RULETA ---
+  ipcMain.handle('roulette:get-lists', async () => {
+    return rouletteRepo.getAllLists();
+  });
+
+  ipcMain.handle('roulette:get-list-by-id', async (_event, id) => {
+    return rouletteRepo.getListById(id);
+  });
+
+  ipcMain.handle('roulette:create-list', async (_event, { name, items }) => {
+    return rouletteRepo.createList(name, items);
+  });
+
+  ipcMain.handle('roulette:add-item', async (_event, { listId, label, color }) => {
+    return rouletteRepo.addItem(listId, label, color);
+  });
+
+  ipcMain.handle('roulette:remove-item', async (_event, itemId) => {
+    return rouletteRepo.removeItem(itemId);
+  });
+
+  ipcMain.handle('roulette:delete-list', async (_event, id) => {
+    return rouletteRepo.deleteList(id);
+  });
+
+  ipcMain.handle('roulette:project-spin', async (_event, payload) => {
+    const { items, winningIndex, durationMs, winnerLabel } = payload;
+    return projectionService.project({
+      module: 'roulette',
+      title: 'Ruleta en Vivo',
+      text: winnerLabel || '',
+      reference: 'Ruleta Dinámica',
+      items,
+      winningIndex,
+      durationMs: durationMs || 5000,
+      isSpinning: true
+    });
+  });
+
+  ipcMain.handle('roulette:project-winner', async (_event, { winnerLabel, color }) => {
+    return projectionService.project({
+      module: 'roulette',
+      title: '¡Elemento Seleccionado!',
+      text: winnerLabel,
+      reference: '¡Ganador!',
+      customStyles: { color: color || '#FCD34D' },
+      isSpinning: false
+    });
   });
 }
 

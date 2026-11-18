@@ -94,5 +94,17 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     importFile: () => ipcRenderer.invoke('spots:import-file'),
     project: (id) => ipcRenderer.invoke('spots:project', id),
     delete: (id) => ipcRenderer.invoke('spots:delete', id)
+  },
+
+  // Ruleta Dinámica
+  roulette: {
+    getLists: () => ipcRenderer.invoke('roulette:get-lists'),
+    getListById: (id) => ipcRenderer.invoke('roulette:get-list-by-id', id),
+    createList: (name, items) => ipcRenderer.invoke('roulette:create-list', { name, items }),
+    addItem: (listId, label, color) => ipcRenderer.invoke('roulette:add-item', { listId, label, color }),
+    removeItem: (itemId) => ipcRenderer.invoke('roulette:remove-item', itemId),
+    deleteList: (id) => ipcRenderer.invoke('roulette:delete-list', id),
+    projectSpin: (payload) => ipcRenderer.invoke('roulette:project-spin', payload),
+    projectWinner: (payload) => ipcRenderer.invoke('roulette:project-winner', payload)
   }
 });

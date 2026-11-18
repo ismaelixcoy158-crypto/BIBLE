@@ -1,0 +1,195 @@
+/* BIBLE — Estilos del Módulo de Ruleta Dinámica */
+
+.roulette-workspace {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 84px);
+  gap: 14px;
+}
+
+.roulette-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+}
+
+.roulette-header-title h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.roulette-header-title span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Malla Principal */
+.roulette-main-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  flex: 1;
+  gap: 14px;
+  min-height: 0;
+}
+
+/* Columna Izquierda: Gestión de Listas y Elementos */
+.roulette-sidebar-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 14px;
+  gap: 14px;
+}
+
+.lists-selector-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.items-manager-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.add-item-form {
+  display: flex;
+  gap: 6px;
+}
+
+.items-tag-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 6px;
+}
+
+.roulette-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.item-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Columna Derecha: Canvas de la Ruleta y Controles de Giro */
+.roulette-stage-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.wheel-canvas-container {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#rouletteCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Puntero Superior */
+.wheel-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid #FFFFFF;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  z-index: 10;
+}
+
+/* Botón Central de Giro */
+.wheel-center-hub {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #0D1117;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 5;
+  transition: transform var(--transition-fast);
+}
+
+.wheel-center-hub:hover {
+  transform: scale(1.08);
+}
+
+/* Tarjeta de Ganador */
+.winner-banner {
+  margin-top: 18px;
+  padding: 10px 24px;
+  background-color: var(--status-live-surface);
+  border: 1px solid var(--status-live);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-normal);
+}
+
+.winner-banner-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--status-live);
+}
+
+.winner-banner-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF;
+}

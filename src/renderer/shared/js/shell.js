@@ -202,6 +202,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 6: Ruleta Dinámica
+    if (moduleName === 'roulette') {
+      try {
+        const response = await fetch('../modules/roulette/roulette.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { RouletteController } = await import('../modules/roulette/js/roulette.js');
+        new RouletteController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Ruleta:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">
