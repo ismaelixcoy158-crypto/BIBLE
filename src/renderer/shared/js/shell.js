@@ -188,6 +188,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 5: Spots Multimedia (Fotos y Videos)
+    if (moduleName === 'spots') {
+      try {
+        const response = await fetch('../modules/spots/spots.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { SpotsController } = await import('../modules/spots/js/spots.js');
+        new SpotsController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Spots:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">

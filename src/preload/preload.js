@@ -85,5 +85,14 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     projectSlide: (preachingId, slideIndex) => ipcRenderer.invoke('preaching:project-slide', { preachingId, slideIndex }),
     resume: () => ipcRenderer.invoke('preaching:resume'),
     delete: (id) => ipcRenderer.invoke('preaching:delete', id)
+  },
+
+  // Spots Multimedia (Videos e Imágenes)
+  spots: {
+    getAll: (fileType) => ipcRenderer.invoke('spots:get-all', fileType),
+    getById: (id) => ipcRenderer.invoke('spots:get-by-id', id),
+    importFile: () => ipcRenderer.invoke('spots:import-file'),
+    project: (id) => ipcRenderer.invoke('spots:project', id),
+    delete: (id) => ipcRenderer.invoke('spots:delete', id)
   }
 });

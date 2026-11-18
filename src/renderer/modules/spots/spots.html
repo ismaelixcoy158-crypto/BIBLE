@@ -1,0 +1,27 @@
+<div class="spots-workspace">
+  <!-- Barra Superior -->
+  <header class="spots-header-bar">
+    <div class="spots-header-title">
+      <h2>Spots y Anuncios Multimedia</h2>
+      <span>Videos promocionales y fotografías de actividades (Ctrl+S)</span>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <!-- Pestañas de Filtro -->
+      <div class="spots-filter-tabs">
+        <button id="tabSpotsAll" class="spot-tab-btn active" data-type="">Todos</button>
+        <button id="tabSpotsVideos" class="spot-tab-btn" data-type="video">🎬 Videos</button>
+        <button id="tabSpotsImages" class="spot-tab-btn" data-type="image">🖼️ Fotos</button>
+      </div>
+
+      <button id="btnImportSpot" class="btn btn-primary">
+        📁 Importar Spot (MP4 / Foto)
+      </button>
+    </div>
+  </header>
+
+  <!-- Malla de Spots -->
+  <main id="spotsGridContainer" class="spots-grid">
+    <!-- Renderizado dinámico de tarjetas de spots -->
+  </main>
+</div>

@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const churchLogoImg = document.getElementById('churchLogoImg');
   const churchNameTitle = document.getElementById('churchNameTitle');
   const blackoutLayer = document.getElementById('blackoutLayer');
+  const mediaSpotLayer = document.getElementById('mediaSpotLayer');
+  const spotVideo = document.getElementById('spotVideo');
+  const spotImage = document.getElementById('spotImage');
 
   /**
    * Actualiza el DOM congregacional a partir del estado emitido
@@ -57,6 +60,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. Renderizado del contenido activo
     if (state.activeContent) {
+      // Manejo específico del módulo de Spots Multimedia
+      if (state.activeContent.module === 'spots') {
+        contentLayer.style.display = 'none';
+        mediaSpotLayer.style.display = 'flex';
+
+        if (state.activeContent.fileType === 'video') {
+          spotImage.style.display = 'none';
+          spotVideo.style.display = 'block';
+          spotVideo.src = state.activeContent.mediaUrl;
+          spotVideo.loop = Boolean(state.activeContent.loop);
+          spotVideo.play().catch(e => console.warn('[Video] Autoplay error:', e));
+        } else {
+          spotVideo.pause();
+          spotVideo.style.display = 'none';
+          spotImage.style.display = 'block';
+          spotImage.src = state.activeContent.mediaUrl;
+        }
+        return;
+      }
+
+      // Detener y ocultar video si cambiamos a otro módulo
+      spotVideo.pause();
+      spotVideo.removeAttribute('src');
+      spotVideo.load();
+      mediaSpotLayer.style.display = 'none';
+      contentLayer.style.display = 'flex';
+
       const { text, reference, refPosition = 'bottom', background, customStyles } = state.activeContent;
 
       // Texto principal

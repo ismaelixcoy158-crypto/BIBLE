@@ -3,6 +3,7 @@ const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
 const preachingService = require('../services/preaching-service.js');
+const spotsService = require('../services/spots-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
 const windowManager = require('../windows/window-manager.js');
@@ -250,6 +251,28 @@ function registerIpcHandlers() {
 
   ipcMain.handle('preaching:delete', async (_event, id) => {
     return preachingService.delete(id);
+  });
+
+  // --- 8. SPOTS MULTIMEDIA (IMÁGENES Y VIDEOS) ---
+  ipcMain.handle('spots:get-all', async (_event, fileType) => {
+    return spotsService.getAll(fileType || null);
+  });
+
+  ipcMain.handle('spots:get-by-id', async (_event, id) => {
+    return spotsService.getById(id);
+  });
+
+  ipcMain.handle('spots:import-file', async () => {
+    const parentWin = windowManager.getWindows().operatorWindow;
+    return spotsService.selectAndImportSpot(parentWin);
+  });
+
+  ipcMain.handle('spots:project', async (_event, id) => {
+    return spotsService.projectSpot(id);
+  });
+
+  ipcMain.handle('spots:delete', async (_event, id) => {
+    return spotsService.delete(id);
   });
 }
 
