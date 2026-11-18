@@ -146,6 +146,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Módulo 2: Biblia (RV1909)
+    if (moduleName === 'bible') {
+      try {
+        const response = await fetch('../modules/bible/bible.html');
+        const html = await response.text();
+        workspaceContainer.innerHTML = html;
+        const { BibleController } = await import('../modules/bible/js/bible.js');
+        new BibleController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Biblia:', err);
+      }
+    }
+
     // Espacio de trabajo provisional para módulos siguientes
     workspaceContainer.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:16px;">

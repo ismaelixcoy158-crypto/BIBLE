@@ -49,5 +49,14 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     downloadLogoUrl: (url) => ipcRenderer.invoke('church:download-logo-url', url),
     deleteLogo: () => ipcRenderer.invoke('church:delete-logo'),
     reset: () => ipcRenderer.invoke('church:reset')
+  },
+
+  // Biblia (RV1909)
+  bible: {
+    getBooks: () => ipcRenderer.invoke('bible:get-books'),
+    getVersesByChapter: (bookId, chapter) => ipcRenderer.invoke('bible:get-verses-by-chapter', { bookId, chapter }),
+    searchReference: (rawRef) => ipcRenderer.invoke('bible:search-reference', rawRef),
+    searchText: (keyword, limit = 50) => ipcRenderer.invoke('bible:search-text', { keyword, limit }),
+    projectVerse: (payload) => ipcRenderer.invoke('bible:project-verse', payload)
   }
 });

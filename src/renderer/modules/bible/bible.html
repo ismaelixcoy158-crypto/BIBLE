@@ -1,0 +1,102 @@
+<div class="bible-workspace">
+  <!-- Barra Superior de Comando / Búsqueda Rápida -->
+  <header class="bible-search-bar">
+    <div class="search-input-wrapper">
+      <span class="search-input-icon">🔍</span>
+      <input 
+        type="text" 
+        id="bibleCommandInput" 
+        class="bible-command-input" 
+        placeholder="Escribe una cita: Juan 3:16, Sal 100:1, Josue 1:9 (Presiona Enter para Proyectar)"
+        autocomplete="off"
+        spellcheck="false"
+      >
+    </div>
+    <div id="parsedFeedbackPill" class="parsed-feedback-pill" style="display: none;"></div>
+    <button id="btnProjectFromCommand" class="btn btn-primary">
+      Proyectar Cita
+    </button>
+  </header>
+
+  <!-- Panel Principal Dividido en 3 Columnas -->
+  <div class="bible-main-grid">
+    <!-- Columna 1: Libros -->
+    <div class="bible-column">
+      <div class="column-header">
+        <span>Libros (66)</span>
+      </div>
+      <div class="books-filter-tabs">
+        <button id="tabAllBooks" class="tab-btn active" data-testament="ALL">Todos</button>
+        <button id="tabOTBooks" class="tab-btn" data-testament="OT">Antiguo</button>
+        <button id="tabNTBooks" class="tab-btn" data-testament="NT">Nuevo</button>
+      </div>
+      <div id="booksListContainer" class="books-list">
+        <!-- Renderizado dinámico de libros -->
+      </div>
+    </div>
+
+    <!-- Columna 2: Capítulos -->
+    <div class="bible-column">
+      <div class="column-header">
+        <span id="activeBookLabel">Capítulos</span>
+      </div>
+      <div id="chaptersGridContainer" class="chapters-grid">
+        <!-- Renderizado dinámico de capítulos -->
+      </div>
+    </div>
+
+    <!-- Columna 3: Versículos -->
+    <div class="bible-column">
+      <div class="column-header">
+        <span id="activeReferenceHeading">Versículos</span>
+        <div style="display: flex; gap: 6px;">
+          <button id="btnPrevVerse" class="btn" style="padding: 4px 8px; font-size: 11px;" title="Versículo anterior (Flecha Izq)">
+            ◀ Anterior
+          </button>
+          <button id="btnNextVerse" class="btn" style="padding: 4px 8px; font-size: 11px;" title="Siguiente versículo (Flecha Der)">
+            Siguiente ▶
+          </button>
+        </div>
+      </div>
+      <div id="versesListContainer" class="verses-container">
+        <!-- Renderizado dinámico de versículos -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra Inferior de Personalización y Acciones -->
+  <footer class="bible-bottom-bar">
+    <div class="bible-customizers">
+      <!-- Posición de Referencia -->
+      <div class="customizer-control">
+        <span>Referencia:</span>
+        <select id="selectRefPosition" class="input-text" style="padding: 4px 8px; font-size: 11px; width: auto;">
+          <option value="bottom" selected>Abajo</option>
+          <option value="top">Arriba</option>
+        </select>
+      </div>
+
+      <!-- Etiqueta de Traducción -->
+      <div class="customizer-control">
+        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+          <input type="checkbox" id="checkShowTranslation" checked>
+          <span>Mostrar (RV1909)</span>
+        </label>
+      </div>
+
+      <!-- Tipografía -->
+      <div class="customizer-control">
+        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+          <input type="checkbox" id="checkUppercase">
+          <span>Mayúsculas</span>
+        </label>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <button id="btnProjectActiveVerse" class="btn btn-primary" style="font-weight: 600;">
+        🖥️ Proyectar Selección (Enter)
+      </button>
+    </div>
+  </footer>
+</div>

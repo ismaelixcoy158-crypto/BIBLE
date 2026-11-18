@@ -2,6 +2,7 @@ const { ipcMain } = require('electron');
 const dbManager = require('../../database/database.js');
 const projectionService = require('../services/projection-service.js');
 const churchService = require('../services/church-service.js');
+const BibleRepository = require('../../database/repositories/bible.repository.js');
 const windowManager = require('../windows/window-manager.js');
 
 /**
@@ -9,6 +10,7 @@ const windowManager = require('../windows/window-manager.js');
  */
 function registerIpcHandlers() {
   const db = dbManager.getInstance();
+  const bibleRepo = new BibleRepository(db);
 
   // Sincronizar identidad inicial con el servicio de proyección
   try {
@@ -129,6 +131,36 @@ function registerIpcHandlers() {
     const updated = churchService.reset();
     projectionService.setChurchIdentity(updated);
     return updated;
+  });
+
+  // --- 5. BIBLIA ---
+  ipcMain.handle('bible:get-books', async () => {
+    return bibleRepo.getAllBooks();
+  });
+
+  ipcMain.handle('bible:get-verses-by-chapter', async (_event, { bookId, chapter }) => {
+    return bibleRepo.getVersesByChapter(parseInt(bookId, 10), parseInt(chapter, 10));
+  });
+
+  ipcMain.handle('bible:search-reference', async (_event, rawReference) => {
+    return bibleRepo.searchReference(rawReference);
+  });
+
+  ipcMain.handle('bible:search-text', async (_event, { keyword, limit }) => {
+    return bibleRepo.searchByText(keyword, limit);
+  });
+
+  ipcMain.handle('bible:project-verse', async (_event, payload) => {
+    const { title, text, reference, refPosition, background, customStyles } = payload;
+    return projectionService.project({
+      module: 'bible',
+      title: title || reference,
+      text,
+      reference,
+      refPosition: refPosition || 'bottom',
+      background: background || null,
+      customStyles: customStyles || null
+    });
   });
 }
 
