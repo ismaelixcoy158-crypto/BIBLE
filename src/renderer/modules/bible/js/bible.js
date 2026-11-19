@@ -246,6 +246,16 @@ export class BibleController {
     this.btnNext.addEventListener('click', () => this.nextVerse());
     this.btnProjectSelection.addEventListener('click', () => this.projectSelectedVerse());
 
+    // Sugerencias de citas rápidas
+    const quickChips = document.querySelectorAll('.quick-cite-chip');
+    quickChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        this.commandInput.value = chip.dataset.cite;
+        this.commandInput.dispatchEvent(new Event('input'));
+        this.btnProjectCommand.click();
+      });
+    });
+
     // 3. Parser de citas por teclado en tiempo real
     this.commandInput.addEventListener('input', async () => {
       const val = this.commandInput.value.trim();

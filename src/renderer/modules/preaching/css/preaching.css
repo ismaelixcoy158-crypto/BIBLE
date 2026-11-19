@@ -3,11 +3,14 @@
 .preaching-workspace {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 84px);
+  height: 100%;
   gap: 12px;
+  min-height: 0;
 }
 
-/* Barra Superior */
+/* ==========================================================================
+   Barra Superior
+   ========================================================================== */
 .preaching-header-bar {
   display: flex;
   align-items: center;
@@ -15,27 +18,42 @@
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  padding: 10px 16px;
+  padding: 8px 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.preaching-badge-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--accent-gold);
 }
 
 .preaching-info-title h2 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .preaching-info-title span {
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.preaching-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .bible-switch-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 6px 12px;
-  background-color: var(--accent-surface);
-  color: var(--accent-primary);
+  background-color: rgba(37, 99, 235, 0.12);
+  color: #93c5fd;
   border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 600;
@@ -49,7 +67,16 @@
   color: #FFFFFF;
 }
 
-/* Malla Principal */
+.bible-switch-pill kbd {
+  font-size: 9px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Malla Principal
+   ========================================================================== */
 .preaching-main-grid {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -81,7 +108,7 @@
   padding: 10px 12px;
   border-radius: var(--radius-md);
   background-color: var(--bg-primary);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
@@ -91,7 +118,7 @@
 
 .presentation-item-card:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--text-muted);
+  border-color: var(--border-default);
 }
 
 .presentation-item-card.active {
@@ -99,37 +126,18 @@
   border-color: var(--accent-primary);
 }
 
-.presentation-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.presentation-card-title {
+.presentation-item-title {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  word-break: break-word;
 }
 
-.format-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-surface);
-  color: var(--accent-primary);
+.presentation-item-meta {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
-.format-badge.pdf {
-  color: #EF4444;
-}
-
-.format-badge.pptx {
-  color: #F97316;
-}
-
-/* Columna Derecha: Cuadrícula de Diapositivas */
+/* Columna Derecha: Visor de Diapositivas */
 .presentation-viewer-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
@@ -148,6 +156,45 @@
   justify-content: space-between;
 }
 
+.viewer-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slide-indicator-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-family-mono);
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.viewer-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-resume {
+  color: var(--accent-gold);
+  border-color: rgba(245, 158, 11, 0.3);
+  font-weight: 600;
+}
+
+.btn-resume:hover {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: var(--accent-gold);
+}
+
+.btn-project-slide {
+  font-weight: 700;
+}
+
+/* Malla de Diapositivas */
 .viewer-slides-grid {
   flex: 1;
   overflow-y: auto;
@@ -159,63 +206,59 @@
 }
 
 .deck-slide-card {
+  position: relative;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, #161B22 0%, #0D1117 100%);
+  background-color: #000000;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
   cursor: pointer;
   transition: all var(--transition-fast);
-  position: relative;
-  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deck-slide-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .deck-slide-card:hover {
-  border-color: var(--text-muted);
+  border-color: var(--accent-primary);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.deck-slide-card.active {
+.deck-slide-card.active,
+.deck-slide-card.selected {
   border-color: var(--accent-primary);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
 }
 
 .deck-slide-card.projected {
-  border: 2px solid var(--status-live);
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
+  border-color: var(--status-live);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
 }
 
-.deck-slide-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.deck-slide-card .slide-num-chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-family-mono);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.deck-slide-num {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
+.deck-slide-card.projected .slide-num-chip {
+  background-color: var(--status-live);
+  color: #000000;
+  border-color: var(--status-live);
 }
-
-.deck-slide-card.projected .deck-slide-num {
-  color: var(--status-live);
-}
-
-.deck-slide-body {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-align: center;
-  margin: auto 0;
-}
-
-.deck-slide-notes {
-  font-size: 11px;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-

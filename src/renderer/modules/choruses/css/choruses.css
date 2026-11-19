@@ -3,11 +3,14 @@
 .choruses-workspace {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 84px);
+  height: 100%;
   gap: 12px;
+  min-height: 0;
 }
 
-/* Barra Superior: Modo Espontáneo */
+/* ==========================================================================
+   Barra Superior: Modo Espontáneo
+   ========================================================================== */
 .choruses-search-bar {
   display: flex;
   align-items: center;
@@ -15,7 +18,8 @@
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  padding: 10px 14px;
+  padding: 8px 12px;
+  box-shadow: var(--shadow-sm);
 }
 
 .spontaneous-input-wrapper {
@@ -28,38 +32,40 @@
 .spontaneous-icon {
   position: absolute;
   left: 12px;
-  font-size: 15px;
-  color: var(--status-warning);
+  color: var(--accent-gold);
   pointer-events: none;
 }
 
 .spontaneous-input {
   width: 100%;
-  padding: 10px 14px 10px 38px;
+  padding: 9px 14px 9px 38px;
   background-color: var(--bg-primary);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   color: #FFFFFF;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .spontaneous-input:focus {
-  border-color: var(--status-warning);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 1px var(--accent-gold);
 }
 
-/* Estructura Principal en 2 Columnas */
+/* ==========================================================================
+   Estructura Principal en 2 Columnas
+   ========================================================================== */
 .choruses-main-grid {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 320px 1fr;
   flex: 1;
   gap: 12px;
   min-height: 0;
 }
 
-/* Columna Izquierda: Lista y Categorías */
+/* Columna Izquierda: Resultados y Biblioteca */
 .choruses-sidebar-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
@@ -77,7 +83,10 @@
 }
 
 .category-tab-btn {
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
   font-size: 11px;
   font-weight: 600;
   background: transparent;
@@ -86,11 +95,17 @@
   cursor: pointer;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.category-tab-btn:hover {
+  color: var(--text-primary);
 }
 
 .category-tab-btn.active {
   color: var(--accent-primary);
   border-bottom-color: var(--accent-primary);
+  background-color: rgba(37, 99, 235, 0.05);
 }
 
 .chorus-results-list {
@@ -99,14 +114,14 @@
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .chorus-item-card {
   padding: 10px 12px;
   border-radius: var(--radius-md);
   background-color: var(--bg-primary);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
@@ -116,7 +131,7 @@
 
 .chorus-item-card:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--text-muted);
+  border-color: var(--border-default);
 }
 
 .chorus-item-card.active {
@@ -124,42 +139,21 @@
   border-color: var(--accent-primary);
 }
 
-.chorus-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.chorus-card-title {
-  font-size: 14px;
+.chorus-item-title {
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.chorus-card-tag {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-surface);
-  color: var(--accent-primary);
-}
-
-.chorus-card-snippet {
-  font-size: 12px;
-  color: var(--text-secondary);
-  line-height: 1.3;
+.chorus-item-snippet {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.chorus-card-snippet b {
-  color: var(--status-warning);
-  font-weight: 700;
-}
-
-/* Columna Derecha: Diapositivas del Corito Activo */
+/* Columna Derecha: Diapositivas */
 .chorus-detail-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
@@ -179,76 +173,123 @@
 }
 
 .detail-title-box h3 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 2px;
 }
 
 .detail-title-box span {
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
+.detail-actions-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-danger {
+  color: var(--status-blackout);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--status-blackout);
+}
+
+.btn-project-chorus {
+  font-weight: 700;
+}
+
+/* Malla de Diapositivas 16:9 */
 .slides-grid-container {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+  gap: 14px;
   align-content: start;
 }
 
 .slide-card {
-  aspect-ratio: 16 / 10;
-  background-color: var(--bg-primary);
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #181c24 0%, #101318 100%);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  padding: 12px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   cursor: pointer;
   transition: all var(--transition-fast);
-  position: relative;
-}
-
-.slide-card:hover {
-  background-color: var(--bg-surface-hover);
-  border-color: var(--text-muted);
-}
-
-.slide-card.active {
-  border-color: var(--accent-primary);
-  background-color: var(--accent-surface);
-}
-
-.slide-card.projected {
-  border: 2px solid var(--status-live);
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
-}
-
-.slide-num-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.slide-card.projected .slide-num-badge {
-  color: var(--status-live);
-}
-
-.slide-body-text {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--text-primary);
-  white-space: pre-line;
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
-/* Modal Simple para Crear / Editar Corito */
+.slide-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.slide-card.selected,
+.slide-card.active {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+}
+
+.slide-card.projected {
+  border-color: var(--status-live);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.slide-badge-num,
+.slide-num-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--accent-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.slide-card.projected .slide-badge-num,
+.slide-card.projected .slide-num-badge {
+  background-color: var(--status-live);
+  color: #000000;
+  border-color: var(--status-live);
+}
+
+.slide-text,
+.slide-body-text {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #FFFFFF;
+  max-height: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Modal para Crear / Editar Corito
+   ========================================================================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -256,22 +297,57 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal-card {
-  width: 520px;
-  max-width: 90vw;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 560px;
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
   padding: 20px;
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  gap: 14px;
 }
 
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 10px;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--border-default);
+  padding-top: 12px;
+}

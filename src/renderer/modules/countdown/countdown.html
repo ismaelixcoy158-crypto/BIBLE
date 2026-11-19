@@ -2,14 +2,15 @@
   <!-- Barra Superior -->
   <header class="countdown-header-bar">
     <div class="countdown-header-title">
-      <h2>Cuenta Regresiva</h2>
-      <span>Reloj visual de bienvenida y aviso previo para el inicio del servicio</span>
+      <div class="countdown-badge-tag">TEMPORIZADOR DE CULTO</div>
+      <h2>Cuenta Regresiva de Entrada</h2>
+      <span>Reloj visual de bienvenida y aviso previo para el inicio puntual del culto</span>
     </div>
   </header>
 
-  <!-- Escenario del Reloj Digital -->
+  <!-- Escenario del Reloj Digital de Estudio -->
   <main class="timer-stage-card">
-    <!-- Pantalla Digital -->
+    <!-- Pantalla Digital Monospace de Estudio -->
     <div id="digitalClockDisplay" class="digital-clock-display">
       00:05:00
     </div>
@@ -22,16 +23,33 @@
     <!-- Controles Maestros -->
     <div class="timer-action-controls">
       <button id="btnStartCountdown" class="btn btn-primary btn-timer-main">
-        ▶ Iniciar
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span>Iniciar Temporizador</span>
       </button>
+
       <button id="btnPauseCountdown" class="btn btn-timer-main" style="display: none;">
-        ⏸ Pausar
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <rect x="6" y="4" width="4" height="16"/>
+          <rect x="14" y="4" width="4" height="16"/>
+        </svg>
+        <span>Pausar</span>
       </button>
+
       <button id="btnResumeCountdown" class="btn btn-primary btn-timer-main" style="display: none;">
-        ▶ Reanudar
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span>Reanudar</span>
       </button>
+
       <button id="btnResetCountdown" class="btn btn-timer-main">
-        🔄 Reiniciar
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>Reiniciar</span>
       </button>
     </div>
   </main>
@@ -39,7 +57,10 @@
   <!-- Ajustes de Mensaje y Fondo -->
   <section class="timer-settings-card">
     <div class="card-title">
-      <span>Mensaje al finalizar el tiempo:</span>
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-gold);">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Mensaje al llegar a cero (00:00:00):</span>
     </div>
     <div class="form-row">
       <input 
@@ -47,9 +68,8 @@
         id="inputEndMessage" 
         class="input-text" 
         value="¡Bienvenidos a la Casa de Dios! El culto ha comenzado"
-        placeholder="Texto que aparecerá cuando el reloj llegue a 00:00:00"
+        placeholder="Texto que aparecerá en pantalla cuando el reloj llegue a 00:00:00"
       >
     </div>
   </section>
 </div>
-

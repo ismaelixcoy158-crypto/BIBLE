@@ -2,16 +2,24 @@
   <!-- Barra Superior -->
   <header class="roulette-header-bar">
     <div class="roulette-header-title">
-      <h2>Ruleta Dinámica</h2>
-      <span>Dinámicas bíblicas, sorteos de cultos y participaciones (Ctrl+R)</span>
+      <div class="roulette-badge-tag">ACTIVIDADES Y DINÁMICAS</div>
+      <h2>Ruleta Dinámica de Sorteos</h2>
+      <span>Dinámicas bíblicas, concursos de jóvenes, niños y actividades pro-templo (Ctrl+R)</span>
     </div>
 
-    <div style="display: flex; gap: 10px;">
+    <div class="roulette-top-actions">
       <button id="btnCreateNewList" class="btn">
-        + Nueva Lista
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5v14"/>
+        </svg>
+        <span>Nueva Lista</span>
       </button>
-      <button id="btnSpinRouletteMaster" class="btn btn-primary" style="font-weight: 700; padding: 8px 18px;">
-        🎡 GIRAR RULETA (Espacio)
+      <button id="btnSpinRouletteMaster" class="btn btn-primary btn-spin-master">
+        <svg class="icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24M2 12h6M16 12h6M12 2v6M12 16v6"/>
+        </svg>
+        <span>GIRAR RULETA (Espacio)</span>
       </button>
     </div>
   </header>
@@ -21,27 +29,34 @@
     <!-- Columna Izquierda: Listas y Elementos -->
     <div class="roulette-sidebar-card">
       <div class="lists-selector-box">
-        <label class="form-label" for="selectRouletteList">Lista activa:</label>
+        <label class="form-label" for="selectRouletteList">Lista de Participantes Activa:</label>
         <select id="selectRouletteList" class="input-text">
           <!-- Opciones dinámicas -->
         </select>
       </div>
 
       <div class="items-manager-box">
-        <span class="form-label">Elementos de la Ruleta:</span>
+        <span class="form-label">Agregar Elemento o Nombre:</span>
         <div class="add-item-form">
           <input type="text" id="inputNewItemLabel" class="input-text" placeholder="Ej: Hno. Carlos, Pregunta #1..." style="font-size: 13px;">
-          <button id="btnAddItem" class="btn btn-primary" style="padding: 6px 12px;">+</button>
+          <button id="btnAddItem" class="btn btn-primary" style="padding: 6px 12px;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5v14"/>
+            </svg>
+          </button>
         </div>
 
         <div id="rouletteItemsList" class="items-tag-list">
           <!-- Lista dinámica de elementos con opción de eliminar -->
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-          <span id="itemsCounterLabel" style="font-size: 11px; color: var(--text-muted);">0 elementos</span>
-          <button id="btnDeleteCurrentList" class="btn" style="font-size: 11px; color: var(--status-blackout); border-color: rgba(239, 68, 68, 0.3);">
-            🗑️ Eliminar Lista
+        <div class="items-footer-row">
+          <span id="itemsCounterLabel" class="items-counter-text">0 elementos</span>
+          <button id="btnDeleteCurrentList" class="btn btn-sm btn-danger" title="Eliminar lista">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            <span>Eliminar Lista</span>
           </button>
         </div>
       </div>
@@ -63,4 +78,3 @@
     </div>
   </div>
 </div>
-

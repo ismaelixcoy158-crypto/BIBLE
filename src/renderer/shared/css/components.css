@@ -1,14 +1,14 @@
 /* BIBLE — Componentes Reutilizables Compartidos */
 
-/* Botones */
+/* Botones Base */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 14px;
+  padding: 7px 13px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-default);
@@ -17,11 +17,13 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   outline: none;
+  white-space: nowrap;
 }
 
 .btn:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--text-muted);
+  border-color: var(--border-strong);
+  color: #FFFFFF;
 }
 
 .btn:active {
@@ -33,37 +35,108 @@
   background-color: var(--accent-primary);
   border-color: var(--accent-primary);
   color: #FFFFFF;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
+.btn-sm {
+  padding: 5px 9px;
+  font-size: 11px;
+}
+
+.btn-lg {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Botones de Pánico de Consola de Emisión */
 .btn-panic {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 10px 12px;
+  min-height: 58px;
   background-color: var(--bg-surface);
-  border-color: var(--border-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  overflow: hidden;
 }
 
+.btn-panic .panic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.btn-panic .panic-key {
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: var(--radius-xs);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+}
+
+.btn-panic .panic-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.btn-panic:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* Estados Activos de Botones de Pánico */
 .btn-panic.active-blackout {
-  background-color: var(--status-blackout);
+  background-color: rgba(239, 68, 68, 0.15);
   border-color: var(--status-blackout);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+.btn-panic.active-blackout .panic-key {
+  background-color: var(--status-blackout);
   color: #FFFFFF;
 }
 
 .btn-panic.active-freeze {
-  background-color: var(--status-freeze);
+  background-color: rgba(6, 182, 212, 0.15);
   border-color: var(--status-freeze);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+}
+.btn-panic.active-freeze .panic-key {
+  background-color: var(--status-freeze);
   color: #FFFFFF;
 }
 
 .btn-panic.active-toggle {
-  background-color: var(--accent-primary);
+  background-color: rgba(37, 99, 235, 0.2);
   border-color: var(--accent-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+}
+.btn-panic.active-toggle .panic-key {
+  background-color: var(--accent-primary);
   color: #FFFFFF;
 }
 
@@ -76,33 +149,34 @@
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .input-text:focus {
   border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
 }
 
 /* Indicadores de Estado (Tally / Live Badge) */
 .badge-status {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 999px;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
 }
 
 .badge-status::before {
   content: "";
   display: inline-block;
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: currentColor;
 }
@@ -110,6 +184,16 @@
 .badge-live {
   background-color: var(--status-live-surface);
   color: var(--status-live);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+.badge-live::before {
+  animation: pulse-live 2s infinite;
+}
+
+@keyframes pulse-live {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
 }
 
 .badge-blackout {
@@ -118,7 +202,19 @@
 }
 
 .badge-standby {
-  background-color: var(--bg-surface);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
 }
 
+/* Tecla de Atajo (KBD) */
+kbd, .kbd-chip {
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 2px 5px;
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+}

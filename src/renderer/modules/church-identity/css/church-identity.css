@@ -3,44 +3,65 @@
 .identity-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   max-width: 850px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .identity-header {
-  border-bottom: 1px solid var(--border-default);
-  padding-bottom: 16px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.identity-badge-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--accent-gold);
 }
 
 .identity-header h2 {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .identity-header p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
 }
 
 .identity-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
 .card-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+}
+
+.logo-source-badge {
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--text-muted);
+  margin-left: auto;
 }
 
 .form-group {
@@ -50,7 +71,7 @@
 }
 
 .form-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -62,8 +83,8 @@
 
 .logo-manager {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
 }
 
 /* Caja de previsualización del logo */
@@ -86,10 +107,10 @@
   border-style: solid;
   border-color: var(--border-default);
   background-image: 
-    linear-gradient(45deg, #1A1F26 25%, transparent 25%), 
-    linear-gradient(-45deg, #1A1F26 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #1A1F26 75%), 
-    linear-gradient(-45deg, transparent 75%, #1A1F26 75%);
+    linear-gradient(45deg, #181c24 25%, transparent 25%), 
+    linear-gradient(-45deg, #181c24 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #181c24 75%), 
+    linear-gradient(-45deg, transparent 75%, #181c24 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
@@ -104,31 +125,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
-.logo-placeholder-icon {
-  font-size: 32px;
-}
-
-/* Opciones y acciones para el logo */
 .logo-actions {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
 }
 
 .url-input-box {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background-color: var(--bg-primary);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  gap: 6px;
 }
 
 .url-row {
@@ -136,30 +149,30 @@
   gap: 8px;
 }
 
-/* Alertas y avisos */
+.logo-bottom-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .identity-alert {
+  display: none;
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  font-size: 13px;
-  display: none;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .identity-alert.success {
-  display: flex;
+  display: block;
   background-color: var(--status-live-surface);
+  border: 1px solid var(--status-live);
   color: var(--status-live);
-  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .identity-alert.error {
-  display: flex;
+  display: block;
   background-color: var(--status-blackout-surface);
+  border: 1px solid var(--status-blackout);
   color: var(--status-blackout);
-  border: 1px solid rgba(239, 68, 68, 0.3);
 }
-
-.danger-zone {
-  border-color: rgba(239, 68, 68, 0.3);
-  background-color: rgba(239, 68, 68, 0.03);
-}
-

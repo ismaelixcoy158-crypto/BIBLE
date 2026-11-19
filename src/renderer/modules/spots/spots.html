@@ -2,20 +2,39 @@
   <!-- Barra Superior -->
   <header class="spots-header-bar">
     <div class="spots-header-title">
-      <h2>Spots y Anuncios Multimedia</h2>
-      <span>Videos promocionales y fotografías de actividades (Ctrl+S)</span>
+      <div class="spots-badge-tag">PROYECCIÓN MULTIMEDIA</div>
+      <h2>Spots, Videos y Anuncios</h2>
+      <span>Videos promocionales, avisos de actividades y fondos visuales (Ctrl+S)</span>
     </div>
 
-    <div style="display: flex; gap: 12px; align-items: center;">
+    <div class="spots-top-actions">
       <!-- Pestañas de Filtro -->
       <div class="spots-filter-tabs">
         <button id="tabSpotsAll" class="spot-tab-btn active" data-type="">Todos</button>
-        <button id="tabSpotsVideos" class="spot-tab-btn" data-type="video">🎬 Videos</button>
-        <button id="tabSpotsImages" class="spot-tab-btn" data-type="image">🖼️ Fotos</button>
+        <button id="tabSpotsVideos" class="spot-tab-btn" data-type="video">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="m10 8 6 4-6 4V8Z"/>
+          </svg>
+          <span>Videos</span>
+        </button>
+        <button id="tabSpotsImages" class="spot-tab-btn" data-type="image">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Fotografías</span>
+        </button>
       </div>
 
       <button id="btnImportSpot" class="btn btn-primary">
-        📁 Importar Spot (MP4 / Foto)
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" x2="12" y1="3" y2="15"/>
+        </svg>
+        <span>Importar Spot (MP4 / Foto)</span>
       </button>
     </div>
   </header>
@@ -25,4 +44,3 @@
     <!-- Renderizado dinámico de tarjetas de spots -->
   </main>
 </div>
-

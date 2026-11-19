@@ -2,33 +2,54 @@
   <!-- Barra Superior de Comando / Búsqueda Rápida -->
   <header class="bible-search-bar">
     <div class="search-input-wrapper">
-      <span class="search-input-icon">🔍</span>
+      <svg class="icon search-input-icon" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.3-4.3"/>
+      </svg>
       <input 
         type="text" 
         id="bibleCommandInput" 
         class="bible-command-input" 
-        placeholder="Escribe una cita: Juan 3:16, Sal 100:1, Josue 1:9 (Presiona Enter para Proyectar)"
+        placeholder="Escribe una cita bíblica (ej. Juan 3:16, Sal 23, Gn 1:1) — Presiona Enter para proyectar"
         autocomplete="off"
         spellcheck="false"
       >
+      <div id="parsedFeedbackPill" class="parsed-feedback-pill" style="display: none;"></div>
     </div>
-    <div id="parsedFeedbackPill" class="parsed-feedback-pill" style="display: none;"></div>
-    <button id="btnProjectFromCommand" class="btn btn-primary">
-      Proyectar Cita
+
+    <!-- Sugerencias Rápidas de Citas -->
+    <div class="quick-cites-bar">
+      <button class="quick-cite-chip" data-cite="Juan 3:16">Juan 3:16</button>
+      <button class="quick-cite-chip" data-cite="Salmos 23:1">Salmos 23:1</button>
+      <button class="quick-cite-chip" data-cite="Filipenses 4:13">Filipenses 4:13</button>
+    </div>
+
+    <button id="btnProjectFromCommand" class="btn btn-primary btn-project-cmd">
+      <svg class="icon icon-sm" viewBox="0 0 24 24">
+        <rect width="20" height="14" x="2" y="3" rx="2"/>
+        <path d="M8 21h8M12 17v4"/>
+      </svg>
+      <span>Proyectar Cita</span>
     </button>
   </header>
 
-  <!-- Panel Principal Dividido en 3 Columnas -->
+  <!-- Panel Principal Dividido en 3 Columnas de Estudio -->
   <div class="bible-main-grid">
     <!-- Columna 1: Libros -->
-    <div class="bible-column">
+    <div class="bible-column col-books">
       <div class="column-header">
-        <span>Libros (66)</span>
+        <div class="column-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10M6 10h10"/>
+          </svg>
+          <span>Libros (66)</span>
+        </div>
       </div>
       <div class="books-filter-tabs">
         <button id="tabAllBooks" class="tab-btn active" data-testament="ALL">Todos</button>
-        <button id="tabOTBooks" class="tab-btn" data-testament="OT">Antiguo</button>
-        <button id="tabNTBooks" class="tab-btn" data-testament="NT">Nuevo</button>
+        <button id="tabOTBooks" class="tab-btn" data-testament="OT">Antiguo (39)</button>
+        <button id="tabNTBooks" class="tab-btn" data-testament="NT">Nuevo (27)</button>
       </div>
       <div id="booksListContainer" class="books-list">
         <!-- Renderizado dinámico de libros -->
@@ -36,9 +57,15 @@
     </div>
 
     <!-- Columna 2: Capítulos -->
-    <div class="bible-column">
+    <div class="bible-column col-chapters">
       <div class="column-header">
-        <span id="activeBookLabel">Capítulos</span>
+        <div class="column-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+          <span id="activeBookLabel">Capítulos</span>
+        </div>
       </div>
       <div id="chaptersGridContainer" class="chapters-grid">
         <!-- Renderizado dinámico de capítulos -->
@@ -46,15 +73,28 @@
     </div>
 
     <!-- Columna 3: Versículos -->
-    <div class="bible-column">
+    <div class="bible-column col-verses">
       <div class="column-header">
-        <span id="activeReferenceHeading">Versículos</span>
-        <div style="display: flex; gap: 6px;">
-          <button id="btnPrevVerse" class="btn" style="padding: 4px 8px; font-size: 11px;" title="Versículo anterior (Flecha Izq)">
-            ◀ Anterior
+        <div class="column-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <line x1="21" x2="3" y1="6" y2="6"/>
+            <line x1="15" x2="3" y1="12" y2="12"/>
+            <line x1="17" x2="3" y1="18" y2="18"/>
+          </svg>
+          <span id="activeReferenceHeading">Versículos</span>
+        </div>
+        <div class="column-nav-actions">
+          <button id="btnPrevVerse" class="btn btn-sm" title="Versículo anterior (Flecha Izquierda)">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+            <span>Anterior</span>
           </button>
-          <button id="btnNextVerse" class="btn" style="padding: 4px 8px; font-size: 11px;" title="Siguiente versículo (Flecha Der)">
-            Siguiente ▶
+          <button id="btnNextVerse" class="btn btn-sm" title="Siguiente versículo (Flecha Derecha)">
+            <span>Siguiente</span>
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -69,35 +109,38 @@
     <div class="bible-customizers">
       <!-- Posición de Referencia -->
       <div class="customizer-control">
-        <span>Referencia:</span>
-        <select id="selectRefPosition" class="input-text" style="padding: 4px 8px; font-size: 11px; width: auto;">
-          <option value="bottom" selected>Abajo</option>
-          <option value="top">Arriba</option>
+        <span class="customizer-label">Ubicación de Referencia:</span>
+        <select id="selectRefPosition" class="input-text customizer-select">
+          <option value="bottom" selected>Abajo (Pie de diapositiva)</option>
+          <option value="top">Arriba (Encabezado)</option>
         </select>
       </div>
 
       <!-- Etiqueta de Traducción -->
       <div class="customizer-control">
-        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+        <label class="customizer-checkbox-label">
           <input type="checkbox" id="checkShowTranslation" checked>
           <span>Mostrar (RV1909)</span>
         </label>
       </div>
 
-      <!-- Tipografía -->
+      <!-- Tipografía Mayúsculas -->
       <div class="customizer-control">
-        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+        <label class="customizer-checkbox-label">
           <input type="checkbox" id="checkUppercase">
-          <span>Mayúsculas</span>
+          <span>Texto en Mayúsculas</span>
         </label>
       </div>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-      <button id="btnProjectActiveVerse" class="btn btn-primary" style="font-weight: 600;">
-        🖥️ Proyectar Selección (Enter)
+    <div class="bible-actions-right">
+      <button id="btnProjectActiveVerse" class="btn btn-primary btn-project-main">
+        <svg class="icon" viewBox="0 0 24 24">
+          <rect width="20" height="14" x="2" y="3" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+        <span>Proyectar Versículo (Enter)</span>
       </button>
     </div>
   </footer>
 </div>
-

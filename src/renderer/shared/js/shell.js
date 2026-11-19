@@ -1,6 +1,6 @@
 /**
  * BIBLE — Shell Maestro del Operador
- * Coordina la navegación entre módulos, atajos globales y la sincronización del monitor de proyección.
+ * Coordina la navegación entre módulos, reloj maestro, atajos globales y la sincronización del monitor de proyección.
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const activeModuleInfo = document.getElementById('activeModuleInfo');
   const activeItemInfo = document.getElementById('activeItemInfo');
   const workspaceContainer = document.getElementById('workspaceContainer');
+  const previewMonitorScreen = document.getElementById('previewMonitorScreen');
+  const previewTallyIndicator = document.getElementById('previewTallyIndicator');
+  const clockTimeDisplay = document.getElementById('clockTimeDisplay');
+  const displayModeLabel = document.getElementById('displayModeLabel');
+  const btnTogglePublic = document.getElementById('btnTogglePublicWindow');
 
   // Botones de pánico
   const btnBlackout = document.getElementById('btnPanicBlackout');
@@ -23,7 +28,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Navegación
   const navButtons = document.querySelectorAll('.nav-item');
-  let currentActiveModule = 'church-identity';
+  let currentActiveModule = 'bible'; // Inicia directamente en la Biblia para máxima agilidad
+
+  /**
+   * Reloj Maestro de Culto en tiempo real
+   */
+  function startMasterClock() {
+    function tick() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const formatted = `${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+      if (clockTimeDisplay) {
+        clockTimeDisplay.textContent = formatted;
+      }
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+  startMasterClock();
+
+  /**
+   * Detecta y muestra el estado de las pantallas
+   */
+  async function checkDisplays() {
+    if (window.bibleAPI && window.bibleAPI.system && window.bibleAPI.system.getDisplays) {
+      try {
+        const { displays, secondaryDisplay } = await window.bibleAPI.system.getDisplays();
+        if (displayModeLabel) {
+          if (secondaryDisplay) {
+            displayModeLabel.textContent = `Proyector HDMI (${secondaryDisplay.bounds.width}x${secondaryDisplay.bounds.height})`;
+          } else {
+            displayModeLabel.textContent = 'Modo 1 Pantalla (Ventana Flotante)';
+          }
+        }
+      } catch (err) {
+        console.warn('[Shell] No se pudo consultar pantallas:', err);
+      }
+    }
+  }
+  checkDisplays();
+
+  if (btnTogglePublic) {
+    btnTogglePublic.addEventListener('click', async () => {
+      // Intentar alternar visibilidad de la ventana pública si existe método
+      if (window.bibleAPI && window.bibleAPI.projection && window.bibleAPI.projection.toggleWindow) {
+        window.bibleAPI.projection.toggleWindow();
+      }
+    });
+  }
 
   /**
    * Sincroniza el monitor de previsualización con el estado de proyección
@@ -31,10 +87,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updatePreviewMonitor(state) {
     if (!state) return;
 
+    const isLive = Boolean(state.activeContent) && !state.isBlackout;
+
+    if (previewMonitorScreen) {
+      if (isLive) {
+        previewMonitorScreen.classList.add('live');
+      } else {
+        previewMonitorScreen.classList.remove('live');
+      }
+    }
+
     // 1. Estado Tally / Badge
     if (state.isBlackout) {
       tallyBadge.className = 'badge-status badge-blackout';
       tallyBadge.textContent = 'En Negro';
+      if (previewTallyIndicator) {
+        previewTallyIndicator.textContent = 'BLACKOUT';
+        previewTallyIndicator.style.backgroundColor = 'var(--status-blackout)';
+        previewTallyIndicator.style.color = '#FFFFFF';
+      }
       btnBlackout.classList.add('active-blackout');
       blackoutOverlay.classList.add('visible');
     } else {
@@ -44,15 +115,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (state.isFrozen) {
         tallyBadge.className = 'badge-status badge-live';
         tallyBadge.textContent = 'Congelado';
+        if (previewTallyIndicator) {
+          previewTallyIndicator.textContent = 'CONGELADO';
+          previewTallyIndicator.style.backgroundColor = 'var(--status-freeze)';
+          previewTallyIndicator.style.color = '#FFFFFF';
+        }
       } else if (state.isLogo) {
         tallyBadge.className = 'badge-status badge-live';
         tallyBadge.textContent = 'Logo Activo';
+        if (previewTallyIndicator) {
+          previewTallyIndicator.textContent = 'LOGO';
+          previewTallyIndicator.style.backgroundColor = 'var(--accent-gold)';
+          previewTallyIndicator.style.color = '#000000';
+        }
       } else if (state.activeContent) {
         tallyBadge.className = 'badge-status badge-live';
         tallyBadge.textContent = 'En Vivo';
+        if (previewTallyIndicator) {
+          previewTallyIndicator.textContent = 'EN EL AIRE';
+          previewTallyIndicator.style.backgroundColor = 'var(--status-live)';
+          previewTallyIndicator.style.color = '#000000';
+        }
       } else {
         tallyBadge.className = 'badge-status badge-standby';
         tallyBadge.textContent = 'Standby';
+        if (previewTallyIndicator) {
+          previewTallyIndicator.textContent = 'STANDBY';
+          previewTallyIndicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+          previewTallyIndicator.style.color = 'var(--text-muted)';
+        }
       }
     }
 
@@ -93,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       previewTitle.textContent = 'Sin Emisión Activa';
       previewText.textContent = 'Selecciona un elemento para proyectar';
-      activeModuleInfo.textContent = '—';
+      activeModuleInfo.textContent = 'En espera';
       activeItemInfo.textContent = 'Ninguno';
       previewBg.style.backgroundImage = 'none';
     }
@@ -223,24 +314,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Espacio de trabajo provisional para módulos siguientes
-    workspaceContainer.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:16px;">
-        <div style="border-bottom: 1px solid var(--border-default); padding-bottom: 12px;">
-          <h2 style="font-size: 18px; font-weight: 600; color: var(--text-primary);">
-            Módulo: ${moduleName.replace('-', ' ').toUpperCase()}
-          </h2>
-          <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
-            Espacio de trabajo modular e independiente.
-          </p>
-        </div>
-        <div id="moduleViewPlaceholder">
-          <!-- Vista del módulo en construcción -->
-        </div>
-      </div>
-    `;
-
-    // Disparar evento personalizado
     window.dispatchEvent(new CustomEvent('module-switched', { detail: { module: moduleName } }));
   }
 
@@ -251,10 +324,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Atajos de Teclado Globales (Reglas de no colisión con el SO)
+  // Atajos de Teclado Globales
   window.addEventListener('keydown', (e) => {
     const isInputFocused = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
     const hasSelection = window.getSelection().toString().length > 0;
+
+    // F1 - F4: Botones de pánico de consola
+    if (e.key === 'F1') {
+      e.preventDefault();
+      window.bibleAPI.projection.toggleBlackout();
+      return;
+    }
+    if (e.key === 'F2') {
+      e.preventDefault();
+      window.bibleAPI.projection.toggleLogo();
+      return;
+    }
+    if (e.key === 'F3') {
+      e.preventDefault();
+      window.bibleAPI.projection.toggleClearText();
+      return;
+    }
+    if (e.key === 'F4') {
+      e.preventDefault();
+      window.bibleAPI.projection.toggleFreeze();
+      return;
+    }
 
     // Ctrl + T: Abrir Biblia
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 't') {
@@ -272,6 +367,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // Ctrl + P: Predicación
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+      e.preventDefault();
+      switchModule('preaching');
+      return;
+    }
+
     // Ctrl + S: Spots
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
       e.preventDefault();
@@ -284,12 +386,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       switchModule('roulette');
       return;
-    }
-
-    // F12: Pánico a Negro
-    if (e.key === 'F12') {
-      e.preventDefault();
-      window.bibleAPI.projection.toggleBlackout();
     }
   });
 

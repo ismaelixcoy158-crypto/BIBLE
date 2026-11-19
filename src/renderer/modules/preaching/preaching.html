@@ -2,18 +2,29 @@
   <!-- Barra Superior -->
   <header class="preaching-header-bar">
     <div class="preaching-info-title">
-      <h2 id="currentPreachingTitle">Presentaciones de Predicación</h2>
-      <span id="currentPreachingMeta">Sermones y diapositivas de culto</span>
+      <div class="preaching-badge-tag">SERMONES Y DIAPOSITIVAS</div>
+      <h2 id="currentPreachingTitle">Presentación de Predicación</h2>
+      <span id="currentPreachingMeta">Sermones, bosquejos y presentaciones para culto</span>
     </div>
 
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <!-- Botón de Alternancia Rápida a la Biblia -->
-      <button id="btnSwitchToBible" class="bible-switch-pill" title="Abre la Biblia sin interrumpir la proyección actual (Ctrl+T)">
-        📖 Alternar con Biblia (Ctrl+T)
+    <div class="preaching-top-actions">
+      <!-- Botón de Alternancia Rápida a la Biblia (Tecla Maestra Ctrl+T) -->
+      <button id="btnSwitchToBible" class="bible-switch-pill" title="Abre la Biblia sin interrumpir la diapositiva del predicador (Ctrl+T)">
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+          <path d="M6 6h10M6 10h10"/>
+        </svg>
+        <span>Alternar con Biblia</span>
+        <kbd>Ctrl+T</kbd>
       </button>
 
       <button id="btnImportPresentation" class="btn btn-primary">
-        📁 Importar Presentación (PDF / PPTX)
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" x2="12" y1="3" y2="15"/>
+        </svg>
+        <span>Importar Presentación (PDF / PPTX)</span>
       </button>
     </div>
   </header>
@@ -23,7 +34,13 @@
     <!-- Columna Izquierda: Lista de Presentaciones Importadas -->
     <div class="preaching-sidebar-card">
       <div class="column-header">
-        <span>Biblioteca de Sermones</span>
+        <div class="column-title">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="20" height="14" x="2" y="3" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+          <span>Biblioteca de Sermones</span>
+        </div>
       </div>
       <div id="presentationsListContainer" class="presentations-list">
         <!-- Renderizado dinámico de presentaciones -->
@@ -33,27 +50,42 @@
     <!-- Columna Derecha: Diapositivas de la Presentación -->
     <div class="presentation-viewer-card">
       <div class="viewer-controls-bar">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <button id="btnPrevSlide" class="btn" style="padding: 6px 10px; font-size: 12px;">
-            ◀ Anterior
+        <div class="viewer-nav-group">
+          <button id="btnPrevSlide" class="btn btn-sm" title="Diapositiva anterior">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+            <span>Anterior</span>
           </button>
-          <button id="btnNextSlide" class="btn" style="padding: 6px 10px; font-size: 12px;">
-            Siguiente ▶
+          <button id="btnNextSlide" class="btn btn-sm" title="Siguiente diapositiva">
+            <span>Siguiente</span>
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
           </button>
-          <span id="slideIndicatorBadge" style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-left: 6px;">
+          <span id="slideIndicatorBadge" class="slide-indicator-badge">
             Diapositiva 1 de 3
           </span>
         </div>
 
-        <div style="display: flex; gap: 8px;">
-          <button id="btnResumePreaching" class="btn" style="color: var(--accent-primary); border-color: rgba(37, 99, 235, 0.4);">
-            ▶ Reanudar Proyección
+        <div class="viewer-action-group">
+          <button id="btnResumePreaching" class="btn btn-sm btn-resume">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>Retomar Predicación</span>
           </button>
-          <button id="btnDeletePreaching" class="btn" style="color: var(--status-blackout); border-color: rgba(239, 68, 68, 0.3);">
-            🗑️
+          <button id="btnDeletePreaching" class="btn btn-sm btn-danger" title="Eliminar presentación">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
           </button>
-          <button id="btnProjectSlideDirect" class="btn btn-primary" style="font-weight: 600;">
-            🖥️ Proyectar Diapositiva (Enter)
+          <button id="btnProjectSlideDirect" class="btn btn-primary btn-project-slide">
+            <svg class="icon icon-sm" viewBox="0 0 24 24">
+              <rect width="20" height="14" x="2" y="3" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+            <span>Proyectar Diapositiva (Enter)</span>
           </button>
         </div>
       </div>
@@ -65,4 +97,3 @@
     </div>
   </div>
 </div>
-
