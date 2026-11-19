@@ -306,11 +306,33 @@ export class BibleController {
       if (e.key === 'Enter') {
         e.preventDefault();
         await executeSearch();
+        this.commandInput.blur();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        this.commandInput.value = '';
+        this.feedbackPill.style.display = 'none';
+        this.commandInput.blur();
+        return;
+      }
+
+      // Si el buscador está vacío, permitir que las flechas naveguen versículos
+      if (!this.commandInput.value.trim()) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          this.nextVerse();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          this.prevVerse();
+        }
       }
     });
 
     this.btnProjectCommand.addEventListener('click', async () => {
       await executeSearch();
+      this.commandInput.blur();
     });
 
     // 5. Ajustes de personalización en tiempo real
@@ -324,20 +346,57 @@ export class BibleController {
       if (this.isCurrentlyProjecting) this.projectSelectedVerse();
     });
 
-    // 5. Atajos globales cuando el foco está en el módulo Biblia
+    // 6. CAPTURA GLOBAL DE ESCRITURA DIRECTA (Estilo Holyrics)
+    // El operador no necesita hacer clic en el buscador para escribir una cita.
     window.addEventListener('keydown', (e) => {
-      // Si el usuario está escribiendo en el input de búsqueda, no interceptar flechas
-      if (document.activeElement === this.commandInput) return;
+      // Ignorar atajos con teclas modificadoras o teclas de función F1-F12
+      if (e.ctrlKey || e.altKey || e.metaKey || /^F\d+$/.test(e.key)) {
+        return;
+      }
 
-      if (e.key === 'ArrowRight') {
+      // Ignorar si el foco está en otro campo de texto distinto al buscador de la biblia
+      if (document.activeElement && document.activeElement !== this.commandInput && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+        return;
+      }
+
+      // Si el buscador ya tiene el foco activo, sus eventos locales lo manejan
+      if (document.activeElement === this.commandInput) {
+        return;
+      }
+
+      // Navegación con flechas cuando el foco no está en el buscador
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
         this.nextVerse();
-      } else if (e.key === 'ArrowLeft') {
+        return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
         this.prevVerse();
-      } else if (e.key === 'Enter') {
+        return;
+      }
+      if (e.key === 'Enter') {
         e.preventDefault();
         this.projectSelectedVerse();
+        return;
+      }
+      if (e.key === 'Escape') {
+        this.commandInput.value = '';
+        this.feedbackPill.style.display = 'none';
+        this.commandInput.blur();
+        return;
+      }
+
+      // Captura de cualquier carácter imprimible (letras, números, dos puntos, puntos, guiones)
+      const isPrintableChar = e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey;
+      if (isPrintableChar) {
+        // Evitar espacio inicial en blanco si el buscador está vacío
+        if (e.key === ' ' && !this.commandInput.value) return;
+
+        e.preventDefault();
+        this.commandInput.focus();
+        this.commandInput.value += e.key;
+        this.commandInput.dispatchEvent(new Event('input'));
       }
     });
   }
