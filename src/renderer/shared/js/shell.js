@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('church-identity');
         workspaceContainer.innerHTML = html;
-        const { ChurchIdentityController } = await import('../modules/church-identity/js/church-identity.js');
+        const { ChurchIdentityController } = await import('../../modules/church-identity/js/church-identity.js');
         new ChurchIdentityController();
         return;
       } catch (err) {
@@ -239,10 +239,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Módulo 2: Biblia (RV1909)
     if (moduleName === 'bible') {
       try {
+        console.log('[Shell] Cargando HTML del módulo bible...');
         const html = await window.bibleAPI.system.getModuleHtml('bible');
         workspaceContainer.innerHTML = html;
-        const { BibleController } = await import('../modules/bible/js/bible.js');
+        console.log('[Shell] Importando BibleController...');
+        const { BibleController } = await import('../../modules/bible/js/bible.js');
+        console.log('[Shell] Instanciando BibleController...');
         new BibleController();
+        console.log('[Shell] BibleController instanciado con éxito.');
         return;
       } catch (err) {
         console.error('[Shell] Error al cargar módulo de Biblia:', err);
@@ -254,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('choruses');
         workspaceContainer.innerHTML = html;
-        const { ChorusesController } = await import('../modules/choruses/js/choruses.js');
+        const { ChorusesController } = await import('../../modules/choruses/js/choruses.js');
         new ChorusesController();
         return;
       } catch (err) {
@@ -267,7 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('preaching');
         workspaceContainer.innerHTML = html;
-        const { PreachingController } = await import('../modules/preaching/js/preaching.js');
+        const { PreachingController } = await import('../../modules/preaching/js/preaching.js');
         new PreachingController();
         return;
       } catch (err) {
@@ -280,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('spots');
         workspaceContainer.innerHTML = html;
-        const { SpotsController } = await import('../modules/spots/js/spots.js');
+        const { SpotsController } = await import('../../modules/spots/js/spots.js');
         new SpotsController();
         return;
       } catch (err) {
@@ -293,7 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('roulette');
         workspaceContainer.innerHTML = html;
-        const { RouletteController } = await import('../modules/roulette/js/roulette.js');
+        const { RouletteController } = await import('../../modules/roulette/js/roulette.js');
         new RouletteController();
         return;
       } catch (err) {
@@ -306,7 +310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const html = await window.bibleAPI.system.getModuleHtml('countdown');
         workspaceContainer.innerHTML = html;
-        const { CountdownController } = await import('../modules/countdown/js/countdown.js');
+        const { CountdownController } = await import('../../modules/countdown/js/countdown.js');
         new CountdownController();
         return;
       } catch (err) {

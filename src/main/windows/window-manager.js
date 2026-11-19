@@ -43,6 +43,11 @@ class WindowManager {
 
     SecurityConfig.secureWindow(this.operatorWindow);
 
+    // Redirigir mensajes de consola del renderer a stdout para diagnósticos claros
+    this.operatorWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+      console.log(`[Operator Console] [lvl ${level}] ${message} (${sourceId}:${line})`);
+    });
+
     this.operatorWindow.loadFile(
       path.join(__dirname, '../../renderer/shared/shell.html')
     );

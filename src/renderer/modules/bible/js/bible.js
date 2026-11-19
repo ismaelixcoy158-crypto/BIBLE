@@ -39,11 +39,15 @@ export class BibleController {
   }
 
   async init() {
+    console.log('[BibleController] Invocando bindEvents()...');
     this.bindEvents();
+    console.log('[BibleController] Invocando loadBooks()...');
     await this.loadBooks();
+    console.log('[BibleController] Libros cargados:', this.books ? this.books.length : 0);
     // Seleccionar por defecto Evangelio según San Juan (ID 43) y capítulo 3
     const defaultBook = this.books.find(b => b.id === 43) || this.books[0];
     if (defaultBook) {
+      console.log('[BibleController] Seleccionando libro inicial:', defaultBook.name);
       await this.selectBook(defaultBook, 3, 16);
     }
   }
@@ -246,6 +250,25 @@ export class BibleController {
       this.renderBooks();
     });
 
+    // Función unificada de búsqueda y proyección por comando
+    const executeSearch = async () => {
+      const val = this.commandInput.value.trim();
+      if (!val) return;
+
+      const res = await window.bibleAPI.bible.searchReference(val);
+      if (res && res.success) {
+        const book = this.books.find(b => b.id === res.parseInfo.bookId);
+        if (book) {
+          await this.selectBook(book, res.parseInfo.chapter, res.parseInfo.startVerse);
+          await this.projectSelectedVerse();
+          this.commandInput.value = '';
+          this.feedbackPill.style.display = 'none';
+        }
+      } else {
+        console.warn('[BibleController] Referencia no encontrada:', val);
+      }
+    };
+
     // 2. Navegación anterior / siguiente
     this.btnPrev.addEventListener('click', () => this.prevVerse());
     this.btnNext.addEventListener('click', () => this.nextVerse());
@@ -254,10 +277,9 @@ export class BibleController {
     // Sugerencias de citas rápidas
     const quickChips = document.querySelectorAll('.quick-cite-chip');
     quickChips.forEach(chip => {
-      chip.addEventListener('click', () => {
+      chip.addEventListener('click', async () => {
         this.commandInput.value = chip.dataset.cite;
-        this.commandInput.dispatchEvent(new Event('input'));
-        this.btnProjectCommand.click();
+        await executeSearch();
       });
     });
 
@@ -272,36 +294,34 @@ export class BibleController {
       const res = await window.bibleAPI.bible.searchReference(val);
       if (res && res.success) {
         this.feedbackPill.style.display = 'inline-block';
-        this.feedbackPill.textContent = `📖 ${res.parseInfo.formattedReference}`;
+        this.feedbackPill.textContent = `Cita: ${res.parseInfo.formattedReference}`;
         this.feedbackPill.style.color = 'var(--status-live)';
       } else {
         this.feedbackPill.style.display = 'none';
       }
     });
 
-    // 4. Confirmación con Enter en el campo de búsqueda
+    // 4. Confirmación con Enter en el campo de búsqueda o clic en botón
     this.commandInput.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        const val = this.commandInput.value.trim();
-        if (!val) return;
-
-        const res = await window.bibleAPI.bible.searchReference(val);
-        if (res && res.success) {
-          const book = this.books.find(b => b.id === res.parseInfo.bookId);
-          if (book) {
-            await this.selectBook(book, res.parseInfo.chapter, res.parseInfo.startVerse);
-            await this.projectSelectedVerse();
-            this.commandInput.value = '';
-            this.feedbackPill.style.display = 'none';
-          }
-        }
+        await executeSearch();
       }
     });
 
-    this.btnProjectCommand.addEventListener('click', () => {
-      const event = new KeyboardEvent('keydown', { key: 'Enter' });
-      this.commandInput.dispatchEvent(event);
+    this.btnProjectCommand.addEventListener('click', async () => {
+      await executeSearch();
+    });
+
+    // 5. Ajustes de personalización en tiempo real
+    this.selectRefPos.addEventListener('change', () => {
+      if (this.isCurrentlyProjecting) this.projectSelectedVerse();
+    });
+    this.checkTranslation.addEventListener('change', () => {
+      if (this.isCurrentlyProjecting) this.projectSelectedVerse();
+    });
+    this.checkUppercase.addEventListener('change', () => {
+      if (this.isCurrentlyProjecting) this.projectSelectedVerse();
     });
 
     // 5. Atajos globales cuando el foco está en el módulo Biblia
