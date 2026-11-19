@@ -25,6 +25,7 @@ app.whenReady().then(() => {
 
   // Directorio local de archivos multimedia
   const userDataPath = app.getPath('userData');
+  console.log('[Main] UserData path:', userDataPath);
   const mediaDirectory = path.join(userDataPath, 'media');
   if (!fs.existsSync(mediaDirectory)) {
     fs.mkdirSync(mediaDirectory, { recursive: true });

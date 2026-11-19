@@ -106,6 +106,40 @@ class DatabaseManager {
         applyMigration();
       }
     }
+
+    // Auto-seed de la Biblia completa Reina-Valera 1909 si está vacía
+    this.seedFullBibleIfEmpty();
+  }
+
+  /**
+   * Carga los 31,102 versículos de la RV1909 si la base de datos es nueva
+   */
+  seedFullBibleIfEmpty() {
+    try {
+      const countRow = this.db.prepare('SELECT COUNT(*) as count FROM bible_verses').get();
+      if (countRow && countRow.count < 100) {
+        const seedPath = path.join(__dirname, 'seeds', 'rv1909-complete.json');
+        if (fs.existsSync(seedPath)) {
+          const raw = fs.readFileSync(seedPath, 'utf-8');
+          const verses = JSON.parse(raw);
+          const insertStmt = this.db.prepare(`
+            INSERT OR REPLACE INTO bible_verses (book_id, chapter, verse, text)
+            VALUES (@book_id, @chapter, @verse, @text)
+          `);
+
+          const insertMany = this.db.transaction((items) => {
+            for (const item of items) {
+              insertStmt.run(item);
+            }
+          });
+
+          insertMany(verses);
+          console.log(`[Database] Sembrados ${verses.length} versículos de la RV1909 completa.`);
+        }
+      }
+    } catch (err) {
+      console.warn('[Database] Advertencia al sembrar versículos bíblicos:', err.message);
+    }
   }
 
   /**

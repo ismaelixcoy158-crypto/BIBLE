@@ -144,6 +144,11 @@ export class BibleController {
         this.selectVerseByIndex(index);
       });
 
+      card.addEventListener('dblclick', () => {
+        this.selectVerseByIndex(index);
+        this.projectSelectedVerse();
+      });
+
       this.versesContainer.appendChild(card);
     });
 
