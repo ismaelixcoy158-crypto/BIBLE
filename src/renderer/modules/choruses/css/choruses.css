@@ -1,92 +1,113 @@
-/* BIBLE — Estilos del Módulo de Coritos */
+/* BIBLE — Estilos del Módulo de Coritos (Estructura Unificada con la Biblia) */
 
 .choruses-workspace {
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 12px;
+  gap: 0;
   min-height: 0;
-}
-
-/* ==========================================================================
-   Barra Superior: Modo Espontáneo
-   ========================================================================== */
-.choruses-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: 8px 12px;
-  box-shadow: var(--shadow-sm);
-}
-
-.spontaneous-input-wrapper {
   position: relative;
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-.spontaneous-icon {
-  position: absolute;
-  left: 12px;
-  color: var(--accent-gold);
-  pointer-events: none;
-}
-
-.spontaneous-input {
-  width: 100%;
-  padding: 9px 14px 9px 38px;
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  color: #FFFFFF;
-  font-size: 14px;
-  font-weight: 500;
-  outline: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.spontaneous-input:focus {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 0 1px var(--accent-gold);
 }
 
 /* ==========================================================================
-   Estructura Principal en 2 Columnas
+   Estructura Principal en Columnas Flexibles con Splitter (Idéntica a la Biblia)
    ========================================================================== */
 .choruses-main-grid {
-  display: grid;
-  grid-template-columns: 320px 1fr;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
   flex: 1;
-  gap: 12px;
+  gap: 0;
   min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Columna Izquierda: Resultados y Biblioteca */
-.choruses-sidebar-card {
+.col-choruses {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
+  flex-shrink: 0;
 }
 
+/* Separador Arrastrable entre Columnas */
+.chorus-splitter {
+  width: 8px;
+  cursor: col-resize;
+  background-color: transparent;
+  position: relative;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.chorus-splitter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background-color: var(--border-default);
+  transition: all var(--transition-fast);
+}
+
+.chorus-splitter:hover,
+.chorus-splitter.dragging {
+  background-color: rgba(37, 99, 235, 0.12);
+}
+
+.chorus-splitter:hover::before,
+.chorus-splitter.dragging::before {
+  background-color: var(--accent-primary);
+  width: 4px;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.7);
+}
+
+/* Fila de Búsqueda Rápida de Coritos (Idéntica a books-filter-input-row) */
+.chorus-filter-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-default);
+  position: relative;
+}
+
+.chorus-filter-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.chorus-filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Pestañas de Filtro Temático */
 .category-filter-tabs {
   display: flex;
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-default);
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .category-tab-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 12px;
+  padding: 8px 12px;
   font-size: 11px;
   font-weight: 600;
   background: transparent;
@@ -106,6 +127,17 @@
   color: var(--accent-primary);
   border-bottom-color: var(--accent-primary);
   background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* Columna Derecha: Diapositivas */
+.col-chorus-detail {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
 }
 
 .chorus-results-list {
@@ -350,4 +382,254 @@
   gap: 10px;
   border-top: 1px solid var(--border-default);
   padding-top: 12px;
+}
+
+/* ==========================================================================
+   Estilos de Búsqueda y Repertorios / Listas de Culto
+   ========================================================================== */
+.search-match, mark.search-match {
+  background-color: rgba(245, 158, 11, 0.35);
+  color: #FCD34D;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.repertoire-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background-color: rgba(37, 99, 235, 0.08);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.repertoire-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.repertoire-actions-group .btn {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 11px;
+  justify-content: center;
+}
+
+.repertoire-actions-group .btn-icon-square {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.repertoire-select {
+  width: 100%;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+.repertoire-select:focus {
+  border-color: var(--accent-primary);
+}
+
+.repertoire-item-pos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(37, 99, 235, 0.25);
+  color: var(--accent-primary);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.quick-day-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn-day-chip {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-day-chip:hover {
+  background-color: rgba(37, 99, 235, 0.15);
+  border-color: var(--accent-primary);
+  color: #FFFFFF;
+}
+
+.btn-day-chip.active {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+
+.btn-reorder-repertoire {
+  opacity: 0.6;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  font-size: 10px;
+  line-height: 1;
+}
+
+.btn-reorder-repertoire:hover:not(:disabled) {
+  opacity: 1;
+  color: var(--accent-primary);
+  background-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.btn-reorder-repertoire:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.btn-remove-repertoire {
+  opacity: 0.6;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.btn-remove-repertoire:hover {
+  opacity: 1;
+  color: #EF4444;
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+.pick-chorus-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.pick-chorus-item:hover {
+  border-color: var(--accent-primary);
+  background-color: rgba(37, 99, 235, 0.08);
+}
+
+.pick-chorus-item:active {
+  transform: scale(0.995);
+}
+
+.pick-chorus-item.picked {
+  border-color: rgba(16, 185, 129, 0.5);
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.pick-chorus-item.picked:hover {
+  border-color: rgba(16, 185, 129, 0.8);
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+.pick-chorus-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pick-chorus-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pick-chorus-preview {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Tarjeta y elementos de búsqueda en Internet (Opción 2) */
+.search-internet-prompt-card {
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(16, 185, 129, 0.08));
+  border: 1px dashed rgba(37, 99, 235, 0.4);
+  border-radius: var(--radius-md);
+  margin: 6px 8px;
+  transition: all var(--transition-fast);
+}
+
+.search-internet-prompt-card:hover {
+  border-color: var(--accent-primary);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(16, 185, 129, 0.12));
+}
+
+.search-internet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(37, 99, 235, 0.2);
+  color: #60A5FA;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-saved-local {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34D399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.online-item-artist {
+  font-size: 10.5px;
+  color: #FBBF24;
+  font-weight: 500;
 }

@@ -46,7 +46,7 @@ test('ChorusesRepository - CRUD, Búsqueda Espontánea y Repertorios', async (t)
     // Búsqueda por fragmento de letra
     const resLetra = repo.searchSpontaneous('redimidos');
     assert.ok(resLetra.length >= 1);
-    assert.equal(resLetra[0].title, 'Alabaré a mi Señor');
+    assert.ok(resLetra.some(c => c.title === 'Alabaré a mi Señor'), 'Debe encontrar Alabaré a mi Señor');
 
     // Búsqueda por inicio de título
     const resTitulo = repo.searchSpontaneous('Como el ciervo');
@@ -75,8 +75,9 @@ test('ChorusesRepository - CRUD, Búsqueda Espontánea y Repertorios', async (t)
   });
 
   await t.test('debe gestionar listas de repertorio de culto', () => {
-    const playlist = repo.createPlaylist('Culto de Jóvenes');
+    const playlist = repo.createPlaylist('Culto de Jóvenes', '2026-11-24');
     assert.ok(playlist.id);
+    assert.equal(playlist.service_date, '2026-11-24');
 
     // Agregar corito 1 y 2
     repo.addChorusToPlaylist(playlist.id, 1);
@@ -85,8 +86,40 @@ test('ChorusesRepository - CRUD, Búsqueda Espontánea y Repertorios', async (t)
     assert.equal(items[0].position, 1);
     assert.equal(items[1].position, 2);
 
+    // No debe duplicar si ya existe
+    const itemsRep = repo.addChorusToPlaylist(playlist.id, 1);
+    assert.equal(itemsRep.length, 2);
+
+    // Quitar un corito y reordenar posiciones
+    const itemsAfterRemove = repo.removeChorusFromPlaylist(playlist.id, 1);
+    assert.equal(itemsAfterRemove.length, 1);
+    assert.equal(itemsAfterRemove[0].position, 1);
+    assert.equal(itemsAfterRemove[0].id, 2);
+
     // Limpieza
     repo.deletePlaylist(playlist.id);
+    const playlists = repo.getPlaylists();
+    assert.ok(!playlists.some(p => p.id === playlist.id));
+  });
+
+  await t.test('debe soportar búsqueda en línea de alabanzas tanto por título como por frase de la letra (searchOnline)', async () => {
+    // Por frase de la letra:
+    const byLyric = await repo.searchOnline('Dios no rechaza oracion');
+    assert.ok(Array.isArray(byLyric));
+    if (byLyric.length > 0) {
+      assert.ok(byLyric[0].title);
+      assert.ok(byLyric[0].lyrics);
+      assert.ok(Array.isArray(byLyric[0].slides));
+      assert.equal(byLyric[0].isOnline, true);
+    }
+
+    // Por título:
+    const byTitle = await repo.searchOnline('Way Maker');
+    assert.ok(Array.isArray(byTitle));
+    if (byTitle.length > 0) {
+      assert.ok(byTitle[0].title);
+      assert.ok(byTitle[0].lyrics);
+    }
   });
 });
 

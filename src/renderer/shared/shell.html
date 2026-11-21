@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BIBLE — Panel del Operador</title>
+  <link rel="icon" type="image/png" href="assets/bible-logo.png">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
@@ -22,15 +23,12 @@
     <header class="top-bar">
       <!-- Marca y Sistema -->
       <div class="brand-badge">
-        <div class="brand-logo-mark">
-          <svg class="icon icon-lg" viewBox="0 0 24 24" style="color: var(--accent-gold);">
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-            <path d="M6 6h10M6 10h10"/>
-          </svg>
+        <div class="brand-logo-mark" title="BIBLE — Church Media System">
+          <img src="assets/bible-logo.png" alt="BIBLE Logo" class="brand-logo-img">
         </div>
         <div class="brand-titles">
           <span class="brand-name">BIBLE</span>
-          <span class="brand-subtitle">CHURCH MEDIA SYSTEM</span>
+          <span id="shellChurchNameTag" class="brand-subtitle">CHURCH MEDIA SYSTEM</span>
         </div>
       </div>
 
@@ -66,7 +64,7 @@
     </header>
 
     <!-- Navegación Lateral Izquierda (Consola de Módulos) -->
-    <nav class="nav-sidebar">
+    <nav class="nav-sidebar" id="navSidebar">
       <div class="nav-section-title">PROYECCIÓN EN VIVO</div>
 
       <button class="nav-item active" data-module="bible">
@@ -149,13 +147,19 @@
       </button>
     </nav>
 
+    <!-- Separador Izquierdo (Arrastrar para estirar menú) -->
+    <div class="shell-splitter shell-splitter-left" id="shellSplitterLeft" title="Arrastra para ajustar ancho del menú (Doble clic para restablecer)"></div>
+
     <!-- Espacio de Trabajo Central -->
     <main id="workspaceContainer" class="workspace-area">
       <!-- El contenido de cada módulo se inyecta dinámicamente aquí -->
     </main>
 
-    <!-- Monitor de Salida Pública y Consola de Pánico (Derecha) -->
-    <aside class="output-sidebar">
+    <!-- Separador Derecho (Arrastrar para estirar panel y monitor de al lado) -->
+    <div class="shell-splitter shell-splitter-right" id="shellSplitterRight" title="Arrastra para estirar o encoger el monitor y panel lateral (Doble clic para restablecer)"></div>
+
+    <!-- Monitor de Salida Pública y Consola de Pánico (Derecha / Panel de a la par) -->
+    <aside class="output-sidebar" id="outputSidebar">
       <!-- Cabecera de Monitor de Programa -->
       <div class="panel-header">
         <div class="panel-header-title">
@@ -183,10 +187,11 @@
           <span>SALIDA EN NEGRO</span>
         </div>
         <div id="previewLogoOverlay" class="preview-overlay overlay-logo">
-          <svg class="icon icon-lg" viewBox="0 0 24 24">
+          <img id="previewLogoImg" alt="Logo de la Iglesia" style="display: none; max-width: 65%; max-height: 65%; object-fit: contain; margin-bottom: 6px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));">
+          <svg id="previewLogoSvgFallback" class="icon icon-lg" viewBox="0 0 24 24">
             <path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-5a2 2 0 0 1 4 0v5"/>
           </svg>
-          <span>LOGOTIPO INSTITUCIONAL</span>
+          <span id="previewLogoText">LOGOTIPO INSTITUCIONAL</span>
         </div>
       </div>
 
@@ -261,6 +266,167 @@
         </div>
       </div>
     </aside>
+  </div>
+
+  <!-- Modal Global de Fondos de Proyección (Compartido entre Biblia, Coritos, Predicación) -->
+  <div id="projectionBgModal" class="modal-overlay bible-bg-modal" style="display: none;">
+    <div class="modal-backdrop bible-bg-modal-backdrop" id="projectionBgBackdrop"></div>
+    <div class="modal-dialog bible-bg-modal-dialog">
+      <div class="modal-header bible-bg-modal-header">
+        <div class="modal-title bible-bg-modal-title">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+          </svg>
+          <span>Fondo de Proyección</span>
+        </div>
+        <button id="btnCloseBgModal" class="btn-icon-close" title="Cerrar (Esc)">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body bible-bg-modal-body">
+        <!-- Pestañas de origen de fondo -->
+        <div class="modal-tabs bg-sources-tabs">
+          <button class="modal-tab-btn bg-source-tab active" data-tab="presets">Preajustes de Estudio</button>
+          <button class="modal-tab-btn bg-source-tab" data-tab="local">Desde Mis Archivos (PC)</button>
+          <button class="modal-tab-btn bg-source-tab" data-tab="url">Desde Enlace Web (URL / HTTP)</button>
+        </div>
+
+        <!-- Tab 1: Preajustes -->
+        <div id="tabContentPresets" class="bg-tab-content active">
+          <div class="bg-presets-grid" id="bgPresetsGrid">
+            <!-- Renderizado dinámico de preajustes -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Archivo Local -->
+        <div id="tabContentLocal" class="bg-tab-content" style="display: none;">
+          <div class="bg-upload-dropzone">
+            <svg class="icon icon-lg" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+            </svg>
+            <div class="dropzone-text">Selecciona una imagen o video desde tu computadora</div>
+            <div class="dropzone-sub">Compatible con JPG, PNG, WebP y videos en bucle MP4 / WebM</div>
+            <button id="btnBrowseLocalBg" class="btn btn-primary btn-sm" style="margin-top: 12px;">
+              Examinar Archivos
+            </button>
+          </div>
+          <div id="localFileStatus" class="bg-file-status" style="display: none;"></div>
+        </div>
+
+        <!-- Tab 3: Enlace Web / HTTP -->
+        <div id="tabContentUrl" class="bg-tab-content" style="display: none;">
+          <div class="bg-url-input-group">
+            <label class="customizer-label">Ingresa la dirección web (URL de imagen o video):</label>
+            <div class="url-input-row">
+              <input type="text" id="inputBgUrl" class="input-text url-field" placeholder="Pega aquí el enlace de la imagen o video...">
+              <button id="btnPasteBgUrl" class="btn btn-secondary btn-sm" title="Pegar desde el portapapeles" style="display: flex; align-items: center; gap: 4px;">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/></svg>
+                <span>Pegar</span>
+              </button>
+              <button id="btnApplyBgUrl" class="btn btn-primary btn-sm">Cargar Fondo</button>
+            </div>
+            <div class="url-tip">Se guardará una copia local para que el fondo funcione 100% sin internet durante el culto.</div>
+            
+            <div class="url-supported-hints">
+              <div class="supported-tags">
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>Google Drive</span>
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>Dropbox</span>
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>YouTube</span>
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>Google Imágenes</span>
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>JPG, PNG, WebP</span>
+                <span class="hint-tag"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke: #10B981; fill: none; stroke-width: 2.5;"><polyline points="20 6 9 17 4 12"/></svg>Videos MP4 / WebM</span>
+              </div>
+              <div class="url-helper-box">
+                <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-gold); flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <div style="font-size: 10.5px; line-height: 1.4;">
+                  <strong style="color: #F8FAFC;">¿Cómo usar cualquier foto de internet?</strong><br>
+                  Abre la foto en tu navegador (Google, Unsplash, Pinterest, etc.), haz <span style="color: var(--accent-gold); font-weight: 600;">clic derecho</span> sobre la foto, selecciona <span style="color: var(--accent-gold); font-weight: 600;">"Copiar dirección de la imagen"</span> y presiona <strong>Pegar</strong>.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="urlStatusMessage" class="bg-file-status" style="display: none; margin-top: 8px;"></div>
+        </div>
+
+        <!-- Adaptación, Escala y Ajuste del Fondo -->
+        <div class="bg-sizing-section">
+          <div class="bg-section-subtitle">Adaptación al Tamaño de Pantalla / Proyector:</div>
+          
+          <div class="bg-fit-buttons" id="bgFitButtonsGroup">
+            <button class="bg-fit-btn active" data-fit="cover" title="Rellena toda la pantalla manteniendo la proporción (sin bordes negros)">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+              <span>Rellenar (Cover)</span>
+            </button>
+            <button class="bg-fit-btn" data-fit="ambient" title="Ideal para imágenes verticales: rellena los lados con un desenfoque artístico de la misma imagen">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="8" height="18" x="8" y="3" rx="1"/><path d="M3 3h3v18H3zm15 0h3v18h-3z" opacity="0.5"/></svg>
+              <span>Adaptar Vertical</span>
+            </button>
+            <button class="bg-fit-btn" data-fit="contain" title="Muestra la imagen o video completo sin recortar nada">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="12" height="18" x="6" y="3" rx="2"/></svg>
+              <span>Ajustar (Contain)</span>
+            </button>
+            <button class="bg-fit-btn" data-fit="fill" title="Estira la imagen o video al ancho y alto total del proyector">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              <span>Estirar al 100%</span>
+            </button>
+          </div>
+
+          <div class="bg-sliders-grid">
+            <div class="bg-slider-item">
+              <div class="scrim-label-row">
+                <span>Escala / Zoom del Fondo:</span>
+                <span id="bgScaleValueLabel" class="scrim-val">100%</span>
+              </div>
+              <input type="range" id="sliderBgScale" min="70" max="150" value="100" class="scrim-slider">
+            </div>
+
+            <div class="bg-slider-item">
+              <div class="scrim-label-row">
+                <span>Alineación Vertical:</span>
+              </div>
+              <div class="bg-pos-buttons">
+                <button class="bg-pos-btn" data-pos="top">Arriba</button>
+                <button class="bg-pos-btn active" data-pos="center">Centro</button>
+                <button class="bg-pos-btn" data-pos="bottom">Abajo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles de Ajuste / Oscurecimiento (Scrim) y Color de Texto -->
+        <div class="bg-adjustment-section">
+          <div class="scrim-label-row">
+            <span>Oscurecimiento de Contraste (Scrim):</span>
+            <span id="scrimValueLabel" class="scrim-val">45%</span>
+          </div>
+          <input type="range" id="sliderBgScrim" min="0" max="85" value="45" class="scrim-slider">
+          <div class="scrim-hint">Garantiza legibilidad perfecta del texto sobre fondos coloridos o videos en movimiento.</div>
+
+          <div class="modal-text-color-row" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <span class="customizer-label" style="font-size: 11px; font-weight: 600;">Color de Letra General:</span>
+            <div class="text-color-toggle-group">
+              <button id="btnModalTextWhite" class="btn-color-choice active" title="Letras blancas">
+                <span class="color-dot dot-white"></span>
+                <span>Blanco</span>
+              </button>
+              <button id="btnModalTextBlack" class="btn-color-choice" title="Letras negras para fondos claros">
+                <span class="color-dot dot-black"></span>
+                <span>Negro</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bible-bg-modal-footer">
+        <button id="btnApplyAndCloseBg" class="btn btn-primary">Listo</button>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="js/shell.js"></script>

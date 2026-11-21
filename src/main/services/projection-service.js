@@ -10,6 +10,10 @@ class ProjectionService {
 
     this.state = {
       activeContent: null,      // { module, title, text, reference, background, customStyles, meta }
+      currentBackground: null,  // Fondo activo general del culto (compartido entre todos los módulos)
+      currentTextColor: 'white',// Color de letra general del culto (Blanco / Negro)
+      currentFontSize: 100,     // Escala de tamaño de letra en porcentaje (60% - 220%)
+      currentFontFamily: 'sans-serif', // Tipografía ('sans-serif', 'serif', 'bold', 'condensed')
       isBlackout: false,        // Pantalla a negro
       isLogo: false,            // Logotipo de la iglesia / fondo institucional
       churchIdentity: null,     // { name, logoUrl }
@@ -49,16 +53,45 @@ class ProjectionService {
    * @param {Object} payload Contenido a proyectar
    */
   project(payload) {
-    if (this.state.isFrozen) {
-      console.warn('[ProjectionService] Proyección bloqueada: La pantalla está CONGELADA.');
-      return this.getState();
+    // Si el payload trae un fondo explícito, actualizamos el fondo global del servicio
+    if (payload.background) {
+      this.state.currentBackground = payload.background;
+    } else if (this.state.currentBackground) {
+      // Si el contenido proyectado no trae fondo explícito, preservamos el fondo global activo
+      payload.background = this.state.currentBackground;
+    } else if (this.state.activeContent?.background) {
+      payload.background = this.state.activeContent.background;
+      this.state.currentBackground = this.state.activeContent.background;
     }
 
-    // Al proyectar nuevo contenido, desactivamos automáticamente blackout y logo
+    // Preservar o actualizar el color de letra general
+    if (payload.textColor) {
+      this.state.currentTextColor = payload.textColor;
+    } else if (this.state.currentTextColor && !payload.textColor) {
+      payload.textColor = this.state.currentTextColor;
+    }
+
+    // Preservar o actualizar el tamaño de letra general
+    if (payload.fontSize !== undefined) {
+      this.state.currentFontSize = payload.fontSize;
+    } else if (this.state.currentFontSize && payload.fontSize === undefined) {
+      payload.fontSize = this.state.currentFontSize;
+    }
+
+    // Preservar o actualizar la tipografía general
+    if (payload.fontFamily) {
+      this.state.currentFontFamily = payload.fontFamily;
+    } else if (this.state.currentFontFamily && !payload.fontFamily) {
+      payload.fontFamily = this.state.currentFontFamily;
+    }
+
+    // Al proyectar nuevo contenido aprobado por el operador, desactivamos automáticamente
+    // cualquier modo de pánico previo (blackout, logo, clearText) y descongelamos la emisión
     this.state.activeContent = { ...payload };
     this.state.isBlackout = false;
     this.state.isLogo = false;
     this.state.isClearText = false;
+    this.state.isFrozen = false;
     this.state.lastUpdated = Date.now();
 
     this.emitState();
@@ -96,6 +129,59 @@ class ProjectionService {
   }
 
   /**
+   * Actualiza el fondo de la emisión activa en tiempo real y lo memoriza globalmente
+   */
+  updateBackground(background) {
+    this.state.currentBackground = background;
+    if (this.state.activeContent) {
+      this.state.activeContent.background = background;
+    }
+    this.state.lastUpdated = Date.now();
+    this.emitState();
+    return this.getState();
+  }
+
+  /**
+   * Actualiza el color de letra (blanco / negro) en tiempo real y lo memoriza globalmente
+   */
+  updateTextColor(textColor) {
+    this.state.currentTextColor = textColor;
+    if (this.state.activeContent) {
+      this.state.activeContent.textColor = textColor;
+    }
+    this.state.lastUpdated = Date.now();
+    this.emitState();
+    return this.getState();
+  }
+
+  /**
+   * Actualiza el tamaño de letra en tiempo real (porcentaje 60% - 220%)
+   */
+  updateFontSize(fontSize) {
+    const clamped = Math.max(60, Math.min(220, parseInt(fontSize, 10) || 100));
+    this.state.currentFontSize = clamped;
+    if (this.state.activeContent) {
+      this.state.activeContent.fontSize = clamped;
+    }
+    this.state.lastUpdated = Date.now();
+    this.emitState();
+    return this.getState();
+  }
+
+  /**
+   * Actualiza la tipografía / tipo de letra en tiempo real
+   */
+  updateFontFamily(fontFamily) {
+    this.state.currentFontFamily = fontFamily || 'sans-serif';
+    if (this.state.activeContent) {
+      this.state.activeContent.fontFamily = this.state.currentFontFamily;
+    }
+    this.state.lastUpdated = Date.now();
+    this.emitState();
+    return this.getState();
+  }
+
+  /**
    * Congela o descongela la emisión
    */
   toggleFreeze(forceState = null) {
@@ -103,6 +189,27 @@ class ProjectionService {
     this.state.lastUpdated = Date.now();
     this.emitState();
     return this.getState();
+  }
+
+  /**
+   * Envía un comando de control de reproducción multimedia (Play, Pause, Seek, Volume, Loop, Stop)
+   */
+  sendMediaCommand(commandData) {
+    if (this.publicWindow && !this.publicWindow.isDestroyed()) {
+      this.publicWindow.webContents.send('projection:media-command', commandData);
+    }
+    if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
+      this.operatorWindow.webContents.send('projection:media-command', commandData);
+    }
+  }
+
+  /**
+   * Notifica el tiempo transcurrido del video desde la pantalla pública al monitor del operador
+   */
+  notifyMediaTimeUpdate(timeData) {
+    if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
+      this.operatorWindow.webContents.send('projection:media-time-update', timeData);
+    }
   }
 
   /**

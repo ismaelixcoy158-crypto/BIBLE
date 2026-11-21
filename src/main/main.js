@@ -1,18 +1,22 @@
-const { app } = require('electron');
+const { app, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
 const SecurityConfig = require('./security/security-config.js');
 const dbManager = require('../database/database.js');
 const projectionService = require('./services/projection-service.js');
+const churchService = require('./services/church-service.js');
 const windowManager = require('./windows/window-manager.js');
 const registerIpcHandlers = require('./ipc/register-ipc-handlers.js');
 
-// 1. Registrar esquemas privilegiados antes de app.whenReady
+// 1. Registrar esquemas privilegiados y políticas de autoplay antes de app.whenReady
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 SecurityConfig.registerSchemes();
 
 // 2. Ciclo de vida principal
 app.whenReady().then(() => {
+  // Desactivar barra de menús genérica de Chromium para no interferir con atajos Alt del operador
+  Menu.setApplicationMenu(null);
   // Inicializar Base de Datos SQLite (WAL + Migraciones)
   try {
     dbManager.init();
@@ -43,6 +47,14 @@ app.whenReady().then(() => {
 
   // Conectar ventanas con el servicio central de proyección
   projectionService.setWindows({ operatorWindow, publicWindow });
+
+  // Sincronizar identidad institucional de la iglesia al inicio
+  try {
+    const churchIdentity = churchService.getIdentity();
+    projectionService.setChurchIdentity(churchIdentity);
+  } catch (err) {
+    console.warn('[Main] No se pudo inicializar identidad de la iglesia:', err);
+  }
 
   // Escuchar conexiones/desconexiones de monitores HDMI
   windowManager.setupDisplayListeners(projectionService);

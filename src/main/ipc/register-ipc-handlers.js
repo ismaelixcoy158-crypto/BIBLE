@@ -7,6 +7,7 @@ const churchService = require('../services/church-service.js');
 const preachingService = require('../services/preaching-service.js');
 const spotsService = require('../services/spots-service.js');
 const countdownService = require('../services/countdown-service.js');
+const backgroundService = require('../services/background-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
 const RouletteRepository = require('../../database/repositories/roulette.repository.js');
@@ -63,6 +64,22 @@ function registerIpcHandlers() {
 
   ipcMain.handle('projection:toggle-freeze', async (_event, force) => {
     return projectionService.toggleFreeze(typeof force === 'boolean' ? force : null);
+  });
+
+  ipcMain.handle('projection:update-background', async (_event, background) => {
+    return projectionService.updateBackground(background);
+  });
+
+  ipcMain.handle('projection:update-text-color', async (_event, textColor) => {
+    return projectionService.updateTextColor(textColor);
+  });
+
+  ipcMain.handle('projection:update-font-size', async (_event, fontSize) => {
+    return projectionService.updateFontSize(fontSize);
+  });
+
+  ipcMain.handle('projection:update-font-family', async (_event, fontFamily) => {
+    return projectionService.updateFontFamily(fontFamily);
   });
 
   ipcMain.handle('projection:get-state', async () => {
@@ -135,6 +152,12 @@ function registerIpcHandlers() {
     return updated;
   });
 
+  ipcMain.handle('church:upload-logo-base64', async (_event, { base64Data, filename } = {}) => {
+    const updated = churchService.uploadLogoBase64(base64Data, filename);
+    projectionService.setChurchIdentity(updated);
+    return updated;
+  });
+
   ipcMain.handle('church:download-logo-url', async (_event, url) => {
     const updated = await churchService.downloadLogoUrl(url);
     projectionService.setChurchIdentity(updated);
@@ -154,20 +177,28 @@ function registerIpcHandlers() {
   });
 
   // --- 5. BIBLIA ---
+  ipcMain.handle('bible:get-versions', async () => {
+    return bibleRepo.getAllVersions();
+  });
+
   ipcMain.handle('bible:get-books', async () => {
     return bibleRepo.getAllBooks();
   });
 
-  ipcMain.handle('bible:get-verses-by-chapter', async (_event, { bookId, chapter }) => {
-    return bibleRepo.getVersesByChapter(parseInt(bookId, 10), parseInt(chapter, 10));
+  ipcMain.handle('bible:get-verses-by-chapter', async (_event, { bookId, chapter, version }) => {
+    return bibleRepo.getVersesByChapter(parseInt(bookId, 10), parseInt(chapter, 10), version || 'RV1909');
   });
 
-  ipcMain.handle('bible:search-reference', async (_event, rawReference) => {
-    return bibleRepo.searchReference(rawReference);
+  ipcMain.handle('bible:search-reference', async (_event, payload) => {
+    if (typeof payload === 'string') {
+      return bibleRepo.searchReference(payload, 'RV1909');
+    }
+    const { rawReference, version } = payload || {};
+    return bibleRepo.searchReference(rawReference, version || 'RV1909');
   });
 
-  ipcMain.handle('bible:search-text', async (_event, { keyword, limit }) => {
-    return bibleRepo.searchByText(keyword, limit);
+  ipcMain.handle('bible:search-text', async (_event, { keyword, limit, version }) => {
+    return bibleRepo.searchByText(keyword, limit, version || 'RV1909');
   });
 
   ipcMain.handle('bible:project-verse', async (_event, payload) => {
@@ -181,6 +212,19 @@ function registerIpcHandlers() {
       background: background || null,
       customStyles: customStyles || null
     });
+  });
+
+  ipcMain.handle('bible:select-background-file', async () => {
+    const parentWin = windowManager.getWindows().operatorWindow;
+    return backgroundService.selectLocalBackground(parentWin);
+  });
+
+  ipcMain.handle('bible:process-url-background', async (_event, url) => {
+    return backgroundService.processUrlBackground(url);
+  });
+
+  ipcMain.handle('bible:get-background-presets', async () => {
+    return backgroundService.getPresets();
   });
 
   // --- 6. CORITOS ---
@@ -200,6 +244,10 @@ function registerIpcHandlers() {
     return chorusesRepo.searchSpontaneous(query, limit);
   });
 
+  ipcMain.handle('choruses:search-online', async (_event, query) => {
+    return await chorusesRepo.searchOnline(query);
+  });
+
   ipcMain.handle('choruses:create', async (_event, data) => {
     return chorusesRepo.create(data);
   });
@@ -212,14 +260,17 @@ function registerIpcHandlers() {
     return chorusesRepo.delete(id);
   });
 
-  ipcMain.handle('choruses:project-slide', async (_event, { title, slideText, background }) => {
+  ipcMain.handle('choruses:project-slide', async (_event, payload) => {
+    const { title, slideText, background, textColor, customStyles, refPosition } = payload || {};
     return projectionService.project({
       module: 'choruses',
       title,
       text: slideText,
       reference: title,
-      refPosition: 'top',
-      background: background || null
+      refPosition: refPosition || 'top',
+      background: background || null,
+      textColor: textColor || null,
+      customStyles: customStyles || null
     });
   });
 
@@ -227,8 +278,11 @@ function registerIpcHandlers() {
     return chorusesRepo.getPlaylists();
   });
 
-  ipcMain.handle('choruses:create-playlist', async (_event, name) => {
-    return chorusesRepo.createPlaylist(name);
+  ipcMain.handle('choruses:create-playlist', async (_event, payload) => {
+    if (typeof payload === 'object' && payload !== null) {
+      return chorusesRepo.createPlaylist(payload.name, payload.serviceDate || null);
+    }
+    return chorusesRepo.createPlaylist(payload);
   });
 
   ipcMain.handle('choruses:get-playlist-items', async (_event, playlistId) => {
@@ -239,8 +293,20 @@ function registerIpcHandlers() {
     return chorusesRepo.addChorusToPlaylist(playlistId, chorusId);
   });
 
+  ipcMain.handle('choruses:remove-from-playlist', async (_event, { playlistId, chorusId }) => {
+    return chorusesRepo.removeChorusFromPlaylist(playlistId, chorusId);
+  });
+
   ipcMain.handle('choruses:delete-playlist', async (_event, playlistId) => {
     return chorusesRepo.deletePlaylist(playlistId);
+  });
+
+  ipcMain.handle('choruses:update-playlist', async (_event, { id, data }) => {
+    return chorusesRepo.updatePlaylist(id, data);
+  });
+
+  ipcMain.handle('choruses:reorder-playlist-item', async (_event, { playlistId, chorusId, direction }) => {
+    return chorusesRepo.reorderPlaylistItem(playlistId, chorusId, direction);
   });
 
   // --- 7. PREDICACIÓN (PRESENTACIONES Y DOCUMENTOS) ---
@@ -257,8 +323,16 @@ function registerIpcHandlers() {
     return preachingService.selectAndImportPresentation(parentWin);
   });
 
-  ipcMain.handle('preaching:project-slide', async (_event, { preachingId, slideIndex }) => {
-    return preachingService.projectSlide(preachingId, slideIndex);
+  ipcMain.handle('preaching:create-manual', async (_event, payload) => {
+    return preachingService.createManualPreaching(payload);
+  });
+
+  ipcMain.handle('preaching:update-render-mode', async (_event, { id, renderMode }) => {
+    return preachingService.updateRenderMode(id, renderMode);
+  });
+
+  ipcMain.handle('preaching:project-slide', async (_event, { preachingId, slideIndex, renderMode }) => {
+    return preachingService.projectSlide(preachingId, slideIndex, renderMode);
   });
 
   ipcMain.handle('preaching:resume', async () => {
@@ -283,12 +357,60 @@ function registerIpcHandlers() {
     return spotsService.selectAndImportSpot(parentWin);
   });
 
-  ipcMain.handle('spots:project', async (_event, id) => {
-    return spotsService.projectSpot(id);
+  ipcMain.handle('spots:add-url', async (_event, payload) => {
+    return spotsService.createFromUrl(payload);
+  });
+
+  ipcMain.handle('spots:update', async (_event, { id, data }) => {
+    return spotsService.update(id, data);
+  });
+
+  ipcMain.handle('spots:project', async (_event, id, options) => {
+    return spotsService.projectSpot(id, options);
   });
 
   ipcMain.handle('spots:delete', async (_event, id) => {
     return spotsService.delete(id);
+  });
+
+  ipcMain.handle('spots:media-command', async (_event, commandData) => {
+    projectionService.sendMediaCommand(commandData);
+    return true;
+  });
+
+  ipcMain.handle('spots:time-update', async (_event, timeData) => {
+    projectionService.notifyMediaTimeUpdate(timeData);
+    return true;
+  });
+
+  ipcMain.handle('spots:play', async () => {
+    spotsService.play();
+    return true;
+  });
+
+  ipcMain.handle('spots:pause', async () => {
+    spotsService.pause();
+    return true;
+  });
+
+  ipcMain.handle('spots:seek', async (_event, seconds) => {
+    spotsService.seek(seconds);
+    return true;
+  });
+
+  ipcMain.handle('spots:set-volume', async (_event, { volume, muted }) => {
+    spotsService.setVolume(volume, muted);
+    return true;
+  });
+
+  ipcMain.handle('spots:set-loop', async (_event, { spotId, loop }) => {
+    spotsService.setLoop(spotId, loop);
+    return true;
+  });
+
+  ipcMain.handle('spots:stop', async () => {
+    spotsService.stop();
+    return true;
   });
 
   // --- 9. RULETA ---
@@ -308,36 +430,64 @@ function registerIpcHandlers() {
     return rouletteRepo.addItem(listId, label, color);
   });
 
+  ipcMain.handle('roulette:add-items-batch', async (_event, { listId, labels }) => {
+    return rouletteRepo.addItemsBatch(listId, labels);
+  });
+
   ipcMain.handle('roulette:remove-item', async (_event, itemId) => {
     return rouletteRepo.removeItem(itemId);
+  });
+
+  ipcMain.handle('roulette:clear-items', async (_event, listId) => {
+    return rouletteRepo.clearItems(listId);
+  });
+
+  ipcMain.handle('roulette:rename-list', async (_event, { id, name }) => {
+    return rouletteRepo.renameList(id, name);
   });
 
   ipcMain.handle('roulette:delete-list', async (_event, id) => {
     return rouletteRepo.deleteList(id);
   });
 
-  ipcMain.handle('roulette:project-spin', async (_event, payload) => {
-    const { items, winningIndex, durationMs, winnerLabel } = payload;
+  ipcMain.handle('roulette:project-wheel', async (_event, { listName, items }) => {
     return projectionService.project({
       module: 'roulette',
-      title: 'Ruleta en Vivo',
+      title: listName || 'Ruleta Dinámica',
+      text: listName || 'Ruleta Dinámica',
+      reference: 'Ruleta',
+      items: items || [],
+      isSpinning: false,
+      winnerLabel: null
+    });
+  });
+
+  ipcMain.handle('roulette:project-spin', async (_event, payload) => {
+    const { items, winningIndex, durationMs, winnerLabel, listName } = payload;
+    return projectionService.project({
+      module: 'roulette',
+      title: listName || 'Ruleta en Vivo',
       text: winnerLabel || '',
       reference: 'Ruleta Dinámica',
       items,
       winningIndex,
       durationMs: durationMs || 5000,
-      isSpinning: true
+      isSpinning: true,
+      winnerLabel: winnerLabel || null
     });
   });
 
-  ipcMain.handle('roulette:project-winner', async (_event, { winnerLabel, color }) => {
+  ipcMain.handle('roulette:project-winner', async (_event, { winnerLabel, color, items, winningIndex }) => {
     return projectionService.project({
       module: 'roulette',
-      title: '¡Elemento Seleccionado!',
+      title: '¡Ganador Seleccionado!',
       text: winnerLabel,
       reference: '¡Ganador!',
+      items: items || [],
+      winningIndex: winningIndex !== undefined ? winningIndex : null,
       customStyles: { color: color || '#FCD34D' },
-      isSpinning: false
+      isSpinning: false,
+      winnerLabel
     });
   });
 
@@ -350,8 +500,16 @@ function registerIpcHandlers() {
     return countdownService.getState();
   });
 
-  ipcMain.handle('countdown:start', async (_event, { seconds, endMessage, background }) => {
-    return countdownService.start(seconds, endMessage, background);
+  ipcMain.handle('countdown:start', async (_event, { seconds, endMessage, background, subtitle } = {}) => {
+    return countdownService.start(seconds, endMessage, background, subtitle);
+  });
+
+  ipcMain.handle('countdown:set-time', async (_event, { seconds, endMessage, background, subtitle } = {}) => {
+    return countdownService.setTime(seconds, endMessage, background, subtitle);
+  });
+
+  ipcMain.handle('countdown:add-seconds', async (_event, delta) => {
+    return countdownService.addSeconds(delta);
   });
 
   ipcMain.handle('countdown:pause', async () => {
@@ -364,6 +522,10 @@ function registerIpcHandlers() {
 
   ipcMain.handle('countdown:reset', async () => {
     return countdownService.reset();
+  });
+
+  ipcMain.handle('countdown:project', async (_event, options = {}) => {
+    return countdownService.project(options);
   });
 }
 

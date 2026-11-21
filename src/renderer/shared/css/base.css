@@ -20,6 +20,26 @@ html, body {
   user-select: none;
 }
 
+/* Permitir selección de texto y cursor de escritura en TODOS los campos de entrada */
+input,
+textarea,
+select,
+.input-text,
+[contenteditable="true"] {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
+  cursor: text !important;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"],
+select {
+  cursor: pointer !important;
+}
+
 /* Scrollbars personalizados ultra-discretos de estudio */
 ::-webkit-scrollbar {
   width: 6px;

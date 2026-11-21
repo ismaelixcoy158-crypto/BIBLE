@@ -100,29 +100,33 @@ class ChorusesRepository {
   }
 
   /**
-   * Búsqueda en Modo Espontáneo en tiempo real (FTS5 + Coincidencias de prefijo)
+   * Búsqueda en Modo Espontáneo en tiempo real (FTS5 + Coincidencias en Título y Letra)
    */
-  searchSpontaneous(queryText, limit = 30) {
+  searchSpontaneous(queryText, limit = 50) {
     const clean = (queryText || '').trim();
     if (!clean) return this.getAll().slice(0, limit);
 
-    // Consulta FTS5 con comodín en cada término
-    const ftsQuery = clean
-      .replace(/[^\w\s]/g, '')
+    // Separar palabras clave para búsqueda flexible
+    const words = clean
+      .replace(/[^\w\sáéíóúÁÉÍÓÚñÑ]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length > 0)
-      .map(w => `${w}*`)
-      .join(' ');
+      .filter(w => w.length > 0);
+
+    if (words.length === 0) return this.getAll().slice(0, limit);
+
+    // Estrategia 1: Consulta FTS5 con comodín en cada término
+    // Ponderación bm25(10.0, 1.0): prioriza coincidencias en título sobre letra, pero busca en ambos
+    const ftsQuery = words.map(w => `"${w}"*`).join(' ');
 
     const sqlFTS = `
       SELECT c.id, c.title, c.lyrics, c.category_id, cat.name as category_name, 
              cat.color as category_color, c.background,
-             snippet(choruses_fts, 1, '<b>', '</b>', '...', 10) as match_snippet
+             snippet(choruses_fts, 1, '<mark class="search-match">', '</mark>', '...', 12) as match_snippet
       FROM choruses_fts
       JOIN choruses c ON c.id = choruses_fts.rowid
       LEFT JOIN chorus_categories cat ON cat.id = c.category_id
       WHERE choruses_fts MATCH ?
-      ORDER BY bm25(choruses_fts) ASC
+      ORDER BY bm25(choruses_fts, 10.0, 1.0) ASC
       LIMIT ?
     `;
 
@@ -130,19 +134,35 @@ class ChorusesRepository {
       const results = this.db.prepare(sqlFTS).all(ftsQuery, limit);
       if (results.length > 0) return results;
     } catch {
-      // Fallback a LIKE
+      // Fallback si la sintaxis FTS falló
     }
 
-    // Fallback estándar con LIKE
+    // Estrategia 2: Si con AND estricto no hubo resultados y hay múltiples palabras, intentar con OR
+    if (words.length > 1) {
+      try {
+        const ftsOrQuery = words.map(w => `"${w}"*`).join(' OR ');
+        const orResults = this.db.prepare(sqlFTS).all(ftsOrQuery, limit);
+        if (orResults.length > 0) return orResults;
+      } catch {}
+    }
+
+    // Estrategia 3: Fallback estándar con LIKE en título Y en letra para tolerancia máxima
+    const likeConditions = words.map(() => '(c.title LIKE ? OR c.lyrics LIKE ?)').join(' AND ');
+    const params = [];
+    words.forEach(w => params.push(`%${w}%`, `%${w}%`));
+    const firstWord = `%${words[0]}%`;
+
     return this.db.prepare(`
       SELECT c.id, c.title, c.lyrics, c.category_id, cat.name as category_name, 
              cat.color as category_color, c.background
       FROM choruses c
       LEFT JOIN chorus_categories cat ON cat.id = c.category_id
-      WHERE c.title LIKE ? OR c.lyrics LIKE ?
-      ORDER BY c.title ASC
+      WHERE ${likeConditions}
+      ORDER BY 
+        CASE WHEN c.title LIKE ? THEN 1 ELSE 2 END,
+        c.title ASC
       LIMIT ?
-    `).all(`%${clean}%`, `%${clean}%`, limit);
+    `).all(...params, firstWord, limit);
   }
 
   /**
@@ -198,19 +218,29 @@ class ChorusesRepository {
   // --- REPERTORIO / LISTAS DE CULTO ---
 
   getPlaylists() {
-    return this.db.prepare('SELECT * FROM chorus_playlists ORDER BY created_at DESC').all();
+    return this.db.prepare(`
+      SELECT p.*, COUNT(pi.id) as total_items
+      FROM chorus_playlists p
+      LEFT JOIN chorus_playlist_items pi ON pi.playlist_id = p.id
+      GROUP BY p.id
+      ORDER BY p.created_at DESC
+    `).all();
   }
 
-  createPlaylist(name) {
+  createPlaylist(name, serviceDate = null) {
     const clean = (name || '').trim();
-    if (!clean) throw new Error('El nombre de la lista es obligatorio');
-    const info = this.db.prepare('INSERT INTO chorus_playlists (name) VALUES (?)').run(clean);
-    return { id: info.lastInsertRowid, name: clean };
+    if (!clean) throw new Error('El nombre del repertorio es obligatorio');
+    const info = this.db.prepare(`
+      INSERT INTO chorus_playlists (name, service_date) 
+      VALUES (?, ?)
+    `).run(clean, serviceDate || null);
+    return { id: info.lastInsertRowid, name: clean, service_date: serviceDate };
   }
 
   getPlaylistItems(playlistId) {
     return this.db.prepare(`
-      SELECT pi.position, c.id, c.title, c.lyrics, cat.name as category_name
+      SELECT pi.position, c.id, c.title, c.lyrics, c.background,
+             cat.name as category_name, cat.color as category_color
       FROM chorus_playlist_items pi
       JOIN choruses c ON c.id = pi.chorus_id
       LEFT JOIN chorus_categories cat ON cat.id = c.category_id
@@ -220,6 +250,14 @@ class ChorusesRepository {
   }
 
   addChorusToPlaylist(playlistId, chorusId) {
+    // Si ya existe en la lista, no duplicar
+    const existing = this.db.prepare(
+      'SELECT id FROM chorus_playlist_items WHERE playlist_id = ? AND chorus_id = ?'
+    ).get(playlistId, chorusId);
+    if (existing) {
+      return this.getPlaylistItems(playlistId);
+    }
+
     const maxPos = this.db.prepare(
       'SELECT COALESCE(MAX(position), 0) as max_pos FROM chorus_playlist_items WHERE playlist_id = ?'
     ).get(playlistId).max_pos;
@@ -232,9 +270,275 @@ class ChorusesRepository {
     return this.getPlaylistItems(playlistId);
   }
 
+  removeChorusFromPlaylist(playlistId, chorusId) {
+    this.db.prepare(`
+      DELETE FROM chorus_playlist_items 
+      WHERE playlist_id = ? AND chorus_id = ?
+    `).run(playlistId, chorusId);
+
+    // Reordenar posiciones secuenciales sin violar UNIQUE (playlist_id, position)
+    const remaining = this.db.prepare(
+      'SELECT id FROM chorus_playlist_items WHERE playlist_id = ? ORDER BY position ASC'
+    ).all(playlistId);
+
+    const updatePos = this.db.prepare('UPDATE chorus_playlist_items SET position = ? WHERE id = ?');
+    const transaction = this.db.transaction((items) => {
+      items.forEach((item, index) => {
+        updatePos.run(-(index + 1), item.id);
+      });
+      items.forEach((item, index) => {
+        updatePos.run(index + 1, item.id);
+      });
+    });
+    transaction(remaining);
+
+    return this.getPlaylistItems(playlistId);
+  }
+
+  updatePlaylist(id, { name, serviceDate }) {
+    const current = this.db.prepare('SELECT * FROM chorus_playlists WHERE id = ?').get(id);
+    if (!current) throw new Error('Repertorio no encontrado');
+
+    const newName = name !== undefined && name !== null ? name.trim() : current.name;
+    const newDate = serviceDate !== undefined ? serviceDate : current.service_date;
+
+    if (!newName) throw new Error('El nombre del repertorio es obligatorio');
+
+    this.db.prepare(`
+      UPDATE chorus_playlists
+      SET name = ?, service_date = ?
+      WHERE id = ?
+    `).run(newName, newDate, id);
+
+    return { id, name: newName, service_date: newDate };
+  }
+
+  reorderPlaylistItem(playlistId, chorusId, direction) {
+    const plId = parseInt(playlistId, 10);
+    const chId = parseInt(chorusId, 10);
+    const items = this.getPlaylistItems(plId);
+    const index = items.findIndex(it => Number(it.id) === chId);
+    if (index === -1) return items;
+
+    if (direction === 'up' && index > 0) {
+      const temp = items[index];
+      items[index] = items[index - 1];
+      items[index - 1] = temp;
+    } else if (direction === 'down' && index < items.length - 1) {
+      const temp = items[index];
+      items[index] = items[index + 1];
+      items[index + 1] = temp;
+    } else {
+      return items;
+    }
+
+    const updatePos = this.db.prepare('UPDATE chorus_playlist_items SET position = ? WHERE playlist_id = ? AND chorus_id = ?');
+    const transaction = this.db.transaction((reordered) => {
+      // Fase 1: Desplazar a índices negativos para evitar colisiones UNIQUE
+      reordered.forEach((item, idx) => {
+        updatePos.run(-(idx + 1), plId, item.id);
+      });
+      // Fase 2: Asignar índices secuenciales 1..N
+      reordered.forEach((item, idx) => {
+        updatePos.run(idx + 1, plId, item.id);
+      });
+    });
+    transaction(items);
+
+    return this.getPlaylistItems(plId);
+  }
+
   deletePlaylist(playlistId) {
+    this.db.prepare('DELETE FROM chorus_playlist_items WHERE playlist_id = ?').run(playlistId);
     this.db.prepare('DELETE FROM chorus_playlists WHERE id = ?').run(playlistId);
     return true;
+  }
+
+  /**
+   * Búsqueda híbrida en línea de letras de alabanzas y cantos cristianos en internet
+   * Funciona tanto por NOMBRE/TÍTULO como por cualquier FRASE DE LA LETRA.
+   * Retorna una lista de cantos encontrados con letra completa formateada en diapositivas.
+   */
+  async searchOnline(query) {
+    const q = (query || '').trim();
+    if (!q) return [];
+
+    const seen = new Set();
+    const results = [];
+
+    const addResult = (item) => {
+      if (!item.title || !item.lyrics) return;
+      const key = `${item.title.toLowerCase().trim()}::${(item.artist || '').toLowerCase().trim()}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+
+      const lines = item.lyrics.split('\n').map(l => l.trim()).filter(Boolean);
+      const snippet = lines.slice(0, 3).join(' / ');
+      const slides = ChorusesRepository.splitIntoSlides(item.lyrics);
+
+      results.push({
+        title: item.title.trim(),
+        artist: (item.artist || '').trim(),
+        album: (item.album || '').trim(),
+        lyrics: item.lyrics.trim(),
+        slides,
+        match_snippet: snippet,
+        isOnline: true
+      });
+    };
+
+    // 1. Búsqueda directa en LRCLIB (ideal para títulos y artistas)
+    try {
+      const lrcUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(q)}`;
+      const lrcRes = await fetch(lrcUrl, {
+        signal: AbortSignal.timeout(5000),
+        headers: { 'User-Agent': 'BIBLE-Church-Media-System/1.0' }
+      });
+      if (lrcRes.ok) {
+        const data = await lrcRes.json();
+        if (Array.isArray(data)) {
+          for (const it of data) {
+            if (!it.plainLyrics && !it.syncedLyrics) continue;
+            const lyrics = (it.plainLyrics || it.syncedLyrics.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, '')).trim();
+            if (lyrics) {
+              addResult({
+                title: it.trackName,
+                artist: it.artistName,
+                album: it.albumName,
+                lyrics
+              });
+            }
+            if (results.length >= 12) break;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[ChorusesRepository] LRCLIB error:', err.message);
+    }
+
+    // 2. Búsqueda por frase de la letra en Genius (identifica el título a partir de versos/estrofas)
+    if (results.length < 8) {
+      try {
+        const geniusUrl = `https://genius.com/api/search/multi?q=${encodeURIComponent(q)}`;
+        const genRes = await fetch(geniusUrl, {
+          signal: AbortSignal.timeout(5000),
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+        });
+        if (genRes.ok) {
+          const genData = await genRes.json();
+          const candidateTracks = [];
+          (genData.response?.sections || []).forEach(sec => {
+            (sec.hits || []).forEach(h => {
+              if (h.result?.title) {
+                candidateTracks.push({
+                  title: h.result.title,
+                  artist: h.result.primary_artist?.name || ''
+                });
+              }
+            });
+          });
+
+          // Para los títulos descubiertos por la letra, consultar sus letras completas en LRCLIB
+          for (const cand of candidateTracks.slice(0, 5)) {
+            let lrcTrackUrl = `https://lrclib.net/api/search?track_name=${encodeURIComponent(cand.title)}`;
+            if (cand.artist) {
+              lrcTrackUrl += `&artist_name=${encodeURIComponent(cand.artist)}`;
+            }
+            try {
+              let trRes = await fetch(lrcTrackUrl, {
+                signal: AbortSignal.timeout(3000),
+                headers: { 'User-Agent': 'BIBLE-Church-Media-System/1.0' }
+              });
+              let trData = trRes.ok ? await trRes.json() : [];
+              if ((!Array.isArray(trData) || trData.length === 0) && cand.artist) {
+                // Reintentar solo por el título de la canción si falló con el artista
+                const fallbackUrl = `https://lrclib.net/api/search?track_name=${encodeURIComponent(cand.title)}`;
+                const fbRes = await fetch(fallbackUrl, {
+                  signal: AbortSignal.timeout(3000),
+                  headers: { 'User-Agent': 'BIBLE-Church-Media-System/1.0' }
+                });
+                if (fbRes.ok) trData = await fbRes.json();
+              }
+
+              if (Array.isArray(trData)) {
+                for (const it of trData) {
+                  if (!it.plainLyrics && !it.syncedLyrics) continue;
+                  const lyrics = (it.plainLyrics || it.syncedLyrics.replace(/\[\d{2}:\d{2}\.\d{2}\]/g, '')).trim();
+                  if (lyrics) {
+                    addResult({
+                      title: it.trackName,
+                      artist: it.artistName,
+                      album: it.albumName,
+                      lyrics
+                    });
+                    break;
+                  }
+                }
+              }
+            } catch (e) {}
+            if (results.length >= 12) break;
+          }
+        }
+      } catch (err) {
+        console.warn('[ChorusesRepository] Genius lyric search error:', err.message);
+      }
+    }
+
+    // 3. Respaldo para coritos tradicionales y pentecostales (Letras.com vía motor público)
+    if (results.length === 0) {
+      try {
+        const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(q + ' letra cristiana')}`;
+        const ddgRes = await fetch(ddgUrl, {
+          signal: AbortSignal.timeout(5000),
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html',
+            'Accept-Language': 'es-ES,es;q=0.9'
+          }
+        });
+        if (ddgRes.ok) {
+          const html = await ddgRes.text();
+          const urlMatches = [...html.matchAll(/class="result__url"[^>]*href="([^"]+)"/g)];
+          for (const um of urlMatches.slice(0, 3)) {
+            let rawUrl = um[1];
+            const uddgMatch = rawUrl.match(/uddg=([^&]+)/);
+            const targetUrl = uddgMatch ? decodeURIComponent(uddgMatch[1]) : rawUrl;
+            if (targetUrl.includes('letras.com')) {
+              try {
+                const lRes = await fetch(targetUrl, {
+                  signal: AbortSignal.timeout(4000),
+                  headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+                });
+                if (lRes.ok) {
+                  const lHtml = await lRes.text();
+                  const h1Match = lHtml.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+                  const title = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : q;
+                  const pMatches = [...lHtml.matchAll(/<p>([\s\S]*?)<\/p>/g)];
+                  let lyrics = pMatches.map(p => p[1].replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim()).filter(Boolean).join('\n\n');
+                  lyrics = lyrics
+                    .replace(/Paga una vez[\s\S]*$/i, '')
+                    .replace(/Enviada por[\s\S]*$/i, '')
+                    .replace(/¿Viste algún error\?[\s\S]*$/i, '')
+                    .trim();
+                  if (lyrics) {
+                    addResult({
+                      title,
+                      artist: 'Letras.com',
+                      album: '',
+                      lyrics
+                    });
+                  }
+                }
+              } catch (e) {}
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[ChorusesRepository] Fallback search error:', err.message);
+      }
+    }
+
+    return results;
   }
 }
 

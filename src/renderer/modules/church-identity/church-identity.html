@@ -3,7 +3,7 @@
   <header class="identity-header">
     <div class="identity-badge-tag">CONFIGURACIÓN INSTITUCIONAL</div>
     <h2>Identidad de la Iglesia</h2>
-    <p>Personaliza el nombre oficial y logotipo de tu congregación para su proyección en pantalla.</p>
+    <p>Personaliza el nombre oficial y logotipo de tu congregación para su proyección en pantalla y uso en todo el sistema.</p>
   </header>
 
   <!-- Notificación de estado -->
@@ -20,7 +20,7 @@
 
     <div class="form-group">
       <label class="form-label" for="churchNameInput">
-        Nombre que se mostrará en las proyecciones, encabezados y pantalla pública:
+        Nombre que se mostrará en las proyecciones, pantalla pública y encabezado:
       </label>
       <div class="form-row">
         <input 
@@ -29,6 +29,7 @@
           class="input-text" 
           placeholder="Ej: Iglesia Evangélica Pentecostal"
           maxlength="120"
+          autocomplete="off"
         >
         <button id="btnSaveChurchName" class="btn btn-primary">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
@@ -36,13 +37,14 @@
             <polyline points="17 21 17 13 7 13 7 21"/>
             <polyline points="7 3 7 8 15 8"/>
           </svg>
-          <span>Guardar Nombre</span>
+          <span id="txtBtnSaveName">Guardar Nombre</span>
         </button>
       </div>
+      <span class="form-help-text">Presiona Enter o haz clic en Guardar para aplicar el cambio en todo el sistema.</span>
     </div>
   </section>
 
-  <!-- Sección 2: Logotipo Oficial -->
+  <!-- Sección 2: Logotipo Oficial / Imagen -->
   <section class="identity-card">
     <div class="card-title">
       <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary);">
@@ -50,36 +52,58 @@
         <circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
       </svg>
-      <span>Logotipo Oficial de la Iglesia</span>
+      <span>Logotipo o Imagen Oficial de la Iglesia</span>
       <span id="logoSourceBadge" class="logo-source-badge">
         Sin logotipo cargado
       </span>
     </div>
 
+    <!-- Input file invisible para selección nativa directa -->
+    <input 
+      type="file" 
+      id="fileLogoDirect" 
+      accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" 
+      style="display: none;"
+    >
+
     <div class="logo-manager">
-      <!-- Caja de previsualización -->
-      <div id="logoPreviewBox" class="logo-preview-box">
+      <!-- Caja interactiva de previsualización (Soporta clic y Drag & Drop) -->
+      <div id="logoPreviewBox" class="logo-preview-box" title="Haz clic o arrastra un archivo de imagen aquí">
         <div id="logoPlaceholder" class="logo-placeholder">
-          <svg class="icon icon-lg" viewBox="0 0 24 24" style="width: 36px; height: 36px; color: var(--text-muted);">
-            <path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-5a2 2 0 0 1 4 0v5"/>
+          <svg class="icon icon-lg" viewBox="0 0 24 24" style="width: 44px; height: 44px; color: var(--accent-gold); opacity: 0.85;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" x2="12" y1="3" y2="15"/>
           </svg>
-          <span>Sin logotipo cargado</span>
+          <strong style="color: var(--text-primary); font-size: 12.5px;">Haz clic o arrastra tu imagen aquí</strong>
+          <span style="font-size: 11px; color: var(--text-muted);">Formatos: PNG, JPG, WEBP, SVG o GIF</span>
         </div>
         <img id="logoPreviewImg" class="logo-preview-img" alt="Vista previa del logo" style="display: none;">
       </div>
 
       <!-- Opciones y Botones de Carga -->
       <div class="logo-actions">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <!-- Opción 1: Archivo local -->
-          <button id="btnSelectLocalLogo" class="btn">
-            <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" x2="12" y1="3" y2="15"/>
-            </svg>
-            <span>Cargar desde este equipo (PNG, JPG, WEBP)</span>
-          </button>
+        <div class="upload-methods-stack">
+          <!-- Botón 1: Archivo local -->
+          <div style="display: flex; gap: 8px;">
+            <button id="btnSelectLocalLogo" class="btn btn-secondary" style="flex: 1;" title="Explorar archivo en tu computadora">
+              <svg class="icon icon-sm" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" x2="12" y1="3" y2="15"/>
+              </svg>
+              <span>Subir Archivo de Imagen</span>
+            </button>
+
+            <!-- Botón 2: Pegar desde portapapeles -->
+            <button id="btnPasteClipboardLogo" class="btn btn-secondary" title="Pegar imagen copiada en el portapapeles (Ctrl+V)">
+              <svg class="icon icon-sm" viewBox="0 0 24 24">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+              <span>Pegar (Ctrl+V)</span>
+            </button>
+          </div>
 
           <!-- Opción 2: URL web -->
           <div class="url-input-box">
@@ -92,7 +116,7 @@
                 placeholder="https://ejemplo.com/logo.png"
                 style="font-size: 12px;"
               >
-              <button id="btnDownloadUrlLogo" class="btn">
+              <button id="btnDownloadUrlLogo" class="btn btn-secondary">
                 <svg class="icon icon-sm" viewBox="0 0 24 24">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7 10 12 15 17 10"/>
@@ -102,18 +126,40 @@
               </button>
             </div>
           </div>
+
+          <!-- Opción 3: Emblemas Predeterminados Rápidos -->
+          <div class="sample-emblems-box">
+            <span class="form-label" style="font-size: 11px;">O elige un emblema institucional predeterminado:</span>
+            <div class="sample-emblems-row">
+              <button class="btn-sample-emblem" data-emblem="bible_official" title="Logotipo Oficial de BIBLE Church Media System">
+                <span>👑 BIBLE Oficial</span>
+              </button>
+              <button class="btn-sample-emblem" data-emblem="cross" title="Cruz Celestial Dorada">
+                <span>✝ Cruz Dorada</span>
+              </button>
+              <button class="btn-sample-emblem" data-emblem="dove" title="Paloma de la Paz">
+                <span>🕊 Paloma de Paz</span>
+              </button>
+              <button class="btn-sample-emblem" data-emblem="bible" title="Sagrada Biblia Abierta">
+                <span>📖 Santa Biblia</span>
+              </button>
+              <button class="btn-sample-emblem" data-emblem="flame" title="Llama de Fuego Pentecostal">
+                <span>🔥 Fuego Santo</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Acciones sobre el logo existente -->
+        <!-- Acciones sobre el logo existente y Proyección -->
         <div class="logo-bottom-actions">
-          <button id="btnTestProjectLogo" class="btn btn-primary" style="flex: 1;">
+          <button id="btnTestProjectLogo" class="btn btn-primary" style="flex: 1;" title="Mostrar u ocultar el logo en la pantalla de proyección (Atajo F2)">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
               <rect width="20" height="14" x="2" y="3" rx="2"/>
               <path d="M8 21h8M12 17v4"/>
             </svg>
-            <span>Proyectar Logo en Pantalla Pública</span>
+            <span id="txtBtnProjectLogo">Proyectar Logo en Pantalla (F2)</span>
           </button>
-          <button id="btnDeleteLogo" class="btn btn-danger">
+          <button id="btnDeleteLogo" class="btn btn-danger" style="display: none;" title="Quitar logotipo actual">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
               <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
             </svg>
@@ -124,7 +170,7 @@
     </div>
   </section>
 
-  <!-- Sección 3: Zona de Peligro / Restablecimiento -->
+  <!-- Sección 3: Zona de Restablecimiento -->
   <section class="identity-card danger-zone">
     <div class="card-title" style="color: var(--status-blackout);">
       <svg class="icon icon-sm" viewBox="0 0 24 24">
@@ -132,10 +178,10 @@
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <span>Restablecer Identidad</span>
+      <span>Restablecer Identidad de Fábrica</span>
     </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <p style="font-size: 12px; color: var(--text-secondary); max-width: 500px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <p style="font-size: 12px; color: var(--text-secondary); max-width: 500px; margin: 0;">
         Restaura el nombre por defecto ("Mi Iglesia") y elimina permanentemente el logotipo almacenado en el equipo.
       </p>
       <button id="btnResetIdentity" class="btn btn-danger">

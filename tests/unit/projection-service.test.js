@@ -71,25 +71,98 @@ test('ProjectionService - Máquina de Estados de Emisión', async (t) => {
     assert.equal(service.getState().isLogo, false);
   });
 
-  await t.test('debe respetar el estado de CONGELADO (Freeze)', () => {
+  await t.test('debe permitir congelar y descongelar con toggleFreeze', () => {
     service.toggleFreeze(true);
     assert.equal(service.getState().isFrozen, true);
 
-    // Intentar proyectar algo nuevo mientras está congelado
-    const nuevoPayload = {
+    service.toggleFreeze(false);
+    assert.equal(service.getState().isFrozen, false);
+  });
+
+  await t.test('debe preservar el fondo global activo al cambiar de módulo sin fondo explícito', () => {
+    // 1. En Biblia se proyecta con fondo 'Océano Profundo'
+    service.project({
+      module: 'bible',
+      title: 'Salmos 23:1',
+      text: 'Jehová es mi pastor...',
+      background: { id: 'preset_ocean', name: 'Océano Profundo', value: 'linear-gradient(...)' }
+    });
+    assert.equal(service.getState().currentBackground.name, 'Océano Profundo');
+    assert.equal(service.getState().activeContent.background.name, 'Océano Profundo');
+
+    // 2. Al cambiar a Coritos y proyectar una diapositiva sin fondo explícito, debe conservar 'Océano Profundo'
+    const chorusesState = service.project({
       module: 'choruses',
       title: 'Alabaré a mi Señor',
-      text: 'Alabaré, alabaré...'
-    };
-    service.project(nuevoPayload);
+      text: 'Alabaré, alabaré, alabaré a mi Señor'
+      // background omitido intencionalmente
+    });
+    assert.ok(chorusesState.activeContent.background);
+    assert.equal(chorusesState.activeContent.background.name, 'Océano Profundo');
+    assert.equal(chorusesState.currentBackground.name, 'Océano Profundo');
 
-    // El estado público emitido NO debe haber cambiado el contenido activo
-    assert.equal(service.getState().activeContent.title, 'Juan 3:16');
+    // 3. Al cambiar a Predicación, también preserva el fondo activo
+    const preachState = service.project({
+      module: 'preaching',
+      title: 'Sermón de la Gracia',
+      text: 'Punto 1: La justificación'
+    });
+    assert.ok(preachState.activeContent.background);
+    assert.equal(preachState.activeContent.background.name, 'Océano Profundo');
+  });
 
-    // Descongelar
-    service.toggleFreeze(false);
-    service.project(nuevoPayload);
-    assert.equal(service.getState().activeContent.title, 'Alabaré a mi Señor');
+  await t.test('debe actualizar el fondo global y notificar en tiempo real con updateBackground', () => {
+    service.updateBackground({ id: 'preset_obsidian', name: 'Obsidiana Noche', value: '#0f172a' });
+    const state = service.getState();
+    assert.equal(state.currentBackground.name, 'Obsidiana Noche');
+    assert.equal(state.activeContent.background.name, 'Obsidiana Noche');
+    assert.equal(mockPublicSent.data.currentBackground.name, 'Obsidiana Noche');
+  });
+
+  await t.test('debe actualizar el color de letra global con updateTextColor', () => {
+    service.updateTextColor('black');
+    const state = service.getState();
+    assert.equal(state.currentTextColor, 'black');
+    assert.equal(state.activeContent.textColor, 'black');
+    assert.equal(mockPublicSent.data.currentTextColor, 'black');
+  });
+
+  await t.test('debe actualizar el tamaño de letra global con updateFontSize', () => {
+    service.updateFontSize(130);
+    const state = service.getState();
+    assert.equal(state.currentFontSize, 130);
+    assert.equal(state.activeContent.fontSize, 130);
+    assert.equal(mockPublicSent.data.currentFontSize, 130);
+
+    // Clampeo inferior y superior
+    service.updateFontSize(40);
+    assert.equal(service.getState().currentFontSize, 60);
+
+    service.updateFontSize(300);
+    assert.equal(service.getState().currentFontSize, 220);
+  });
+
+  await t.test('debe actualizar la tipografía global con updateFontFamily', () => {
+    service.updateFontFamily('serif');
+    const state = service.getState();
+    assert.equal(state.currentFontFamily, 'serif');
+    assert.equal(state.activeContent.fontFamily, 'serif');
+    assert.equal(mockPublicSent.data.currentFontFamily, 'serif');
+  });
+
+  await t.test('debe preservar tamaño de letra y tipografía en proyecciones subsiguientes', () => {
+    service.updateFontSize(140);
+    service.updateFontFamily('serif');
+
+    const newState = service.project({
+      module: 'choruses',
+      title: 'Grande es Tu Fidelidad',
+      text: 'Oh Dios eterno, tu misericordia...'
+    });
+    assert.equal(newState.currentFontSize, 140);
+    assert.equal(newState.currentFontFamily, 'serif');
+    assert.equal(newState.activeContent.fontSize, 140);
+    assert.equal(newState.activeContent.fontFamily, 'serif');
   });
 });
 

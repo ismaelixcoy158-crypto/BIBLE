@@ -57,6 +57,26 @@ test('BibleReferenceParser - Parser Inteligente de Citas Bíblicas', async (t) =
     assert.equal(res2.startVerse, 16);
   });
 
+  await t.test('debe reconocer referencias separadas únicamente por espacios (estilo Holyrics)', () => {
+    const res1 = parser.parse('SALMOS 10 12');
+    assert.equal(res1.success, true);
+    assert.equal(res1.bookName, 'Salmos');
+    assert.equal(res1.chapter, 10);
+    assert.equal(res1.startVerse, 12);
+
+    const res2 = parser.parse('Juan 3 16');
+    assert.equal(res2.success, true);
+    assert.equal(res2.bookName, 'Juan');
+    assert.equal(res2.chapter, 3);
+    assert.equal(res2.startVerse, 16);
+
+    const res3 = parser.parse('1 Juan 3 16');
+    assert.equal(res3.success, true);
+    assert.equal(res3.bookName, '1 Juan');
+    assert.equal(res3.chapter, 3);
+    assert.equal(res3.startVerse, 16);
+  });
+
   await t.test('debe reconocer rangos de versículos', () => {
     const res = parser.parse('Juan 3:16-18');
     assert.equal(res.success, true);
@@ -79,6 +99,20 @@ test('BibleReferenceParser - Parser Inteligente de Citas Bíblicas', async (t) =
     const res = parser.parse('genesiss 1:1');
     assert.equal(res.success, true);
     assert.equal(res.bookName, 'Génesis');
+  });
+
+  await t.test('debe soportar versiones bíblicas dinámicas (RV1909 por defecto y RVG moderna)', () => {
+    const resDefault = parser.parse('Juan 3:16');
+    assert.equal(resDefault.success, true);
+    assert.equal(resDefault.formattedReference, 'Juan 3:16 (RV1909)');
+
+    const resRvg = parser.parse('Juan 3:16', 'RVG');
+    assert.equal(resRvg.success, true);
+    assert.equal(resRvg.formattedReference, 'Juan 3:16 (RVG)');
+
+    const resRvgRange = parser.parse('Salmos 23:1-3', 'RVG');
+    assert.equal(resRvgRange.success, true);
+    assert.equal(resRvgRange.formattedReference, 'Salmos 23:1-3 (RVG)');
   });
 
   await t.test('debe rechazar entradas totalmente inválidas con mensaje claro', () => {

@@ -100,6 +100,55 @@ class RouletteRepository {
   }
 
   /**
+   * Agrega múltiples elementos en lote (por ejemplo pegados por el usuario)
+   */
+  addItemsBatch(listId, labels = []) {
+    if (!Array.isArray(labels) || labels.length === 0) return this.getListById(listId);
+
+    const palette = RouletteRepository.getPalette();
+    const insertItem = this.db.prepare(`
+      INSERT INTO roulette_items (list_id, label, color, position)
+      VALUES (?, ?, ?, ?)
+    `);
+
+    const transaction = this.db.transaction(() => {
+      let currentCount = this.db.prepare('SELECT COUNT(*) as count FROM roulette_items WHERE list_id = ?').get(listId).count;
+
+      labels.forEach(rawLabel => {
+        const clean = (rawLabel || '').trim();
+        if (!clean) return;
+        currentCount++;
+        const color = palette[(currentCount - 1) % palette.length];
+        insertItem.run(listId, clean, color, currentCount);
+      });
+
+      this.db.prepare('UPDATE roulette_lists SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(listId);
+    });
+
+    transaction();
+    return this.getListById(listId);
+  }
+
+  /**
+   * Elimina todos los elementos de una lista para vaciarla
+   */
+  clearItems(listId) {
+    this.db.prepare('DELETE FROM roulette_items WHERE list_id = ?').run(listId);
+    this.db.prepare('UPDATE roulette_lists SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(listId);
+    return this.getListById(listId);
+  }
+
+  /**
+   * Renombra una lista existente
+   */
+  renameList(id, name) {
+    const cleanName = (name || '').trim();
+    if (!cleanName) throw new Error('El nombre de la lista es obligatorio');
+    this.db.prepare('UPDATE roulette_lists SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(cleanName, id);
+    return this.getListById(id);
+  }
+
+  /**
    * Elimina un elemento de la ruleta
    */
   removeItem(itemId) {

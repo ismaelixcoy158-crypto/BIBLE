@@ -114,8 +114,9 @@ class BibleReferenceParser {
   /**
    * Analiza una cadena de texto y extrae la referencia bíblica
    * @param {string} input Texto ingresado (ej. "Juan 3:16", "jn 3.16-18", "sal23:1")
+   * @param {string} version Versión bíblica (ej. 'RV1909', 'RVG')
    */
-  parse(input) {
+  parse(input, version = 'RV1909') {
     if (!input || typeof input !== 'string') {
       return { success: false, error: 'Entrada vacía o inválida' };
     }
@@ -123,11 +124,26 @@ class BibleReferenceParser {
     const cleanInput = input.trim();
 
     // Expresión regular universal para referencias bíblicas en español
-    // Soporta: "1 Juan 3:16", "juan3:16", "jn 3.16-18", "Salmos 23"
-    const regex = /^([1-3]?\s*[a-záéíóúñ\s]+?)\s*(\d+)(?:[:.,](\d+)(?:-(\d+))?)?$/i;
-    const match = cleanInput.match(regex);
+    // Soporta: "Salmos 10 12", "Juan 3:16", "Juan 3 16", "juan3:16", "1 Juan 3 16", "sal23", "gn 1 1", etc.
+    const regex = /^([1-3I]{0,3}\s*[a-záéíóúñA-ZÁÉÍÓÚÑ]+?)\s*(\d+)(?:(?:\s+|[:.,])(\d+)(?:\s*-\s*(\d+))?)?$/i;
+    let match = cleanInput.match(regex);
 
+    // Si el usuario escribió únicamente el nombre de un libro (ej. "Salmos", "Génesis", "Juan")
     if (!match) {
+      const singleBook = this.findBook(cleanInput);
+      if (singleBook) {
+        return {
+          success: true,
+          bookId: singleBook.id,
+          bookName: singleBook.name,
+          standardAbbrev: singleBook.standard_abbrev,
+          chapter: 1,
+          startVerse: 1,
+          endVerse: null,
+          isSingleVerse: true,
+          formattedReference: `${singleBook.name} 1:1 (${version})`
+        };
+      }
       return { success: false, error: `Referencia no reconocida: "${cleanInput}"` };
     }
 
@@ -156,7 +172,7 @@ class BibleReferenceParser {
         formattedReference += `-${endVerse}`;
       }
     }
-    formattedReference += ' (RV1909)';
+    formattedReference += ` (${version})`;
 
     return {
       success: true,

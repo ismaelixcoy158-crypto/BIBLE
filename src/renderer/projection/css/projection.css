@@ -1,7 +1,7 @@
 /* BIBLE — Estilos de la Ventana Pública de Proyección */
 :root {
   --projection-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  --text-shadow-scrim: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.7);
+  --text-shadow-scrim: 0 2px 12px rgba(0, 0, 0, 0.95), 0 0 24px rgba(0, 0, 0, 0.85), 0 0 45px rgba(0, 0, 0, 0.7);
 }
 
 html, body {
@@ -10,7 +10,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #000000;
+  background-color: #0a2e5c;
   color: #FFFFFF;
   font-family: var(--projection-font);
   user-select: none;
@@ -28,6 +28,21 @@ html, body {
 }
 
 /* Capa de Fondo */
+.projection-background-ambient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(45px) brightness(0.65);
+  transform: scale(1.25);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
 .projection-background {
   position: absolute;
   top: 0;
@@ -37,8 +52,21 @@ html, body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transition: opacity 300ms ease;
-  z-index: 1;
+  transition: opacity 300ms ease, transform 150ms ease;
+  transform-origin: center center;
+  z-index: 2;
+}
+
+.projection-background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 300ms ease, transform 150ms ease;
+  transform-origin: center center;
+  z-index: 2;
 }
 
 /* Scrim / Oscurecimiento sutil para asegurar contraste */
@@ -48,22 +76,25 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 2;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 3;
+  transition: background-color 300ms ease;
 }
 
 /* Capa de Contenido de Texto */
 .projection-content {
   position: relative;
   z-index: 3;
-  width: 88%;
-  max-width: 1600px;
+  width: 90%;
+  max-width: 1700px;
+  max-height: 92vh;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 40px;
+  padding: 24px 32px;
   transition: opacity 250ms ease, transform 250ms ease;
 }
 
@@ -98,6 +129,38 @@ html, body {
   margin-bottom: 24px;
 }
 
+/* Modo Texto Oscuro (Para fondos claros o blancos) */
+.projection-content.dark-text .projection-text {
+  color: #0F172A;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 16px rgba(255, 255, 255, 0.8);
+}
+
+.projection-content.dark-text .projection-reference {
+  color: #92400E; /* Ámbar oscuro de alta elegancia */
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 14px rgba(255, 255, 255, 0.8);
+}
+
+/* Capa de Diapositiva Fiel del Predicador (PDF / PowerPoint / Imágenes) */
+.projection-slide-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  transition: opacity 200ms ease;
+}
+
+.projection-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 /* Capa de Spots Multimedia (Videos e Imágenes 4K) */
 .projection-media-spot-layer {
   position: absolute;
@@ -105,7 +168,7 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 3;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,6 +182,176 @@ html, body {
   object-fit: contain;
 }
 
+/* Estilos para el módulo de Cuenta Regresiva en Pantalla Pública */
+.projection-content.module-countdown .projection-text {
+  font-family: var(--font-family-mono), 'Montserrat', sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 4px;
+  font-weight: 800;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9), 0 0 35px rgba(37, 99, 235, 0.5);
+}
+
+.projection-content.module-countdown.finished .projection-text {
+  font-family: inherit;
+  letter-spacing: normal;
+  font-weight: 800;
+  color: #34D399;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 0 35px rgba(16, 185, 129, 0.6);
+}
+
+/* Capa de Ruleta Dinámica en Vivo (Pantalla Gigante 4K) */
+.projection-roulette-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at center, rgba(30, 58, 138, 0.4) 0%, rgba(10, 15, 30, 0.8) 100%);
+}
+
+.projection-roulette-header {
+  position: absolute;
+  top: 4vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+  text-align: center;
+}
+
+.projection-roulette-tag {
+  font-size: clamp(11px, 1.1vw, 15px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #FCD34D;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(252, 211, 77, 0.5);
+  text-transform: uppercase;
+}
+
+.projection-roulette-title {
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.85), 0 0 10px rgba(255, 255, 255, 0.3);
+  margin: 0;
+}
+
+.projection-wheel-container {
+  position: relative;
+  width: 66vh;
+  height: 66vh;
+  max-width: 78vw;
+  max-height: 78vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  margin-top: 5vh;
+}
+
+#projectionRouletteCanvas {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.9));
+}
+
+.projection-wheel-pointer {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 36px solid #F59E0B;
+  z-index: 25;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95));
+}
+
+.projection-wheel-center-hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2563EB 0%, #1E3A8A 100%);
+  border: 5px solid #FFFFFF;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.85), 0 0 15px rgba(37, 99, 235, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+  color: #FFFFFF;
+  z-index: 15;
+  user-select: none;
+}
+
+.projection-winner-banner {
+  position: absolute;
+  bottom: 4vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.96);
+  border: 3px solid #F59E0B;
+  border-radius: 24px;
+  padding: 16px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.95), 0 0 40px rgba(245, 158, 11, 0.7);
+  z-index: 30;
+  animation: proj-pop-winner 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes proj-pop-winner {
+  0% { transform: translateX(-50%) scale(0.6); opacity: 0; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+.proj-winner-badge {
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #FCD34D;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.proj-winner-name {
+  font-size: clamp(2rem, 4.2vw, 4rem);
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9);
+  text-align: center;
+}
+
+.projection-confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 28;
+}
+
 /* Capa de Logotipo Institucional */
 .projection-logo-layer {
   position: absolute;
@@ -126,15 +359,17 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 4;
+  z-index: 40;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #000000;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.92) 0%, #000000 100%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms ease;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
 .projection-logo-layer.active {
@@ -143,17 +378,21 @@ html, body {
 }
 
 .projection-logo-img {
-  max-width: 45vw;
-  max-height: 45vh;
+  max-width: 55vw;
+  max-height: 55vh;
   object-fit: contain;
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.8));
 }
 
 .projection-church-title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 700;
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-weight: 800;
   color: #FFFFFF;
-  margin-top: 28px;
-  text-shadow: var(--text-shadow-scrim);
+  margin-top: 24px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
+  letter-spacing: 0.5px;
+  text-align: center;
+  max-width: 85vw;
 }
 
 /* Capa de Emergencia / Pantalla a Negro (Blackout) */
@@ -164,7 +403,7 @@ html, body {
   width: 100%;
   height: 100%;
   background-color: #000000;
-  z-index: 10;
+  z-index: 100;
   opacity: 0;
   pointer-events: none;
   transition: opacity 150ms ease;

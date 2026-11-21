@@ -6,18 +6,68 @@
       <h2>Cuenta Regresiva de Entrada</h2>
       <span>Reloj visual de bienvenida y aviso previo para el inicio puntual del culto</span>
     </div>
+
+    <div class="countdown-top-actions">
+      <button id="btnProjectCountdown" class="btn btn-secondary" title="Mostrar la cuenta regresiva en la pantalla pública">
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span id="txtBtnProjectCountdown">Proyectar en Pantalla</span>
+      </button>
+    </div>
   </header>
 
   <!-- Escenario del Reloj Digital de Estudio -->
   <main class="timer-stage-card">
+    <!-- Indicador Tally de Proyección -->
+    <div id="countdownTallyChip" class="countdown-tally-chip not-projected">
+      <span class="tally-dot"></span>
+      <span id="txtCountdownTally">⚪ Temporizador en Espera</span>
+    </div>
+
     <!-- Pantalla Digital Monospace de Estudio -->
     <div id="digitalClockDisplay" class="digital-clock-display">
       00:05:00
     </div>
 
+    <!-- Configuración de Tiempo Personalizado -->
+    <div class="custom-time-config-box">
+      <span class="custom-time-label">Configurar Tiempo Personalizado:</span>
+      <div class="time-inputs-row">
+        <div class="time-unit-box">
+          <input type="number" id="inputCustomHours" min="0" max="23" value="0" class="input-text time-num-input" title="Horas">
+          <span class="time-unit-label">h</span>
+        </div>
+        <span class="time-colon">:</span>
+        <div class="time-unit-box">
+          <input type="number" id="inputCustomMinutes" min="0" max="59" value="5" class="input-text time-num-input" title="Minutos">
+          <span class="time-unit-label">min</span>
+        </div>
+        <span class="time-colon">:</span>
+        <div class="time-unit-box">
+          <input type="number" id="inputCustomSeconds" min="0" max="59" value="0" class="input-text time-num-input" title="Segundos">
+          <span class="time-unit-label">seg</span>
+        </div>
+        <button id="btnSetCustomTime" class="btn btn-secondary" style="margin-left: 6px;">
+          <span>Aplicar Tiempo</span>
+        </button>
+      </div>
+
+      <div class="quick-adjust-row">
+        <button id="btnQuickSub1" class="btn btn-xs" title="Restar 1 minuto">-1 min</button>
+        <button id="btnQuickAdd1" class="btn btn-xs" title="Sumar 1 minuto">+1 min</button>
+        <button id="btnQuickAdd5" class="btn btn-xs" title="Sumar 5 minutos">+5 min</button>
+      </div>
+    </div>
+
     <!-- Preajustes Rápidos -->
-    <div id="presetsRow" class="presets-row">
-      <!-- Generado dinámicamente -->
+    <div class="presets-section">
+      <span class="presets-label">Preajustes Rápidos:</span>
+      <div id="presetsRow" class="presets-row">
+        <!-- Generado dinámicamente -->
+      </div>
     </div>
 
     <!-- Controles Maestros -->
@@ -54,22 +104,102 @@
     </div>
   </main>
 
-  <!-- Ajustes de Mensaje y Fondo -->
+  <!-- Ajustes de Mensaje y Título -->
   <section class="timer-settings-card">
-    <div class="card-title">
-      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-gold);">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-      <span>Mensaje al llegar a cero (00:00:00):</span>
+    <div class="settings-grid-row">
+      <div class="settings-field-group">
+        <div class="card-title">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-gold);">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span>Título / Subtítulo Superior en Pantalla:</span>
+        </div>
+        <input 
+          type="text" 
+          id="inputSubtitle" 
+          class="input-text" 
+          value="El culto comenzará en breve"
+          placeholder="Ej: El culto comenzará en breve / Tiempo de Oración"
+        >
+      </div>
+
+      <div class="settings-field-group">
+        <div class="card-title">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--status-live);">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Mensaje al llegar a cero (00:00:00):</span>
+        </div>
+        <input 
+          type="text" 
+          id="inputEndMessage" 
+          class="input-text" 
+          value="¡Bienvenidos a la Casa de Dios! El culto ha comenzado"
+          placeholder="Texto que aparecerá en pantalla cuando el reloj llegue a 00:00:00"
+        >
+      </div>
     </div>
-    <div class="form-row">
-      <input 
-        type="text" 
-        id="inputEndMessage" 
-        class="input-text" 
-        value="¡Bienvenidos a la Casa de Dios! El culto ha comenzado"
-        placeholder="Texto que aparecerá en pantalla cuando el reloj llegue a 00:00:00"
-      >
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 4px;">
+      <label class="checkbox-label" style="font-size: 11px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+        <input type="checkbox" id="chkEndChime" checked>
+        <span>Aviso sonoro (campana triunfal) al llegar a 00:00:00</span>
+      </label>
     </div>
   </section>
+
+  <!-- Barra Inferior Estandarizada de Personalización y Fondo (Idéntica a Biblia, Coros y Predica) -->
+  <footer class="countdown-bottom-bar config-toolbar">
+    <div class="config-toolbar-left">
+      <div class="live-status-pill">
+        <span class="live-dot live-status-dot"></span>
+        <span class="live-status-text">
+          <span class="live-status-tag">ESTADO:</span>
+          <span id="countdownLiveStatus" class="live-status-cite">En espera</span>
+        </span>
+      </div>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Selector de Fondo General (Compartido con Biblia, Coritos y Predicación) -->
+      <button id="btnOpenBackgroundPicker" class="config-pill btn-bg-selector" title="Cambiar fondo de proyección (Alt+B)">
+        <span id="activeBgThumb" class="config-pill-thumb bg-thumb-preview"></span>
+        <span class="config-pill-text bg-selector-text">
+          <span class="config-pill-label bg-selector-label">Fondo</span>
+          <span id="activeBgName" class="config-pill-name bg-selector-name">Negro Clásico</span>
+        </span>
+      </button>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Alternar Color de Letra -->
+      <div class="config-toggle-group text-color-toggle-group" title="Color de letra">
+        <button id="btnTextWhite" class="config-toggle-btn btn-color-choice active" title="Letras blancas">
+          <span class="color-dot dot-white"></span>
+          <span>Blanco</span>
+        </button>
+        <button id="btnTextBlack" class="config-toggle-btn btn-color-choice" title="Letras negras para fondos claros">
+          <span class="color-dot dot-black"></span>
+          <span>Negro</span>
+        </button>
+      </div>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Selector de Tipografía / Tipo de Letra -->
+      <select id="selectFontFamily" class="config-select config-select-font" title="Tipo de Letra para proyección">
+        <option value="sans-serif" selected>Moderna Sans</option>
+        <option value="serif">Clásica Bíblica</option>
+        <option value="bold">Impacto Bold</option>
+        <option value="condensed">Condensada</option>
+      </select>
+
+      <!-- Tamaño de Letra (A- / A+) -->
+      <div class="font-size-stepper-group" title="Tamaño de letra en la proyección">
+        <button id="btnFontDec" class="btn-font-step btn-font-dec" title="Disminuir tamaño de letra (A-)">A-</button>
+        <span id="fontSizeBadge" class="font-size-badge">100%</span>
+        <button id="btnFontInc" class="btn-font-step btn-font-inc" title="Aumentar tamaño de letra (A+)">A+</button>
+      </div>
+    </div>
+  </footer>
 </div>

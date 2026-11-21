@@ -151,6 +151,10 @@
   font-family: inherit;
   font-size: 13px;
   outline: none;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text !important;
+  pointer-events: auto !important;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -218,3 +222,709 @@ kbd, .kbd-chip {
   border-radius: var(--radius-xs);
   color: var(--text-secondary);
 }
+
+/* ==========================================================================
+   BARRA GENERAL DE CONFIGURACIÓN Y EMISIÓN (Toolbar / Customizer Bar)
+   Componente general reutilizable para Biblia, Coritos y Predicación
+   ========================================================================== */
+.toolbar-config {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  min-height: 54px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.config-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.config-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.config-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-default);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* Botón Pastilla (Pill) para Selectores (ej. Fondo) */
+.config-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.config-pill:hover {
+  border-color: var(--border-focus);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.config-pill-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-xs);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.config-pill-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.config-pill-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.config-pill-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Desplegables de Opciones Generales (Select) */
+.config-select {
+  height: 36px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.config-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+.config-select-accent {
+  font-weight: 600;
+  color: #FBBF24;
+  border-color: rgba(251, 191, 36, 0.5);
+  background-color: rgba(251, 191, 36, 0.04);
+}
+
+.config-select-accent:focus {
+  border-color: #FBBF24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.25);
+}
+
+/* ==========================================================================
+   Controles de Tipografía y Tamaño de Letra (Biblia, Coros, Predicación)
+   ========================================================================== */
+.font-size-stepper-group {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 3px;
+  gap: 3px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+}
+
+.btn-font-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-font-step:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-default);
+  color: #FFFFFF;
+}
+
+.btn-font-step:active {
+  transform: scale(0.95);
+}
+
+.font-size-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: var(--font-family-mono, monospace);
+  color: var(--accent-gold, #FBBF24);
+  padding: 0 4px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.config-select-font {
+  font-weight: 600;
+  max-width: 155px;
+}
+
+/* Grupo de Botones Toggle (ej. Blanco / Negro) */
+.config-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 3px;
+  gap: 3px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+}
+
+.config-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.config-toggle-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.config-toggle-btn.active {
+  background-color: var(--bg-surface-active);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dot-white { background-color: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.3); }
+.dot-black { background-color: #000000; border: 1px solid rgba(255, 255, 255, 0.4); }
+
+/* Casillas Checkbox Estilizadas (ej. Mayúsculas / Mostrar versión) */
+.config-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+  user-select: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+  box-sizing: border-box;
+}
+
+.config-checkbox:hover {
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+
+.config-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+/* Indicador En Aire (Live Status Pill) */
+.live-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--text-muted);
+  box-sizing: border-box;
+}
+
+.live-status-chip .live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.live-status-chip.live {
+  border-color: rgba(34, 197, 94, 0.4);
+  background-color: rgba(34, 197, 94, 0.08);
+  color: #4ADE80;
+  font-weight: 600;
+}
+
+.live-status-chip.live .live-dot {
+  background-color: #22C55E;
+  box-shadow: 0 0 8px #22C55E;
+  animation: pulse-live 1.6s infinite;
+}
+
+/* ==========================================================================
+   MODALES Y DIÁLOGOS GENERALES (Java-like Reusable Component)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 15, 26, 0.65);
+  backdrop-filter: blur(8px);
+}
+
+.modal-dialog {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 600px;
+  background: linear-gradient(180deg, #131b2c 0%, #0c121d 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(59, 130, 246, 0.14);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-icon-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon-close:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.modal-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Pestañas del Modal (Tabs) */
+.modal-tabs {
+  display: flex;
+  gap: 6px;
+  background-color: var(--bg-primary);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.modal-tab-btn {
+  flex: 1;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-tab-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.modal-tab-btn.active {
+  background-color: var(--bg-surface-active);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   COMPONENTES DEL SELECTOR DE FONDOS (Background Picker Components)
+   ========================================================================== */
+.bg-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.bg-preset-card {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: flex-end;
+  padding: 6px;
+  overflow: hidden;
+}
+
+.bg-preset-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.bg-preset-card.active {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+.bg-preset-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(4px);
+  width: 100%;
+  margin: -6px;
+  padding: 6px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* Zona de Carga de Archivos Locales (Dropzone) */
+.bg-upload-dropzone {
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  transition: all var(--transition-fast);
+}
+
+.bg-upload-dropzone:hover {
+  border-color: var(--accent-primary);
+  background-color: rgba(59, 130, 246, 0.03);
+}
+
+.dropzone-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 8px;
+}
+
+.dropzone-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.bg-file-status {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  margin-top: 10px;
+  background-color: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ADE80;
+}
+
+/* Sección de Enlace Web (URL) */
+.bg-url-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.url-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.url-field {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.url-tip {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.url-supported-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.supported-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hint-tag {
+  font-size: 10px;
+  padding: 3px 8px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+}
+
+.url-helper-box {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background-color: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: var(--radius-sm);
+}
+
+/* Sección de Ajuste, Tamaño y Escala */
+.bg-sizing-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.bg-section-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-fit-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.bg-fit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.bg-fit-btn:hover {
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+
+.bg-fit-btn.active {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #FFFFFF;
+}
+
+.bg-sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bg-slider-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scrim-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.scrim-val {
+  color: var(--accent-primary);
+  font-family: var(--font-family-mono);
+  font-weight: 700;
+}
+
+.scrim-slider {
+  width: 100%;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.bg-pos-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.bg-pos-btn {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.bg-pos-btn.active {
+  background-color: var(--bg-surface-active);
+  color: #FFFFFF;
+  border-color: var(--border-strong);
+}
+
+.bg-adjustment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.scrim-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+

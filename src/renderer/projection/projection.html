@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BIBLE — Pantalla Pública</title>
+  <link rel="icon" type="image/png" href="../shared/assets/bible-logo.png">
   <link rel="stylesheet" href="css/projection.css">
 </head>
 <body>
   <div class="projection-container">
     <!-- Capa de Fondo Dinámico -->
+    <div id="bgAmbientLayer" class="projection-background-ambient" style="display: none;"></div>
     <div id="bgLayer" class="projection-background"></div>
-    <div class="projection-scrim"></div>
+    <video id="bgVideoLayer" class="projection-background-video" loop muted playsinline style="display: none;"></video>
+    <div id="bgScrim" class="projection-scrim"></div>
 
     <!-- Capa de Contenido -->
     <main id="contentLayer" class="projection-content">
@@ -19,10 +22,38 @@
       <div id="refBottom" class="projection-reference pos-bottom" style="display: none;"></div>
     </main>
 
+    <!-- Capa de Diapositiva del Predicador (Fiel al 100% con Colores, Fondos y Gráficos Originales) -->
+    <div id="slideLayer" class="projection-slide-layer" style="display: none;">
+      <img id="slideImg" class="projection-slide-img" alt="Diapositiva del Predicador">
+    </div>
+
     <!-- Capa de Spots Multimedia (Videos e Imágenes 4K) -->
     <div id="mediaSpotLayer" class="projection-media-spot-layer" style="display: none;">
       <video id="spotVideo" class="projection-spot-video" playsinline style="display: none;"></video>
       <img id="spotImage" class="projection-spot-image" alt="Spot Multimedia" style="display: none;">
+    </div>
+
+    <!-- Capa de Ruleta Dinámica en Vivo (Pantalla Gigante 4K) -->
+    <div id="rouletteLayer" class="projection-roulette-layer" style="display: none;">
+      <div class="projection-roulette-header">
+        <div class="projection-roulette-tag">ACTIVIDAD EN VIVO</div>
+        <h2 id="projRouletteTitle" class="projection-roulette-title">Ruleta Dinámica</h2>
+      </div>
+
+      <div class="projection-wheel-container">
+        <div class="projection-wheel-pointer"></div>
+        <canvas id="projectionRouletteCanvas" width="900" height="900"></canvas>
+        <div class="projection-wheel-center-hub">⭐</div>
+      </div>
+
+      <!-- Banner de Ganador y Celebración -->
+      <div id="projWinnerBanner" class="projection-winner-banner" style="display: none;">
+        <span class="proj-winner-badge">¡RESULTADO GANADOR!</span>
+        <span id="projWinnerLabel" class="proj-winner-name">—</span>
+      </div>
+
+      <!-- Canvas de Confeti -->
+      <canvas id="projConfettiCanvas" class="projection-confetti-canvas"></canvas>
     </div>
 
     <!-- Capa de Logotipo Institucional -->

@@ -2,11 +2,12 @@
 
 .app-container {
   display: grid;
-  grid-template-columns: 210px 1fr 340px;
+  grid-template-columns: var(--nav-sidebar-width, 210px) 6px 1fr 6px var(--output-sidebar-width, 340px);
   grid-template-rows: 48px 1fr;
   width: 100vw;
   height: 100vh;
   background-color: var(--bg-app);
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -34,11 +35,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(37, 99, 235, 0.15));
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  padding: 1px;
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
 }
 
 .brand-titles {
@@ -109,6 +121,8 @@
    Navegación Lateral (Izquierda)
    ========================================================================== */
 .nav-sidebar {
+  grid-column: 1;
+  grid-row: 2;
   background-color: var(--bg-primary);
   border-right: 1px solid var(--border-default);
   display: flex;
@@ -116,6 +130,7 @@
   padding: 14px 10px;
   gap: 4px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nav-section-title {
@@ -124,7 +139,8 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-muted);
-  padding: 12px 10px 4px 10px;
+  padding: 14px 10px 6px 10px;
+  white-space: nowrap;
 }
 
 .nav-section-title:first-child {
@@ -135,10 +151,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   padding: 9px 12px;
   border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -146,16 +163,25 @@
   background: transparent;
   width: 100%;
   text-align: left;
+  white-space: nowrap;
 }
 
 .nav-item-left {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.nav-item-left span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-item-left .icon {
   color: var(--text-muted);
+  flex-shrink: 0;
   transition: color var(--transition-fast);
 }
 
@@ -169,24 +195,84 @@
 }
 
 .nav-item.active {
-  background-color: var(--accent-surface);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.05) 100%);
   color: #FFFFFF;
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 3px 0 0 #3B82F6;
 }
 
 .nav-item.active .nav-item-left .icon {
-  color: var(--accent-primary);
+  color: #60A5FA;
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.6));
 }
 
 .nav-item kbd {
   font-size: 9px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* ==========================================================================
+   Separadores Arrastrables del Shell (Para estirar las barras de al lado)
+   ========================================================================== */
+.shell-splitter {
+  grid-row: 2;
+  width: 6px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+  background-color: var(--bg-app);
+  transition: background-color var(--transition-fast);
+}
+
+.shell-splitter-left {
+  grid-column: 2;
+}
+
+body.resizing-columns,
+body.resizing-columns * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+.shell-splitter-right {
+  grid-column: 4;
+}
+
+.shell-splitter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--border-default);
+  transition: all var(--transition-fast);
+}
+
+.shell-splitter:hover,
+.shell-splitter.dragging {
+  background-color: rgba(37, 99, 235, 0.2);
+}
+
+.shell-splitter:hover::before,
+.shell-splitter.dragging::before {
+  background-color: var(--accent-primary);
+  width: 3px;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.7);
 }
 
 /* ==========================================================================
    Espacio de Trabajo Central (Dinámico)
    ========================================================================== */
 .workspace-area {
+  grid-column: 3;
+  grid-row: 2;
   background-color: var(--bg-app);
   overflow: hidden;
   padding: 14px;
@@ -197,9 +283,11 @@
 }
 
 /* ==========================================================================
-   Panel Lateral Derecho: Monitor y Consola de Pánico
+   Panel Lateral Derecho: Monitor y Consola de Pánico (Panel de a la par)
    ========================================================================== */
 .output-sidebar {
+  grid-column: 5;
+  grid-row: 2;
   background-color: var(--bg-primary);
   border-left: 1px solid var(--border-default);
   padding: 16px;
@@ -207,6 +295,7 @@
   flex-direction: column;
   gap: 16px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .panel-header {

@@ -26,13 +26,17 @@ class WindowManager {
   createOperatorWindow() {
     const { primaryDisplay } = this.getDisplays();
 
+    const appIcon = path.join(__dirname, '../../assets/icons/bible-logo.png');
+
     this.operatorWindow = new BrowserWindow({
       title: 'BIBLE — Panel del Operador',
+      icon: appIcon,
       width: Math.min(1366, primaryDisplay.workAreaSize.width),
       height: Math.min(820, primaryDisplay.workAreaSize.height),
       minWidth: 1024,
       minHeight: 680,
       backgroundColor: '#0D1117',
+      autoHideMenuBar: true,
       webPreferences: {
         preload: path.join(__dirname, '../../preload/preload.js'),
         contextIsolation: true,
@@ -71,8 +75,11 @@ class WindowManager {
     const targetDisplay = secondaryDisplay || primaryDisplay;
     const isSingleMonitor = !secondaryDisplay;
 
+    const appIcon = path.join(__dirname, '../../assets/icons/bible-logo.png');
+
     this.publicWindow = new BrowserWindow({
       title: 'BIBLE — Proyección Pública',
+      icon: appIcon,
       x: targetDisplay.bounds.x + (isSingleMonitor ? 100 : 0),
       y: targetDisplay.bounds.y + (isSingleMonitor ? 100 : 0),
       width: isSingleMonitor ? 960 : targetDisplay.bounds.width,
@@ -80,6 +87,9 @@ class WindowManager {
       frame: isSingleMonitor, // Con marco solo en desarrollo con un monitor
       fullscreen: !isSingleMonitor, // Pantalla completa real en monitor secundario
       skipTaskbar: !isSingleMonitor,
+      resizable: true,
+      minWidth: 480,
+      minHeight: 270,
       backgroundColor: '#000000',
       webPreferences: {
         preload: path.join(__dirname, '../../preload/preload.js'),

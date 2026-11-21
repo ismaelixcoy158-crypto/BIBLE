@@ -46,6 +46,24 @@ test('RouletteRepository - Listas de Ruleta y Elementos', async (t) => {
     assert.equal(conNuevo.items.length, 3);
   });
 
+  await t.test('debe agregar elementos en lote, vaciar y renombrar', () => {
+    const lista = repo.createList('Participantes Culto', ['Juan']);
+    assert.equal(lista.items.length, 1);
+
+    const conLote = repo.addItemsBatch(lista.id, ['Pedro', 'María', 'Andrés', 'Lucas']);
+    assert.equal(conLote.items.length, 5);
+    assert.equal(conLote.items[1].label, 'Pedro');
+    assert.equal(conLote.items[4].label, 'Lucas');
+
+    const renombrada = repo.renameList(lista.id, 'Participantes Renovados');
+    assert.equal(renombrada.name, 'Participantes Renovados');
+
+    const vaciada = repo.clearItems(lista.id);
+    assert.equal(vaciada.items.length, 0);
+
+    repo.deleteList(lista.id);
+  });
+
   await t.test('debe eliminar elementos y listas', () => {
     const lista = repo.createList('Lista temporal', ['Elemento 1', 'Elemento 2']);
     repo.removeItem(lista.items[0].id);

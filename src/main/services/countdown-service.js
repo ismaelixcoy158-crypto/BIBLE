@@ -17,10 +17,25 @@ class CountdownService {
       isPaused: false,
       isFinished: false,
       formattedTime: '00:05:00',
-      endMessage: '¡Bienvenidos a la Casa de Dios!',
-      background: null
+      endMessage: '¡Bienvenidos a la Casa de Dios! El culto ha comenzado',
+      subtitle: 'El culto comenzará en breve',
+      background: null,
+      textColor: 'white',
+      fontSize: 100,
+      fontFamily: 'sans-serif'
     };
     this.targetEndTime = null;
+    this.isProjected = false;
+  }
+
+  project(options = {}) {
+    if (options.background) this.state.background = options.background;
+    if (options.textColor) this.state.textColor = options.textColor;
+    if (options.fontSize) this.state.fontSize = options.fontSize;
+    if (options.fontFamily) this.state.fontFamily = options.fontFamily;
+    this.isProjected = true;
+    this.emitSync(true);
+    return this.getState();
   }
 
   init() {
@@ -49,20 +64,64 @@ class CountdownService {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   }
 
-  start(seconds = 300, endMessage = null, background = null) {
+  setTime(seconds = 300, endMessage = null, background = null, subtitle = null) {
+    this.stopInterval();
+    const safeSecs = Math.max(0, Math.floor(seconds));
+    this.state.totalSeconds = safeSecs;
+    this.state.remainingSeconds = safeSecs;
+    this.state.formattedTime = this.formatTime(safeSecs);
+    this.state.isRunning = false;
+    this.state.isPaused = false;
+    this.state.isFinished = false;
+    if (endMessage !== null && endMessage !== undefined) this.state.endMessage = endMessage;
+    if (background !== null && background !== undefined) this.state.background = background;
+    if (subtitle !== null && subtitle !== undefined) this.state.subtitle = subtitle;
+
+    this.emitSync();
+    return this.getState();
+  }
+
+  addSeconds(delta = 60) {
+    if (this.state.isFinished) {
+      return this.setTime(Math.max(0, delta));
+    }
+    const newRemaining = Math.max(0, this.state.remainingSeconds + delta);
+    this.state.remainingSeconds = newRemaining;
+    if (newRemaining > this.state.totalSeconds) {
+      this.state.totalSeconds = newRemaining;
+    }
+    this.state.formattedTime = this.formatTime(newRemaining);
+    if (this.state.isRunning) {
+      this.targetEndTime = Date.now() + newRemaining * 1000;
+    }
+    this.emitSync();
+    return this.getState();
+  }
+
+  start(seconds = null, endMessage = null, background = null, subtitle = null) {
     this.stopInterval();
 
-    this.state.totalSeconds = seconds;
-    this.state.remainingSeconds = seconds;
+    if (seconds !== null && seconds !== undefined) {
+      const safeSecs = Math.max(0, Math.floor(seconds));
+      this.state.totalSeconds = safeSecs;
+      this.state.remainingSeconds = safeSecs;
+    }
+
+    if (this.state.remainingSeconds <= 0) {
+      this.state.remainingSeconds = this.state.totalSeconds || 300;
+    }
+
     this.state.isRunning = true;
     this.state.isPaused = false;
     this.state.isFinished = false;
-    this.state.formattedTime = this.formatTime(seconds);
-    if (endMessage) this.state.endMessage = endMessage;
-    if (background) this.state.background = background;
+    this.state.formattedTime = this.formatTime(this.state.remainingSeconds);
+    if (endMessage !== null && endMessage !== undefined) this.state.endMessage = endMessage;
+    if (background !== null && background !== undefined) this.state.background = background;
+    if (subtitle !== null && subtitle !== undefined) this.state.subtitle = subtitle;
 
-    this.targetEndTime = Date.now() + seconds * 1000;
-    this.emitSync();
+    this.targetEndTime = Date.now() + this.state.remainingSeconds * 1000;
+    this.isProjected = true;
+    this.emitSync(true);
 
     this.timerInterval = setInterval(() => {
       const now = Date.now();
@@ -144,15 +203,23 @@ class CountdownService {
     }
   }
 
-  emitSync() {
-    // Proyectar el reloj a la pantalla congregacional
+  emitSync(force = false) {
+    const isCountdownActive = force || this.isProjected || projectionService.state.activeContent?.module === 'countdown';
+    if (!isCountdownActive) {
+      return;
+    }
+    this.isProjected = true;
+    const isFinished = Boolean(this.state.isFinished);
     projectionService.project({
       module: 'countdown',
-      title: 'Cuenta Regresiva',
-      text: this.state.isFinished ? this.state.endMessage : this.state.formattedTime,
-      reference: this.state.isFinished ? '¡Comenzamos!' : 'Inicio de Culto',
-      refPosition: 'bottom',
-      background: this.state.background,
+      title: isFinished ? (this.state.subtitle || 'Culto Iniciado') : (this.state.subtitle || 'Cuenta Regresiva'),
+      text: isFinished ? this.state.endMessage : this.state.formattedTime,
+      reference: isFinished ? '¡Bienvenidos!' : (this.state.subtitle || 'Inicio de Culto'),
+      refPosition: 'top',
+      background: this.state.background || projectionService.state.currentBackground,
+      textColor: this.state.textColor || projectionService.state.currentTextColor,
+      fontSize: this.state.fontSize || projectionService.state.currentFontSize,
+      fontFamily: this.state.fontFamily || projectionService.state.currentFontFamily,
       countdown: { ...this.state }
     });
   }

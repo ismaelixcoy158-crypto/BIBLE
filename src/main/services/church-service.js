@@ -15,7 +15,13 @@ class ChurchService {
       const db = dbManager.getInstance();
       this.repo = new ChurchRepository(db);
 
-      const userData = app.getPath('userData');
+      let userData;
+      try {
+        userData = (app && typeof app.getPath === 'function') ? app.getPath('userData') : null;
+      } catch {}
+      if (!userData) {
+        userData = path.join('/tmp', 'bible-church-media-system');
+      }
       this.brandingDir = path.join(userData, 'media', 'branding');
       if (!fs.existsSync(this.brandingDir)) {
         fs.mkdirSync(this.brandingDir, { recursive: true });
@@ -92,6 +98,42 @@ class ChurchService {
     this.repo.updateLogo(targetFilename, 'local');
 
     return this.getIdentity();
+  }
+
+  /**
+   * Carga un logotipo desde un buffer binario
+   */
+  uploadLogoBuffer(buffer, originalFilename = 'logo.png', sourceType = 'local') {
+    this.init();
+    if (!buffer || !buffer.length) {
+      throw new Error('El archivo de imagen está vacío');
+    }
+    if (buffer.length > 10 * 1024 * 1024) {
+      throw new Error('La imagen excede el límite máximo de 10 MB');
+    }
+
+    this.cleanCurrentLogoFile();
+
+    const ext = path.extname(originalFilename).toLowerCase() || '.png';
+    const targetFilename = `logo_${Date.now()}${ext}`;
+    const targetPath = path.join(this.brandingDir, targetFilename);
+
+    fs.writeFileSync(targetPath, buffer);
+    this.repo.updateLogo(targetFilename, sourceType);
+
+    return this.getIdentity();
+  }
+
+  /**
+   * Carga un logotipo desde una cadena Base64 (Drag & Drop, Portapapeles, input file)
+   */
+  uploadLogoBase64(base64Data, originalFilename = 'logo.png') {
+    if (!base64Data || typeof base64Data !== 'string') {
+      throw new Error('Datos de imagen no válidos');
+    }
+    const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(cleanBase64, 'base64');
+    return this.uploadLogoBuffer(buffer, originalFilename, 'local');
   }
 
   /**

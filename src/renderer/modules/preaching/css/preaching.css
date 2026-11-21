@@ -257,6 +257,96 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Grupo de Modo: Mantener Original vs Fondo del Culto */
+.render-mode-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+
+.btn-mode-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-mode-toggle:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-mode-toggle.active {
+  background-color: var(--accent-primary);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.deck-slide-card img.deck-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #0b0f19;
+}
+
+.deck-slide-card .slide-text-preview {
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.deck-slide-card .slide-preview-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #FCD34D;
+  margin-bottom: 4px;
+}
+
+.deck-slide-card .slide-preview-snippet {
+  font-size: 11px;
+  color: #E2E8F0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Modal form inputs */
+.form-input {
+  background-color: var(--bg-surface-elevated, #1E293B);
+  border: 1px solid var(--border-default, #334155);
+  color: #FFFFFF;
+  border-radius: var(--radius-md, 6px);
+  padding: 8px 12px;
+  font-size: 12.5px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 150ms ease;
+}
+
+.form-input:focus {
+  border-color: var(--accent-primary, #3B82F6);
+}
+
 .deck-slide-card.projected .slide-num-chip {
   background-color: var(--status-live);
   color: #000000;

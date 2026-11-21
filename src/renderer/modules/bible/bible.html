@@ -1,63 +1,96 @@
 <div class="bible-workspace">
-  <!-- Barra Superior de Comando / Búsqueda Rápida -->
-  <header class="bible-search-bar">
-    <div class="search-input-wrapper">
-      <svg class="icon search-input-icon" viewBox="0 0 24 24">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="m21 21-4.3-4.3"/>
-      </svg>
-      <input 
-        type="text" 
-        id="bibleCommandInput" 
-        class="bible-command-input" 
-        placeholder="Escribe una cita bíblica (ej. Juan 3:16, Sal 23, Gn 1:1) — Presiona Enter para proyectar"
-        autocomplete="off"
-        spellcheck="false"
-      >
-      <div id="parsedFeedbackPill" class="parsed-feedback-pill" style="display: none;"></div>
+  <!-- HUD Flotante de Cita Rápida (Escribe directamente en el teclado: ej. juan 3 16) -->
+  <div id="bibleFloatingQuickCite" class="bible-floating-quick-cite" style="display: none;">
+    <div class="hud-capsule">
+      <div class="hud-lead-section">
+        <span class="hud-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-gold); fill: none; stroke: currentColor; stroke-width: 2;">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </span>
+        <span id="hudVersionPill" class="hud-version-chip" title="Versión bíblica activa (Alt+V)">RV1909</span>
+        <div class="hud-text-group">
+          <span class="hud-tag">ESCRIBIENDO:</span>
+          <span id="hudRawBuffer" class="hud-raw-buffer">—</span>
+        </div>
+      </div>
+      <div class="hud-capsule-divider"></div>
+      <div class="hud-segments-group">
+        <div class="hud-segment hud-segment-book" title="Libro bíblico detectado">
+          <span class="hud-segment-label">LIBRO</span>
+          <span id="hudBookSegment" class="hud-segment-val">—</span>
+        </div>
+        <span class="hud-segment-separator">›</span>
+        <div class="hud-segment hud-segment-chapter" title="Capítulo">
+          <span class="hud-segment-label">CAP</span>
+          <span id="hudChapterSegment" class="hud-segment-val">—</span>
+        </div>
+        <span class="hud-segment-separator">›</span>
+        <div class="hud-segment hud-segment-verse" title="Versículo o rango">
+          <span class="hud-segment-label">VERS</span>
+          <span id="hudVerseSegment" class="hud-segment-val">—</span>
+        </div>
+      </div>
+      <div id="hudConcordancePrompt" class="hud-concordance-prompt" style="display: none;">
+        <span class="hud-search-icon">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="fill: none; stroke: currentColor; stroke-width: 2.5;">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
+        <span id="hudConcordanceQuery" class="hud-search-text">Buscar en concordancia</span>
+      </div>
+      <div class="hud-action-badges">
+        <span class="hud-key-pill hud-pill-enter"><kbd>Enter</kbd> Proyectar</span>
+        <span class="hud-key-pill hud-pill-esc"><kbd>Esc</kbd> Cancelar</span>
+      </div>
     </div>
+  </div>
 
-    <!-- Sugerencias Rápidas de Citas -->
-    <div class="quick-cites-bar">
-      <button class="quick-cite-chip" data-cite="Juan 3:16">Juan 3:16</button>
-      <button class="quick-cite-chip" data-cite="Salmos 23:1">Salmos 23:1</button>
-      <button class="quick-cite-chip" data-cite="Filipenses 4:13">Filipenses 4:13</button>
-    </div>
+  <!-- Dropdown Flotante de Concordancia Bíblica FTS5 (Búsqueda por palabras) -->
+  <div id="ftsSearchResults" class="fts-search-results-floating" style="display: none;"></div>
 
-    <button id="btnProjectFromCommand" class="btn btn-primary btn-project-cmd">
-      <svg class="icon icon-sm" viewBox="0 0 24 24">
-        <rect width="20" height="14" x="2" y="3" rx="2"/>
-        <path d="M8 21h8M12 17v4"/>
-      </svg>
-      <span>Proyectar Cita</span>
-    </button>
-  </header>
-
-  <!-- Panel Principal Dividido en 3 Columnas de Estudio -->
-  <div class="bible-main-grid">
+  <!-- Panel Principal Dividido en 3 Columnas con Separadores Arrastrables -->
+  <div class="bible-main-grid" id="bibleMainGrid">
     <!-- Columna 1: Libros -->
-    <div class="bible-column col-books">
+    <div class="bible-column col-books" id="colBooks">
       <div class="column-header">
         <div class="column-title">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
             <path d="M6 6h10M6 10h10"/>
           </svg>
-          <span>Libros (66)</span>
+          <span id="booksCountHeader">Libros (66)</span>
         </div>
       </div>
       <div class="books-filter-tabs">
-        <button id="tabAllBooks" class="tab-btn active" data-testament="ALL">Todos</button>
-        <button id="tabOTBooks" class="tab-btn" data-testament="OT">Antiguo (39)</button>
-        <button id="tabNTBooks" class="tab-btn" data-testament="NT">Nuevo (27)</button>
+        <button id="tabAllBooks" class="tab-btn active" data-testament="ALL" title="Todos los libros (Alt+0)">Todos</button>
+        <button id="tabOTBooks" class="tab-btn" data-testament="OT" title="Antiguo Testamento — 39 libros (Alt+1)">A.T.</button>
+        <button id="tabNTBooks" class="tab-btn" data-testament="NT" title="Nuevo Testamento — 27 libros (Alt+2)">N.T.</button>
+        <button id="tabFavBooks" class="tab-btn" data-testament="FAV" title="Pasajes bíblicos frecuentes (Alt+3)">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="vertical-align: -1px; margin-right: 3px; fill: currentColor;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Frecuentes</span>
+        </button>
+      </div>
+      <!-- Buscador Rápido de Libros -->
+      <div class="books-filter-input-row">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="inputBookFilter" class="book-filter-input" placeholder="Filtrar libro... (ej. hab, sal, jn)" autocomplete="off" spellcheck="false">
+        <button id="btnClearBookFilter" class="btn-clear-mini" title="Limpiar filtro" style="display: none;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="fill: none; stroke: currentColor; stroke-width: 2.5;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div id="booksListContainer" class="books-list">
         <!-- Renderizado dinámico de libros -->
       </div>
     </div>
 
+    <!-- Separador 1: Entre Libros y Capítulos (Arrastrar para ajustar ancho) -->
+    <div class="bible-splitter" id="splitterBooksChapters" title="Arrastra para ajustar el ancho (Doble clic para restablecer)"></div>
+
     <!-- Columna 2: Capítulos -->
-    <div class="bible-column col-chapters">
+    <div class="bible-column col-chapters" id="colChapters">
       <div class="column-header">
         <div class="column-title">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
@@ -66,14 +99,18 @@
           </svg>
           <span id="activeBookLabel">Capítulos</span>
         </div>
+        <span id="activeBookChaptersCountBadge" class="column-badge-caps">21 caps</span>
       </div>
       <div id="chaptersGridContainer" class="chapters-grid">
         <!-- Renderizado dinámico de capítulos -->
       </div>
     </div>
 
+    <!-- Separador 2: Entre Capítulos y Versículos (Arrastrar para ajustar ancho) -->
+    <div class="bible-splitter" id="splitterChaptersVerses" title="Arrastra para ajustar el ancho (Doble clic para restablecer)"></div>
+
     <!-- Columna 3: Versículos -->
-    <div class="bible-column col-verses">
+    <div class="bible-column col-verses" id="colVerses">
       <div class="column-header">
         <div class="column-title">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
@@ -81,21 +118,16 @@
             <line x1="15" x2="3" y1="12" y2="12"/>
             <line x1="17" x2="3" y1="18" y2="18"/>
           </svg>
-          <span id="activeReferenceHeading">Versículos</span>
+          <span id="activeReferenceHeading" class="column-title-text">Versículos</span>
         </div>
-        <div class="column-nav-actions">
-          <button id="btnPrevVerse" class="btn btn-sm" title="Versículo anterior (Flecha Izquierda)">
-            <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-            <span>Anterior</span>
-          </button>
-          <button id="btnNextVerse" class="btn btn-sm" title="Siguiente versículo (Flecha Derecha)">
-            <span>Siguiente</span>
-            <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="m9 18 6-6-6-6"/>
-            </svg>
-          </button>
+        <div class="column-header-right">
+          <!-- Control de Zoom de Fuente en Operador -->
+          <div class="verse-font-zoom-group" title="Tamaño de letra en panel de operador">
+            <button id="btnVerseFontDec" class="btn-font-zoom" title="Disminuir letra (A-)">A-</button>
+            <span id="verseFontSizeLabel" class="font-zoom-label">100%</span>
+            <button id="btnVerseFontInc" class="btn-font-zoom" title="Aumentar letra (A+)">A+</button>
+          </div>
+          <span class="column-hint">Doble clic para proyectar</span>
         </div>
       </div>
       <div id="versesListContainer" class="verses-container">
@@ -104,43 +136,255 @@
     </div>
   </div>
 
-  <!-- Barra Inferior de Personalización y Acciones -->
-  <footer class="bible-bottom-bar">
-    <div class="bible-customizers">
-      <!-- Posición de Referencia -->
-      <div class="customizer-control">
-        <span class="customizer-label">Ubicación de Referencia:</span>
-        <select id="selectRefPosition" class="input-text customizer-select">
-          <option value="bottom" selected>Abajo (Pie de diapositiva)</option>
-          <option value="top">Arriba (Encabezado)</option>
+  <!-- Barra Inferior: Apariencia (izquierda) · Navegación y Emisión (derecha) -->
+  <!-- BARRA INFERIOR DE CONFIGURACIÓN Y EMISIÓN (Usa clases generales de components.css) -->
+  <footer class="toolbar-config bible-bottom-bar">
+    <div class="config-group bible-customizers">
+      <!-- Indicador Tally de Emisión en Vivo -->
+      <div class="live-status-chip live-status-pill" id="liveStatusBadge" title="Estado actual de emisión hacia la pantalla pública">
+        <span class="live-dot live-status-dot"></span>
+        <span class="live-status-text">
+          <span class="live-status-tag">EN AIRE:</span>
+          <span id="liveStatusRef" class="live-status-cite">En espera</span>
+        </span>
+      </div>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Selector de Fondo General -->
+      <button id="btnOpenBackgroundPicker" class="config-pill btn-bg-selector" title="Cambiar fondo de proyección (Alt+B)">
+        <span id="activeBgThumb" class="config-pill-thumb bg-thumb-preview"></span>
+        <span class="config-pill-text bg-selector-text">
+          <span class="config-pill-label bg-selector-label">Fondo</span>
+          <span id="activeBgName" class="config-pill-name bg-selector-name">Negro Clásico</span>
+        </span>
+      </button>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Alternar Color de Letra -->
+      <div class="config-toggle-group text-color-toggle-group" title="Color de letra (Alt+C)">
+        <button id="btnTextWhite" class="config-toggle-btn btn-color-choice active" title="Letras blancas (Alt+C)">
+          <span class="color-dot dot-white"></span>
+          <span>Blanco</span>
+        </button>
+        <button id="btnTextBlack" class="config-toggle-btn btn-color-choice" title="Letras negras para fondos claros (Alt+C)">
+          <span class="color-dot dot-black"></span>
+          <span>Negro</span>
+        </button>
+      </div>
+
+      <!-- Ubicación de la Cita -->
+      <select id="selectRefPosition" class="config-select customizer-select" title="Ubicación de la cita (Alt+P)">
+        <option value="bottom" selected>Cita abajo</option>
+        <option value="top">Cita arriba</option>
+      </select>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Selector de Tipografía / Tipo de Letra -->
+      <select id="selectFontFamily" class="config-select config-select-font" title="Tipo de Letra para proyección">
+        <option value="sans-serif" selected>Moderna Sans</option>
+        <option value="serif">Clásica Bíblica</option>
+        <option value="bold">Impacto Bold</option>
+        <option value="condensed">Condensada</option>
+      </select>
+
+      <!-- Tamaño de Letra (A- / A+) -->
+      <div class="font-size-stepper-group" title="Tamaño de letra en la proyección">
+        <button id="btnFontDec" class="btn-font-step btn-font-dec" title="Disminuir tamaño de letra (A-)">A-</button>
+        <span id="fontSizeBadge" class="font-size-badge">100%</span>
+        <button id="btnFontInc" class="btn-font-step btn-font-inc" title="Aumentar tamaño de letra (A+)">A+</button>
+      </div>
+
+      <span class="config-divider toolbar-divider"></span>
+
+      <!-- Selector de Versión Bíblica -->
+      <div class="config-item bible-version-control" title="Versión Bíblica (Alt+V)">
+        <span class="version-label" style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Versión:</span>
+        <select id="selectBibleVersion" class="config-select config-select-accent version-picker">
+          <option value="RV1909" selected>RV1909 (Clásica)</option>
+          <option value="RVG">RVG (Moderna)</option>
         </select>
       </div>
 
-      <!-- Etiqueta de Traducción -->
-      <div class="customizer-control">
-        <label class="customizer-checkbox-label">
-          <input type="checkbox" id="checkShowTranslation" checked>
-          <span>Mostrar (RV1909)</span>
-        </label>
-      </div>
+      <!-- Mayúsculas -->
+      <label class="config-checkbox customizer-checkbox-label" title="Texto en mayúsculas (Alt+M)">
+        <input type="checkbox" id="checkUppercase">
+        <span>MAYÚS</span>
+      </label>
 
-      <!-- Tipografía Mayúsculas -->
-      <div class="customizer-control">
-        <label class="customizer-checkbox-label">
-          <input type="checkbox" id="checkUppercase">
-          <span>Texto en Mayúsculas</span>
-        </label>
-      </div>
+      <!-- Mostrar Versión -->
+      <label class="config-checkbox customizer-checkbox-label" title="Mostrar sigla de la versión en la cita (Alt+T)">
+        <input type="checkbox" id="checkShowTranslation" checked>
+        <span id="labelShowTranslation">Versión</span>
+      </label>
     </div>
 
-    <div class="bible-actions-right">
-      <button id="btnProjectActiveVerse" class="btn btn-primary btn-project-main">
-        <svg class="icon" viewBox="0 0 24 24">
+    <div class="config-actions-right bible-actions-right">
+      <button id="btnOpenShortcutsModal" class="btn-icon-square" title="Guía de atajos de teclado (?)">
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <rect width="20" height="16" x="2" y="4" rx="2"/>
+          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/>
+        </svg>
+      </button>
+
+      <div class="nav-button-cluster">
+        <button id="btnPrevVerse" class="btn-nav" title="Versículo anterior (← / ↑)">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          <span>Anterior</span>
+        </button>
+        <button id="btnNextVerse" class="btn-nav" title="Siguiente versículo (→ / ↓ / Espacio)">
+          <span>Siguiente</span>
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <button id="btnProjectActiveVerse" class="btn btn-primary btn-project-main" title="Proyectar versículo seleccionado (Enter)">
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
           <rect width="20" height="14" x="2" y="3" rx="2"/>
           <path d="M8 21h8M12 17v4"/>
         </svg>
-        <span>Proyectar Versículo (Enter)</span>
+        <span>Proyectar</span>
+        <kbd class="kbd-badge">Enter</kbd>
       </button>
     </div>
   </footer>
+
+  <!-- Modal de Atajos de Teclado del Operador (Usa clases generales) -->
+  <div id="bibleShortcutsModal" class="modal-overlay bible-bg-modal" style="display: none;">
+    <div class="modal-backdrop bible-bg-modal-backdrop" id="shortcutsBackdrop"></div>
+    <div class="modal-dialog bible-bg-modal-dialog" style="max-width: 640px;">
+      <div class="modal-header bible-bg-modal-header">
+        <div class="modal-title bible-bg-modal-title">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/>
+          </svg>
+          <span>Atajos de Teclado — Operación Bíblica Rápida</span>
+        </div>
+        <button id="btnCloseShortcutsModal" class="btn-icon-close" title="Cerrar (Esc)">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body bible-shortcuts-body">
+        <div class="shortcuts-category">
+          <div class="shortcuts-cat-title">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
+            <span>Navegación y Emisión Bíblica</span>
+          </div>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Escribir libro o cita (ej. <code>juan 3 16</code>)</span>
+              <kbd class="kbd-badge">Cualquier Tecla</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Proyectar versículo seleccionado en vivo</span>
+              <kbd class="kbd-badge">Enter</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Siguiente versículo</span>
+              <div class="kbd-group"><kbd class="kbd-badge">→</kbd> <kbd class="kbd-badge">Espacio</kbd> <kbd class="kbd-badge">↓</kbd></div>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Versículo anterior</span>
+              <div class="kbd-group"><kbd class="kbd-badge">←</kbd> <kbd class="kbd-badge">↑</kbd></div>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Primer / Último versículo del capítulo</span>
+              <div class="kbd-group"><kbd class="kbd-badge">Inicio</kbd> / <kbd class="kbd-badge">Fin</kbd></div>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Limpiar buscador o cerrar ventanas</span>
+              <kbd class="kbd-badge">Esc</kbd>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-category">
+          <div class="shortcuts-cat-title">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6Z"/></svg>
+            <span>Fondo y Aspecto Visual</span>
+          </div>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Abrir selector de Fondo (Imágenes, Videos, Enlaces)</span>
+              <kbd class="kbd-badge">Alt + B</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Alternar color de letra (Blanco ⇋ Negro)</span>
+              <kbd class="kbd-badge">Alt + C</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Alternar texto en MAYÚSCULAS</span>
+              <kbd class="kbd-badge">Alt + M</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Alternar posición de cita (Arriba ⇋ Abajo)</span>
+              <kbd class="kbd-badge">Alt + P</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Alternar Versión Bíblica (RV1909 ⇋ RVG)</span>
+              <kbd class="kbd-badge">Alt + V</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Mostrar u ocultar etiqueta de Versión</span>
+              <kbd class="kbd-badge">Alt + T</kbd>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-category">
+          <div class="shortcuts-cat-title">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+            <span>Filtro Rápido de Libros</span>
+          </div>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Ver Todos los libros (66)</span>
+              <kbd class="kbd-badge">Alt + 0</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Antiguo Testamento (39)</span>
+              <kbd class="kbd-badge">Alt + 1</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Nuevo Testamento (27)</span>
+              <kbd class="kbd-badge">Alt + 2</kbd>
+            </div>
+          </div>
+        </div>
+
+        <div class="shortcuts-category">
+          <div class="shortcuts-cat-title">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span>Controles Globales de Consola (Pánico y Emisión)</span>
+          </div>
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Pantalla a Negro (Blackout)</span>
+              <kbd class="kbd-badge">F1</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Logotipo Institucional de la Iglesia</span>
+              <kbd class="kbd-badge">F2</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Ocultar / Mostrar Texto de Versículo</span>
+              <kbd class="kbd-badge">F3</kbd>
+            </div>
+            <div class="shortcut-item">
+              <span class="shortcut-desc">Congelar pantalla (Freeze)</span>
+              <kbd class="kbd-badge">F4</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer bible-bg-modal-footer">
+        <button id="btnGotItShortcuts" class="btn btn-primary">Entendido (Esc)</button>
+      </div>
+    </div>
+  </div>
 </div>

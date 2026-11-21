@@ -4,16 +4,26 @@
     <div class="roulette-header-title">
       <div class="roulette-badge-tag">ACTIVIDADES Y DINÁMICAS</div>
       <h2>Ruleta Dinámica de Sorteos</h2>
-      <span>Dinámicas bíblicas, concursos de jóvenes, niños y actividades pro-templo (Ctrl+R)</span>
+      <span>Dinámicas bíblicas, concursos de jóvenes, niños y actividades (Ctrl+R)</span>
     </div>
 
     <div class="roulette-top-actions">
+      <button id="btnProjectRoulette" class="btn btn-secondary" title="Mostrar la ruleta en la pantalla de proyección">
+        <svg class="icon icon-sm" viewBox="0 0 24 24">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span id="txtBtnProject">Proyectar en Pantalla</span>
+      </button>
+
       <button id="btnCreateNewList" class="btn">
         <svg class="icon icon-sm" viewBox="0 0 24 24">
           <path d="M5 12h14M12 5v14"/>
         </svg>
         <span>Nueva Lista</span>
       </button>
+
       <button id="btnSpinRouletteMaster" class="btn btn-primary btn-spin-master">
         <svg class="icon" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10"/>
@@ -29,51 +39,135 @@
     <!-- Columna Izquierda: Listas y Elementos -->
     <div class="roulette-sidebar-card">
       <div class="lists-selector-box">
-        <label class="form-label" for="selectRouletteList">Lista de Participantes Activa:</label>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label class="form-label" for="selectRouletteList" style="margin: 0;">Lista Activa:</label>
+          <div style="display: flex; gap: 4px;">
+            <button id="btnRenameCurrentList" class="btn btn-icon-sm" title="Renombrar esta lista">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+            <button id="btnDeleteCurrentList" class="btn btn-icon-sm btn-danger-hover" title="Eliminar lista">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
         <select id="selectRouletteList" class="input-text">
           <!-- Opciones dinámicas -->
         </select>
       </div>
 
       <div class="items-manager-box">
-        <span class="form-label">Agregar Elemento o Nombre:</span>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="form-label" style="margin: 0;">Agregar Valor o Nombre:</span>
+          <button id="btnOpenBatchAdd" class="btn btn-xs" style="padding: 2px 8px; font-size: 11px;" title="Pegar múltiples nombres o valores">
+            📋 Pegar Varios
+          </button>
+        </div>
+
         <div class="add-item-form">
-          <input type="text" id="inputNewItemLabel" class="input-text" placeholder="Ej: Hno. Carlos, Pregunta #1..." style="font-size: 13px;">
-          <button id="btnAddItem" class="btn btn-primary" style="padding: 6px 12px;">
+          <input type="text" id="inputNewItemLabel" class="input-text" placeholder="Escribe cualquier nombre, valor, número..." style="font-size: 13px;">
+          <button id="btnAddItem" class="btn btn-primary" style="padding: 6px 14px; font-weight: 600;">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
               <path d="M5 12h14M12 5v14"/>
             </svg>
+            <span>Agregar</span>
           </button>
+        </div>
+
+        <!-- Barra de herramientas de elementos -->
+        <div class="items-quick-tools">
+          <span id="itemsCounterLabel" class="items-counter-text">0 elementos</span>
+          <div style="display: flex; gap: 6px;">
+            <button id="btnShuffleItems" class="btn btn-xs" title="Mezclar aleatoriamente el orden de los elementos">
+              🔀 Mezclar
+            </button>
+            <button id="btnClearAllItems" class="btn btn-xs btn-danger" title="Vaciar todos los elementos de esta lista">
+              🧹 Vaciar
+            </button>
+          </div>
         </div>
 
         <div id="rouletteItemsList" class="items-tag-list">
           <!-- Lista dinámica de elementos con opción de eliminar -->
         </div>
 
-        <div class="items-footer-row">
-          <span id="itemsCounterLabel" class="items-counter-text">0 elementos</span>
-          <button id="btnDeleteCurrentList" class="btn btn-sm btn-danger" title="Eliminar lista">
-            <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-            </svg>
-            <span>Eliminar Lista</span>
-          </button>
+        <!-- Preferencias de la Ruleta -->
+        <div class="roulette-options-card">
+          <label class="checkbox-label" style="font-size: 11px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="chkAutoRemoveWinner">
+            <span>Eliminar ganador de la lista al terminar</span>
+          </label>
+          <label class="checkbox-label" style="font-size: 11px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="chkSoundEffects" checked>
+            <span>Efectos de sonido (Tics y Fanfarria)</span>
+          </label>
         </div>
       </div>
     </div>
 
-    <!-- Columna Derecha: Canvas de la Ruleta -->
+    <!-- Columna Derecha: Canvas de la Ruleta y Monitor -->
     <div class="roulette-stage-card">
+      <!-- Indicador Tally de Proyección -->
+      <div id="rouletteTallyChip" class="roulette-tally-chip not-projected">
+        <span class="tally-dot"></span>
+        <span id="txtTallyStatus">Ruleta en Espera (No proyectada)</span>
+      </div>
+
       <div class="wheel-canvas-container">
         <div class="wheel-pointer"></div>
         <canvas id="rouletteCanvas" width="800" height="800"></canvas>
-        <div id="btnCenterHub" class="wheel-center-hub">GIRAR</div>
+        <div id="btnCenterHub" class="wheel-center-hub" title="Haz clic para girar">GIRAR</div>
       </div>
 
       <!-- Anuncio de Ganador -->
       <div id="winnerBanner" class="winner-banner" style="display: none;">
         <span class="winner-banner-title">¡Resultado Seleccionado!</span>
         <span id="winnerLabelText" class="winner-banner-name">—</span>
+        <div class="winner-banner-actions">
+          <button id="btnSpinAgain" class="btn btn-sm btn-primary">Girar de Nuevo</button>
+          <button id="btnRemoveWinnerFromList" class="btn btn-sm btn-secondary">Quitar Ganador</button>
+          <button id="btnCloseWinnerBanner" class="btn btn-sm">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Crear Nueva Lista -->
+  <div id="modalNewList" class="roulette-modal" style="display: none;">
+    <div class="roulette-modal-content">
+      <div class="roulette-modal-header">
+        <h3>Crear Nueva Lista de Ruleta</h3>
+        <button id="btnCloseModalNewList" class="modal-close-btn">✕</button>
+      </div>
+      <div class="roulette-modal-body">
+        <label class="form-label" for="inputNewListName">Nombre de la Lista:</label>
+        <input type="text" id="inputNewListName" class="input-text" placeholder="Ej: Jóvenes, Preguntas Bíblicas, Ofrendas...">
+        
+        <label class="form-label" for="inputNewListInitialItems" style="margin-top: 10px;">Valores Iniciales (Opcional, uno por línea):</label>
+        <textarea id="inputNewListInitialItems" class="input-text" rows="5" placeholder="Escribe o pega aquí los nombres o valores...&#10;Opción 1&#10;Opción 2&#10;Opción 3"></textarea>
+      </div>
+      <div class="roulette-modal-footer">
+        <button id="btnCancelModalNewList" class="btn">Cancelar</button>
+        <button id="btnConfirmCreateList" class="btn btn-primary">Crear Lista</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Pegar Múltiples Valores (Batch Add) -->
+  <div id="modalBatchAdd" class="roulette-modal" style="display: none;">
+    <div class="roulette-modal-content">
+      <div class="roulette-modal-header">
+        <h3>Pegar Múltiples Valores</h3>
+        <button id="btnCloseModalBatch" class="modal-close-btn">✕</button>
+      </div>
+      <div class="roulette-modal-body">
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+          Pega aquí una lista de nombres o valores desde WhatsApp, un archivo o notas. Se agregarán automáticamente a la lista activa:
+        </p>
+        <textarea id="textareaBatchItems" class="input-text" rows="8" placeholder="Carlos López&#10;María Gómez&#10;Pregunta 1&#10;Pregunta 2..."></textarea>
+      </div>
+      <div class="roulette-modal-footer">
+        <button id="btnCancelModalBatch" class="btn">Cancelar</button>
+        <button id="btnConfirmBatchAdd" class="btn btn-primary">Agregar Todos</button>
       </div>
     </div>
   </div>
