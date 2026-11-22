@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node scripts/start.js",
+    "serve:downloads": "ELECTRON_RUN_AS_NODE=1 ./node_modules/.bin/electron scripts/serve-downloads.js",
     "start:dev": "env -u ELECTRON_RUN_AS_NODE electron --no-sandbox --remote-debugging-port=9222 .",
     "test": "ELECTRON_RUN_AS_NODE=1 electron --test tests/unit/*.test.js",
     "test:all": "ELECTRON_RUN_AS_NODE=1 electron --test tests/unit/*.test.js tests/**/*.test.js"

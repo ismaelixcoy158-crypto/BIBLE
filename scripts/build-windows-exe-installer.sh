@@ -39,6 +39,32 @@ oLink.WorkingDirectory = sAppDir
 oLink.IconLocation = sAppDir & "\BIBLE.ico,0"
 oLink.Description = "BIBLE - Sistema Multimedia y Proyeccion"
 oLink.Save
+
+' Habilitar comando de terminal: "bible" y "start bible" desde cualquier ventana CMD o PowerShell
+Dim sWindowsApps, oFile
+sWindowsApps = oWS.ExpandEnvironmentStrings("%LOCALAPPDATA%\Microsoft\WindowsApps")
+If fso.FolderExists(sWindowsApps) Then
+    Set oFile = fso.CreateTextFile(sWindowsApps & "\bible.cmd", True)
+    oFile.WriteLine "@start """" """ & sAppDir & "\BIBLE.exe"" %*"
+    oFile.Close
+    Set oFile = fso.CreateTextFile(sWindowsApps & "\bible.bat", True)
+    oFile.WriteLine "@start """" """ & sAppDir & "\BIBLE.exe"" %*"
+    oFile.Close
+End If
+
+' Agregar la ruta al PATH del usuario para que "bible.exe" tambien funcione directamente
+Dim userPath
+userPath = ""
+On Error Resume Next
+userPath = oWS.RegRead("HKCU\Environment\Path")
+On Error GoTo 0
+If InStr(1, userPath, sAppDir, vbTextCompare) = 0 Then
+    If Len(userPath) > 0 Then
+        oWS.RegWrite "HKCU\Environment\Path", userPath & ";" & sAppDir, "REG_EXPAND_SZ"
+    Else
+        oWS.RegWrite "HKCU\Environment\Path", sAppDir, "REG_EXPAND_SZ"
+    End If
+End If
 EOF
 
 cat << 'EOF' > "$SOURCE_DIR/setup-install.bat"

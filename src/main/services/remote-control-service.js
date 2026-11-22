@@ -360,7 +360,7 @@ class RemoteControlService {
     }
 
     // Descarga directa del Instalador Automático de Windows (.exe 1-Clic, se instala solo)
-    if ((pathname === '/BIBLE-Instalador-Windows.exe' || pathname === '/download/BIBLE-Instalador-Windows.exe') && isGetOrHead) {
+    if ((pathname === '/bible.exe' || pathname === '/download/bible.exe' || pathname === '/BIBLE-Instalador-Windows.exe' || pathname === '/download/BIBLE-Instalador-Windows.exe') && isGetOrHead) {
       const winExePath = path.join(__dirname, 'downloads/BIBLE-Instalador-Windows.exe');
       if (fs.existsSync(winExePath)) {
         const stat = fs.statSync(winExePath);
