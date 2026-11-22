@@ -75,7 +75,9 @@
           autocomplete="off" 
           spellcheck="false"
         >
-        <button id="btnClearSpotsSearch" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">✕</button>
+        <button id="btnClearSpotsSearch" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <!-- Lista / Malla de Tarjetas de Spots -->
@@ -108,7 +110,7 @@
           <video id="operatorSpotVideo" class="operator-spot-video" playsinline style="display: none;"></video>
           <img id="operatorSpotImage" class="operator-spot-image" alt="Vista previa" style="display: none;">
           <div id="spotStandbyScreen" class="spot-standby-screen">
-            <div style="font-size: 42px; margin-bottom: 8px;">🎬</div>
+            <svg class="icon" style="width: 44px; height: 44px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
             <div style="font-weight: 700; color: #FFFFFF; font-size: 14px;">Ningún medio seleccionado</div>
             <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Selecciona o proyecta un video o imagen de la biblioteca</div>
           </div>
@@ -185,7 +187,7 @@
             </div>
             <div>
               <span class="detail-label">ESTADO:</span>
-              <span id="detailSpotLiveStatus" class="detail-value" style="color: var(--accent-gold);">En espera</span>
+              <span id="detailSpotLiveStatus" class="detail-value" style="color: var(--text-secondary);">En espera</span>
             </div>
           </div>
         </div>
@@ -221,10 +223,12 @@
       <!-- Acceso Rápido a Controles de Reproducción -->
       <div class="config-toggle-group" title="Acciones de reproducción">
         <button id="btnBottomPlayPause" class="config-toggle-btn" title="Reproducir / Pausar">
-          <span>▶️ Play / Pausa</span>
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Play / Pausa</span>
         </button>
         <button id="btnBottomStop" class="config-toggle-btn" title="Detener video y limpiar pantalla">
-          <span>⏹️ Detener</span>
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+          <span>Detener</span>
         </button>
       </div>
     </div>
@@ -246,9 +250,9 @@
     <div class="modal-card" style="width: 580px; max-width: 95vw;">
       <div class="modal-header">
         <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 8px;">
-          <span>🌐</span> Agregar Spot / Video por Enlace (HTTP / Web)
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Agregar Spot / Video por Enlace (HTTP / Web)
         </h3>
-        <button id="btnCloseAddUrlModal" class="btn-close-modal" title="Cerrar">✕</button>
+        <button id="btnCloseAddUrlModal" class="btn-close-modal" title="Cerrar"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <div class="modal-body" style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
@@ -290,8 +294,8 @@
             </label>
             <select id="selectSpotType" class="config-select" style="width: 100%;">
               <option value="" selected>Detección Automática</option>
-              <option value="video">🎬 Video</option>
-              <option value="image">🖼️ Imagen / Fotografía</option>
+              <option value="video">Video</option>
+              <option value="image">Imagen / Fotografía</option>
             </select>
           </div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="icon" type="image/png" href="../shared/assets/bible-logo.png">
   <link rel="stylesheet" href="css/projection.css">
 </head>
+
 <body>
   <div class="projection-container">
     <!-- Capa de Fondo Dinámico -->
@@ -43,7 +45,9 @@
       <div class="projection-wheel-container">
         <div class="projection-wheel-pointer"></div>
         <canvas id="projectionRouletteCanvas" width="900" height="900"></canvas>
-        <div class="projection-wheel-center-hub">⭐</div>
+        <div class="projection-wheel-center-hub">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" style="color: #38BDF8;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
       </div>
 
       <!-- Banner de Ganador y Celebración -->
@@ -68,4 +72,5 @@
 
   <script type="module" src="js/projection.js"></script>
 </body>
+
 </html>

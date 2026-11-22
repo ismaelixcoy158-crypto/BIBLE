@@ -150,7 +150,7 @@ export class SpotsController {
     if (!items.length) {
       this.gridContainer.innerHTML = `
         <div style="grid-column: 1 / -1; padding: 40px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-          <div style="font-size: 32px; margin-bottom: 8px;">🎬</div>
+          <svg class="icon" style="width: 36px; height: 36px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
           <div style="font-weight: 700; color: #FFFFFF;">No hay spots multimedia en esta vista</div>
           <div style="margin-top: 6px; font-size: 11px;">
             Haz clic en <strong>"Importar Archivo Local"</strong> o en <strong>"Agregar por Enlace (HTTP)"</strong> para comenzar.
@@ -182,7 +182,7 @@ export class SpotsController {
         `;
       } else {
         thumbnailHtml = `
-          <div style="font-size: 32px; position: absolute; z-index: 1;">🖼️</div>
+          <svg class="icon" style="width: 28px; height: 28px; position: absolute; z-index: 1; opacity: 0.4;" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
           <img src="${spot.mediaUrl}" class="spot-thumbnail-img" alt="${spot.title}" loading="lazy" style="position: relative; z-index: 2;" onerror="this.style.display='none';">
         `;
       }
@@ -196,14 +196,15 @@ export class SpotsController {
           <span class="spot-card-title" title="${spot.title}">${spot.title}</span>
           <div class="spot-meta-row">
             <span>${sizeMB}</span>
-            <span>${isVideo ? (spot.loop_enabled ? '🔁 Bucle' : '▶️ 1 vez') : 'Foto'}</span>
+            <span>${isVideo ? (spot.loop_enabled ? 'Bucle' : '1 vez') : 'Foto'}</span>
           </div>
           <div class="spot-card-actions">
-            <button class="btn btn-primary btn-project-spot" style="flex: 1; font-size: 11px; padding: 5px 8px;" title="Proyectar a la pantalla pública">
-              🖥️ Proyectar
+            <button class="btn btn-primary btn-project-spot" style="flex: 1; font-size: 11px; padding: 5px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;" title="Proyectar a la pantalla pública">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              <span>Proyectar</span>
             </button>
-            <button class="btn btn-sm btn-delete-spot" style="padding: 5px 8px; color: #F87171; border-color: rgba(239, 68, 68, 0.25);" title="Eliminar anuncio">
-              🗑️
+            <button class="btn btn-sm btn-delete-spot" style="padding: 5px 8px; color: #F87171; border-color: rgba(239, 68, 68, 0.25); display: inline-flex; align-items: center; justify-content: center;" title="Eliminar anuncio">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
           </div>
         </div>
@@ -290,14 +291,14 @@ export class SpotsController {
 
     // Actualizar Ficha de Detalles
     if (this.detailTitle) this.detailTitle.textContent = spot.title;
-    if (this.detailType) this.detailType.textContent = spot.file_type === 'video' ? '🎬 Video' : '🖼️ Fotografía / Imagen';
-    if (this.detailOrigin) this.detailOrigin.textContent = spot.isHttp ? '🌐 Enlace Web (HTTP/HTTPS)' : '💾 Archivo Local en Disco';
+    if (this.detailType) this.detailType.textContent = spot.file_type === 'video' ? 'Video' : 'Fotografía / Imagen';
+    if (this.detailOrigin) this.detailOrigin.textContent = spot.isHttp ? 'Enlace Web (HTTP/HTTPS)' : 'Archivo Local en Disco';
     if (this.detailSize) {
       this.detailSize.textContent = spot.file_size ? `${(spot.file_size / (1024 * 1024)).toFixed(1)} MB` : 'En línea';
     }
     if (this.detailLiveStatus) {
       const isLive = Boolean(this.projectedSpot && this.projectedSpot.id === spot.id);
-      this.detailLiveStatus.textContent = isLive ? '🔴 EN EL AIRE' : '⚪ En Espera';
+      this.detailLiveStatus.textContent = isLive ? 'EN EL AIRE' : 'En Espera';
       this.detailLiveStatus.style.color = isLive ? 'var(--status-live)' : 'var(--text-muted)';
     }
 
@@ -374,7 +375,7 @@ export class SpotsController {
     });
 
     if (this.detailLiveStatus) {
-      this.detailLiveStatus.textContent = '⚪ En Espera';
+      this.detailLiveStatus.textContent = 'En Espera';
       this.detailLiveStatus.style.color = 'var(--text-muted)';
     }
   }

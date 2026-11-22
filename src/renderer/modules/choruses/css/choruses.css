@@ -155,7 +155,7 @@
   background-color: var(--bg-primary);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color 100ms ease, border-color 100ms ease;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -167,8 +167,19 @@
 }
 
 .chorus-item-card.active {
-  background-color: var(--accent-surface);
-  border-color: var(--accent-primary);
+  background-color: var(--item-selected-bg) !important;
+  border: 2px solid var(--accent-primary) !important;
+  box-shadow: inset 4px 0 0 var(--accent-primary) !important;
+}
+
+.chorus-item-card.active .chorus-item-title {
+  color: var(--item-selected-text) !important;
+  font-weight: 700 !important;
+}
+
+.chorus-item-card.active .chorus-item-snippet {
+  color: var(--text-primary) !important;
+  font-weight: 500 !important;
 }
 
 .chorus-item-title {
@@ -260,26 +271,32 @@
   align-items: center;
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: border-color 100ms ease, box-shadow 100ms ease;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
 .slide-card:hover {
   border-color: var(--accent-primary);
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .slide-card.selected,
 .slide-card.active {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+  border: 2.5px solid var(--item-selected-border) !important;
+  box-shadow: 0 0 0 1px var(--item-selected-border), 0 4px 14px var(--accent-glow) !important;
 }
 
 .slide-card.projected {
-  border-color: var(--status-live);
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+  border: 2.5px solid var(--status-live) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Diapositiva AL AIRE y además MARCADA / ACTIVA (Estado Dual Único) */
+.slide-card.projected.active,
+.slide-card.projected.selected {
+  border: 2.5px solid var(--status-live) !important;
+  box-shadow: 0 0 0 2.5px #0284C7, 0 0 18px rgba(16, 185, 129, 0.5) !important;
 }
 
 .slide-badge-num,
@@ -292,16 +309,25 @@
   letter-spacing: 0.5px;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
-  background-color: rgba(0, 0, 0, 0.6);
-  color: var(--accent-gold);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .slide-card.projected .slide-badge-num,
 .slide-card.projected .slide-num-badge {
   background-color: var(--status-live);
-  color: #000000;
+  color: #FFFFFF;
   border-color: var(--status-live);
+}
+
+.slide-card.projected.active .slide-badge-num,
+.slide-card.projected.active .slide-num-badge,
+.slide-card.projected.selected .slide-badge-num,
+.slide-card.projected.selected .slide-num-badge {
+  background-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  border-color: #0284C7 !important;
 }
 
 .slide-text,
@@ -388,8 +414,9 @@
    Estilos de Búsqueda y Repertorios / Listas de Culto
    ========================================================================== */
 .search-match, mark.search-match {
-  background-color: rgba(245, 158, 11, 0.35);
-  color: #FCD34D;
+  background-color: rgba(37, 99, 235, 0.16);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-primary);
   padding: 1px 4px;
   border-radius: 3px;
   font-weight: 700;
@@ -630,6 +657,6 @@
 
 .online-item-artist {
   font-size: 10.5px;
-  color: #FBBF24;
+  color: var(--text-secondary);
   font-weight: 500;
 }

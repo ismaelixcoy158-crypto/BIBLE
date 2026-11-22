@@ -105,8 +105,8 @@ export class PreachingController {
     if (!items.length) {
       this.listContainer.innerHTML = `
         <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-          <div style="font-size: 24px; margin-bottom: 6px;">📖</div>
-          <div style="font-weight: 600; color: #fff;">No hay sermones disponibles</div>
+          <svg class="icon" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M6 6h10M6 10h10"/></svg>
+          <div style="font-weight: 600; color: var(--text-primary);">No hay sermones disponibles</div>
           <div style="margin-top: 6px; font-size: 11px;">Haz clic en <strong>"Importar Presentación"</strong> para cargar un archivo PDF o PowerPoint con todas sus diapositivas e imágenes.</div>
         </div>
       `;
@@ -118,8 +118,8 @@ export class PreachingController {
       card.className = `presentation-item-card ${this.currentPreaching && this.currentPreaching.id === p.id ? 'active' : ''}`;
       card.dataset.id = p.id;
       
-      const speakerInfo = p.preacher ? `<span style="color: var(--accent-gold); font-size: 10.5px;">• ${p.preacher}</span>` : '';
-      const bibleInfo = p.bible_passage ? `<span style="color: #93C5FD; font-size: 10.5px;">(${p.bible_passage})</span>` : '';
+      const speakerInfo = p.preacher ? `<span style="color: var(--text-secondary); font-size: 10.5px; font-weight: 600;">• ${p.preacher}</span>` : '';
+      const bibleInfo = p.bible_passage ? `<span style="color: var(--accent-primary); font-size: 10.5px; font-weight: 700;">(${p.bible_passage})</span>` : '';
 
       card.innerHTML = `
         <div class="presentation-card-header">
@@ -265,7 +265,7 @@ export class PreachingController {
     cards.forEach((card, idx) => {
       if (idx === index) {
         card.classList.add('active');
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        card.scrollIntoView({ behavior: 'auto', block: 'nearest' });
       } else {
         card.classList.remove('active');
       }
@@ -312,7 +312,7 @@ export class PreachingController {
     this.isProjecting = true;
 
     // Actualizar indicador EN AIRE en la barra inferior
-    const modeLabel = this.currentRenderMode === 'original' ? '🖼️ Original' : '🎨 Fondo Culto';
+    const modeLabel = this.currentRenderMode === 'original' ? 'Original' : 'Fondo Culto';
     if (this.liveStatusRef) {
       this.liveStatusRef.textContent = `${this.currentPreaching.title} [D${this.activeSlideIndex + 1}/${this.currentPreaching.slide_count}] (${modeLabel})`;
     }
@@ -425,6 +425,15 @@ export class PreachingController {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         this.projectCurrentSlide();
+      }
+    });
+
+    // Control Remoto Móvil (Atril / Púlpito)
+    window.addEventListener('remote-control:action', (e) => {
+      if (e.detail?.action === 'next') {
+        this.next();
+      } else if (e.detail?.action === 'prev') {
+        this.prev();
       }
     });
   }

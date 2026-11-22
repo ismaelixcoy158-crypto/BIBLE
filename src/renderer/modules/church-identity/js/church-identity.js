@@ -62,10 +62,21 @@ export class ChurchIdentityController {
 
     // Emblemas
     this.sampleEmblemBtns = document.querySelectorAll('.btn-sample-emblem');
+
+    // Temas y Apariencia
+    this.themeCards = document.querySelectorAll('.theme-card');
+    this.btnResetTheme = document.getElementById('btnResetDefaultTheme');
+
+    // Términos y Proyecto Ixcoydev
+    this.btnOpenTermsModal = document.getElementById('btnOpenTermsModal');
   }
 
   async init() {
     this.bindEvents();
+    this.updateActiveThemeCard();
+    window.addEventListener('app-theme-changed', (e) => {
+      this.updateActiveThemeCard(e.detail?.theme);
+    });
     await this.loadCurrentIdentity();
     await this.syncProjectionState();
 
@@ -119,7 +130,7 @@ export class ChurchIdentityController {
       this.btnTestProject.classList.remove('btn-primary');
       this.btnTestProject.classList.add('btn-danger');
       if (this.txtBtnProjectLogo) {
-        this.txtBtnProjectLogo.textContent = '🔴 Dejar de Proyectar Logo (F2)';
+        this.txtBtnProjectLogo.textContent = 'Dejar de Proyectar Logo (F2)';
       }
     } else {
       this.btnTestProject.classList.remove('btn-danger');
@@ -440,14 +451,51 @@ export class ChurchIdentityController {
       }
     });
 
-    // 9. Proyectar / Quitar Logo en Pantalla Pública (Alternar F2)
-    this.btnTestProject?.addEventListener('click', async () => {
-      const state = await window.bibleAPI.projection.toggleLogo();
-      this.updateProjectButtonState(state);
-      if (state.isLogo) {
-        this.showAlert('Proyectando logotipo en la pantalla pública');
+    // 10. Selección Interactiva de Temas Dinámicos
+    this.themeCards?.forEach(card => {
+      card.addEventListener('click', () => {
+        const themeId = card.dataset.themeId;
+        if (themeId && window.setAppTheme) {
+          window.setAppTheme(themeId, true);
+          this.updateActiveThemeCard(themeId);
+          const name = card.querySelector('.theme-name')?.textContent || themeId;
+          this.showAlert(`Tema «${name}» aplicado correctamente.`);
+        }
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+
+    // 11. Restablecer Tema Predeterminado
+    this.btnResetTheme?.addEventListener('click', () => {
+      if (window.setAppTheme) {
+        window.setAppTheme('warm-cream', true);
+        this.updateActiveThemeCard('warm-cream');
+        this.showAlert('Tema predeterminado «Warm Cream» restaurado con éxito.');
+      }
+    });
+
+    // 12. Modal de Términos, Reglas y Proyecto Ixcoydev
+    this.btnOpenTermsModal?.addEventListener('click', () => {
+      if (typeof window.openTermsModal === 'function') {
+        window.openTermsModal(true);
+      }
+    });
+  }
+
+  updateActiveThemeCard(themeId) {
+    const activeId = themeId || window.getCurrentAppTheme?.() || 'warm-cream';
+    this.themeCards?.forEach(card => {
+      if (card.dataset.themeId === activeId) {
+        card.classList.add('active');
+        card.setAttribute('aria-selected', 'true');
       } else {
-        this.showAlert('Proyección de logotipo finalizada');
+        card.classList.remove('active');
+        card.removeAttribute('aria-selected');
       }
     });
   }

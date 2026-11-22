@@ -1,0 +1,39 @@
+=============================================================
+   BIBLE — SISTEMA MULTIMEDIA Y PROYECCIÓN PARA IGLESIAS
+      Guía de Inicio Rápido en Computadoras Windows
+=============================================================
+
+Para que el programa quede instalado en esta computadora Windows, 
+aparezca en el Escritorio y lo puedas buscar en el Menú Inicio:
+
+PASO 1: ASEGURAR QUE TIENES NODE.JS
+-----------------------------------
+Si esta computadora aún no tiene Node.js:
+1. Abre tu navegador y ve a: https://nodejs.org/
+2. Descarga la versión "LTS" (Recomendada).
+3. Instálala (solo dale a Siguiente, Siguiente, Finalizar).
+
+PASO 2: INSTALAR EL ACCESO DIRECTO
+----------------------------------
+1. Haz doble clic en el archivo:
+   "instalar-acceso-directo-windows.bat"
+
+2. El instalador configurará automáticamente los paquetes necesarios 
+   y creará los accesos directos oficiales.
+
+PASO 3: ¡LISTO! CÓMO ABRIRLO
+----------------------------
+A partir de ahora puedes abrir BIBLE de 2 formas:
+1. Desde el ícono "BIBLE" que quedó creado en tu Escritorio.
+2. O simplemente presiona la tecla de Inicio de Windows (la tecla con 
+   el logo de Windows) y escribe:
+   
+   BIBLE
+   
+   y presiona Enter.
+
+¡El programa se abrirá directamente sin mostrar ventanas negras de consola!
+=============================================================
+Desarrollado para iglesias locales por Ixcoydev • Sin fines de lucro
+=============================================================
+

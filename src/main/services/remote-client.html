@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <title>BIBLE — Control Remoto</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-blue: #38bdf8;
+      --accent-blue-hover: #0ea5e9;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    /* Vistas principales */
+    .view-screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+    .view-screen.active {
+      display: flex;
+    }
+
+    /* ============================================================
+       PANTALLA DE AUTENTICACIÓN (PIN)
+       ============================================================ */
+    #pinScreen {
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .pin-auth-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .pin-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+      color: #fff;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+    }
+
+    .pin-logo svg {
+      width: 32px;
+      height: 32px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .pin-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .pin-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .pin-display {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .pin-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      transition: all 0.15s ease;
+    }
+
+    .pin-dot.filled {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+      transform: scale(1.1);
+    }
+
+    .pin-error-msg {
+      font-size: 0.85rem;
+      color: var(--accent-red);
+      height: 20px;
+      margin-bottom: 16px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .pin-error-msg.visible {
+      opacity: 1;
+    }
+
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .pin-key {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 1.5rem;
+      font-weight: 600;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+    .pin-key:active {
+      background: var(--accent-blue);
+      color: #0f172a;
+      transform: scale(0.94);
+    }
+    .pin-key.key-action {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* ============================================================
+       CABECERA Y CONTROL PRINCIPAL
+       ============================================================ */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.15); }
+    }
+
+    .header-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .header-subtitle {
+      font-size: 0.72rem;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon-subtle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .btn-icon-subtle:active {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+    }
+
+    /* Selector de pestañas de modo */
+    .mode-tabs {
+      display: flex;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 4px;
+      margin: 12px 16px 8px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      gap: 4px;
+    }
+
+    .mode-tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .mode-tab-btn.active {
+      background: var(--bg-card);
+      color: var(--accent-blue);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Contenido de pestañas */
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      padding: 0 16px 16px 16px;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* ============================================================
+       MODO PREDICADOR (SMART PULPIT CLICKER)
+       ============================================================ */
+    .live-slide-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .live-slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-green);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .slide-counter {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .live-slide-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .live-slide-snippet {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* BOTONES GIGANTES DE PULPITO CLICKER */
+    .pulpit-clicker-grid {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 12px;
+      min-height: 320px;
+    }
+
+    .btn-pulpit {
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+    }
+    .btn-pulpit:active {
+      transform: scale(0.97);
+    }
+
+    .btn-pulpit-next {
+      flex: 1.3;
+      background: linear-gradient(145deg, #0284c7 0%, #1d4ed8 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
+    }
+    .btn-pulpit-next:active {
+      background: linear-gradient(145deg, #0369a1 0%, #1e40af 100%);
+    }
+
+    .btn-pulpit-prev {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    .btn-pulpit-prev:active {
+      background: var(--bg-card-hover);
+    }
+
+    .pulpit-icon {
+      width: 42px;
+      height: 42px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .pulpit-label {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .pulpit-hint {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    /* CRONOMETRO DE SERMON */
+    .sermon-timer-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .timer-display-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer-clock {
+      font-family: monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      letter-spacing: 1px;
+    }
+    .timer-clock.warning {
+      color: var(--accent-amber);
+    }
+    .timer-clock.danger {
+      color: var(--accent-red);
+    }
+
+    .timer-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-timer {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-timer:active {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* ============================================================
+       MODO MULTIMEDIA (POCKET OPERATOR)
+       ============================================================ */
+    .panic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panic-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all 0.15s ease;
+      min-height: 95px;
+    }
+    .panic-btn:active {
+      transform: scale(0.96);
+    }
+
+    .panic-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+
+    .panic-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .panic-btn.active-blackout {
+      background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);
+      border-color: #ef4444;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+    .panic-btn.active-logo {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      border-color: #3b82f6;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+    .panic-btn.active-clear {
+      background: linear-gradient(135deg, #581c87 0%, #9333ea 100%);
+      border-color: #a855f7;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+    }
+    .panic-btn.active-freeze {
+      background: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%);
+      border-color: #22d3ee;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+    }
+
+    .media-stepper {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn-media-step {
+      flex: 1;
+      height: 56px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-media-step:active {
+      background: var(--bg-card-hover);
+      transform: scale(0.97);
+    }
+
+    .system-health-card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .health-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .health-ip {
+      color: var(--accent-blue);
+      font-family: monospace;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       PANTALLA DE ACCESO (PIN DE SEGURIDAD)
+       ============================================================ -->
+  <div id="pinScreen" class="view-screen active">
+    <div class="pin-auth-card">
+      <div class="pin-logo">
+        <svg viewBox="0 0 24 24">
+          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+          <path d="M12 18h.01"/>
+          <path d="m9 7 3-3 3 3"/>
+          <path d="m9 11 3 3 3-3"/>
+        </svg>
+      </div>
+      <h1 class="pin-title">BIBLE Control</h1>
+      <p class="pin-subtitle">Ingresa el PIN de 4 dígitos mostrado en la consola</p>
+
+      <div class="pin-display">
+        <div class="pin-dot" id="dot0"></div>
+        <div class="pin-dot" id="dot1"></div>
+        <div class="pin-dot" id="dot2"></div>
+        <div class="pin-dot" id="dot3"></div>
+      </div>
+
+      <div class="pin-error-msg" id="pinErrorMsg">PIN incorrecto. Intenta de nuevo.</div>
+
+      <div class="pin-keypad">
+        <button class="pin-key" data-num="1">1</button>
+        <button class="pin-key" data-num="2">2</button>
+        <button class="pin-key" data-num="3">3</button>
+        <button class="pin-key" data-num="4">4</button>
+        <button class="pin-key" data-num="5">5</button>
+        <button class="pin-key" data-num="6">6</button>
+        <button class="pin-key" data-num="7">7</button>
+        <button class="pin-key" data-num="8">8</button>
+        <button class="pin-key" data-num="9">9</button>
+        <button class="pin-key key-action" id="btnPinClear">C</button>
+        <button class="pin-key" data-num="0">0</button>
+        <button class="pin-key key-action" id="btnPinDelete">⌫</button>
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border-color);">
+        <a href="/download/bible-control.apk" download="bible-control.apk" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; color: var(--accent-blue); text-decoration: none; font-size: 0.82rem; font-weight: 700;">
+          <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Descargar APK para Android (.apk)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PANTALLA PRINCIPAL DEL CONTROL REMOTO
+       ============================================================ -->
+  <div id="mainScreen" class="view-screen">
+    <!-- Header de conexión y estado -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="header-status-dot"></div>
+        <div class="header-title-wrap">
+          <span class="header-title">BIBLE Control</span>
+          <span id="connectionStateLabel" class="header-subtitle">En línea (Wi-Fi Local)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/download/bible-control.apk" download="bible-control.apk" class="btn-icon-subtle" title="Descargar APK para Android" style="text-decoration:none;">
+          <svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </a>
+        <button id="btnLogout" class="btn-icon-subtle" title="Cerrar Sesión / Cambiar PIN">
+          <svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Selector de Modo -->
+    <div class="mode-tabs">
+      <button class="mode-tab-btn active" data-tab="pulpit">
+        <span>🎙️</span>
+        <span>Modo Predicador</span>
+      </button>
+      <button class="mode-tab-btn" data-tab="multimedia">
+        <span>🎛️</span>
+        <span>Modo Multimedia</span>
+      </button>
+    </div>
+
+    <!-- PESTAÑA 1: MODO PREDICADOR -->
+    <div id="tabPulpit" class="tab-content active">
+      <!-- Tarjeta de Diapositiva Actual en Vivo -->
+      <div class="live-slide-card">
+        <div class="live-slide-header">
+          <span id="pulpitLiveBadge" class="live-badge">● EN PANTALLA</span>
+          <span id="pulpitSlideCounter" class="slide-counter">Diapositiva -- / --</span>
+        </div>
+        <div id="pulpitSlideTitle" class="live-slide-title">Sin emisión activa</div>
+        <div id="pulpitSlideSnippet" class="live-slide-snippet">El contenido proyectado aparecerá reflejado aquí en tiempo real.</div>
+      </div>
+
+      <!-- BOTONES GIGANTES DE PULPITO CLICKER -->
+      <div class="pulpit-clicker-grid">
+        <button id="btnPulpitPrev" class="btn-pulpit btn-pulpit-prev">
+          <svg class="pulpit-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          <span class="pulpit-label">ANTERIOR</span>
+          <span class="pulpit-hint">Diapositiva o Versículo Previo</span>
+        </button>
+
+        <button id="btnPulpitNext" class="btn-pulpit btn-pulpit-next">
+          <svg class="pulpit-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="pulpit-label">SIGUIENTE</span>
+          <span class="pulpit-hint">Avanzar Diapositiva</span>
+        </button>
+      </div>
+
+      <!-- CRONOMETRO DE PREDICACIÓN -->
+      <div class="sermon-timer-card">
+        <div class="timer-display-group">
+          <div class="timer-clock" id="sermonTimerDisplay">00:00</div>
+          <div>
+            <div class="timer-label">Cronómetro Sermón</div>
+            <div id="timerStatusLabel" style="font-size:0.68rem; color:var(--text-dim)">Pausado</div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button id="btnTimerToggle" class="btn-timer">Iniciar</button>
+          <button id="btnTimerReset" class="btn-timer">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: MODO MULTIMEDIA -->
+    <div id="tabMultimedia" class="tab-content">
+      <!-- Consola de Botones de Pánico -->
+      <div class="panic-grid">
+        <button id="panicBlackout" class="panic-btn">
+          <span class="panic-badge">F1</span>
+          <span class="panic-name">Negro</span>
+        </button>
+        <button id="panicLogo" class="panic-btn">
+          <span class="panic-badge">F2</span>
+          <span class="panic-name">Logo</span>
+        </button>
+        <button id="panicClear" class="panic-btn">
+          <span class="panic-badge">F3</span>
+          <span class="panic-name">Limpiar</span>
+        </button>
+        <button id="panicFreeze" class="panic-btn">
+          <span class="panic-badge">F4</span>
+          <span class="panic-name">Congelar</span>
+        </button>
+      </div>
+
+      <!-- Navegación Rápida -->
+      <div class="media-stepper">
+        <button id="btnMediaPrev" class="btn-media-step">
+          <svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          <span>Anterior</span>
+        </button>
+        <button id="btnMediaNext" class="btn-media-step" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.08);">
+          <span>Siguiente</span>
+          <svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <!-- Estado de Proyección en Vivo -->
+      <div class="live-slide-card" style="margin-top: auto;">
+        <div class="live-slide-header">
+          <span id="mediaLiveBadge" class="live-badge">ESTADO CONGREGACIONAL</span>
+          <span id="mediaLiveMode" class="slide-counter">Normal</span>
+        </div>
+        <div id="mediaLiveTitle" class="live-slide-title">Sin Emisión Activa</div>
+        <div id="mediaLiveSnippet" class="live-slide-snippet">Seleccione versículo, corito o diapositiva desde la consola.</div>
+      </div>
+
+      <!-- Pie de página con IP Local -->
+      <div class="system-health-card">
+        <span class="health-info">Conexión Local Wi-Fi</span>
+        <span id="systemIpLabel" class="health-ip">127.0.0.1:4545</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LÓGICA DEL CLIENTE MÓVIL
+       ============================================================ -->
+  <script>
+    (function() {
+      // Estado local del cliente móvil
+      const API_BASE = window.location.origin.startsWith('http') ? '' : 'http://127.0.0.1:4545';
+      let authToken = localStorage.getItem('bible_remote_token') || null;
+      let enteredPin = '';
+      let pollTimer = null;
+      let sermonSeconds = 0;
+      let sermonRunning = false;
+      let sermonInterval = null;
+
+      // Elementos DOM
+      const pinScreen = document.getElementById('pinScreen');
+      const mainScreen = document.getElementById('mainScreen');
+      const pinDots = [
+        document.getElementById('dot0'),
+        document.getElementById('dot1'),
+        document.getElementById('dot2'),
+        document.getElementById('dot3')
+      ];
+      const pinErrorMsg = document.getElementById('pinErrorMsg');
+      const btnLogout = document.getElementById('btnLogout');
+
+      // Pestañas
+      const modeTabs = document.querySelectorAll('.mode-tab-btn');
+      const tabPulpit = document.getElementById('tabPulpit');
+      const tabMultimedia = document.getElementById('tabMultimedia');
+
+      // Pulpit
+      const pulpitLiveBadge = document.getElementById('pulpitLiveBadge');
+      const pulpitSlideCounter = document.getElementById('pulpitSlideCounter');
+      const pulpitSlideTitle = document.getElementById('pulpitSlideTitle');
+      const pulpitSlideSnippet = document.getElementById('pulpitSlideSnippet');
+      const btnPulpitNext = document.getElementById('btnPulpitNext');
+      const btnPulpitPrev = document.getElementById('btnPulpitPrev');
+
+      // Cronómetro
+      const sermonTimerDisplay = document.getElementById('sermonTimerDisplay');
+      const timerStatusLabel = document.getElementById('timerStatusLabel');
+      const btnTimerToggle = document.getElementById('btnTimerToggle');
+      const btnTimerReset = document.getElementById('btnTimerReset');
+
+      // Multimedia
+      const panicBlackout = document.getElementById('panicBlackout');
+      const panicLogo = document.getElementById('panicLogo');
+      const panicClear = document.getElementById('panicClear');
+      const panicFreeze = document.getElementById('panicFreeze');
+      const btnMediaPrev = document.getElementById('btnMediaPrev');
+      const btnMediaNext = document.getElementById('btnMediaNext');
+      const mediaLiveTitle = document.getElementById('mediaLiveTitle');
+      const mediaLiveSnippet = document.getElementById('mediaLiveSnippet');
+      const mediaLiveMode = document.getElementById('mediaLiveMode');
+      const systemIpLabel = document.getElementById('systemIpLabel');
+
+      // Retroalimentación Háptica
+      function hapticVibrate(duration = 40) {
+        if (window.navigator && window.navigator.vibrate) {
+          try {
+            window.navigator.vibrate(duration);
+          } catch (e) {}
+        }
+      }
+
+      // ---------------- PIN LOGIC ----------------
+      function updatePinDots() {
+        pinDots.forEach((dot, idx) => {
+          if (idx < enteredPin.length) {
+            dot.classList.add('filled');
+          } else {
+            dot.classList.remove('filled');
+          }
+        });
+      }
+
+      async function verifyPin() {
+        if (enteredPin.length !== 4) return;
+        try {
+          const res = await fetch(API_BASE + '/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: enteredPin })
+          });
+          const data = await res.json();
+          if (data.success && data.token) {
+            hapticVibrate(60);
+            authToken = data.token;
+            localStorage.setItem('bible_remote_token', authToken);
+            enteredPin = '';
+            updatePinDots();
+            showMainScreen();
+          } else {
+            hapticVibrate([50, 50, 50]);
+            pinErrorMsg.textContent = data.error || 'PIN incorrecto. Intenta de nuevo.';
+            pinErrorMsg.classList.add('visible');
+            enteredPin = '';
+            updatePinDots();
+            setTimeout(() => {
+              pinErrorMsg.classList.remove('visible');
+            }, 3000);
+          }
+        } catch (err) {
+          pinErrorMsg.textContent = 'Error de conexión con BIBLE';
+          pinErrorMsg.classList.add('visible');
+        }
+      }
+
+      document.querySelectorAll('.pin-key[data-num]').forEach(key => {
+        key.addEventListener('click', () => {
+          hapticVibrate(25);
+          if (enteredPin.length < 4) {
+            enteredPin += key.dataset.num;
+            updatePinDots();
+            if (enteredPin.length === 4) {
+              setTimeout(verifyPin, 100);
+            }
+          }
+        });
+      });
+
+      document.getElementById('btnPinDelete').addEventListener('click', () => {
+        hapticVibrate(20);
+        if (enteredPin.length > 0) {
+          enteredPin = enteredPin.slice(0, -1);
+          updatePinDots();
+        }
+      });
+
+      document.getElementById('btnPinClear').addEventListener('click', () => {
+        hapticVibrate(20);
+        enteredPin = '';
+        updatePinDots();
+      });
+
+      // ---------------- PANTALLA PRINCIPAL ----------------
+      function showMainScreen() {
+        pinScreen.classList.remove('active');
+        mainScreen.classList.add('active');
+        startPolling();
+      }
+
+      function showPinScreen() {
+        stopPolling();
+        mainScreen.classList.remove('active');
+        pinScreen.classList.add('active');
+      }
+
+      btnLogout.addEventListener('click', () => {
+        hapticVibrate(30);
+        if (confirm('¿Cerrar sesión del control remoto?')) {
+          localStorage.removeItem('bible_remote_token');
+          authToken = null;
+          showPinScreen();
+        }
+      });
+
+      // Pestañas
+      modeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          hapticVibrate(30);
+          modeTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.tab;
+          if (target === 'pulpit') {
+            tabPulpit.classList.add('active');
+            tabMultimedia.classList.remove('active');
+          } else {
+            tabMultimedia.classList.add('active');
+            tabPulpit.classList.remove('active');
+          }
+        });
+      });
+
+      // ---------------- ACCIONES DE CONTROL ----------------
+      async function sendAction(action) {
+        hapticVibrate(40);
+        if (!authToken) {
+          showPinScreen();
+          return;
+        }
+        try {
+          const res = await fetch(API_BASE + '/api/action', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Auth-Token': authToken
+            },
+            body: JSON.stringify({ action })
+          });
+          if (res.status === 401) {
+            localStorage.removeItem('bible_remote_token');
+            authToken = null;
+            showPinScreen();
+            return;
+          }
+          const data = await res.json();
+          if (data && data.state) {
+            applyState(data.state);
+          }
+        } catch (err) {
+          console.warn('[Remote] Error al enviar acción:', err);
+        }
+      }
+
+      // Clickers Predicador
+      btnPulpitNext.addEventListener('click', () => sendAction('next'));
+      btnPulpitPrev.addEventListener('click', () => sendAction('prev'));
+
+      // Botones Multimedia
+      btnMediaNext.addEventListener('click', () => sendAction('next'));
+      btnMediaPrev.addEventListener('click', () => sendAction('prev'));
+      panicBlackout.addEventListener('click', () => sendAction('toggle-blackout'));
+      panicLogo.addEventListener('click', () => sendAction('toggle-logo'));
+      panicClear.addEventListener('click', () => sendAction('toggle-clear-text'));
+      panicFreeze.addEventListener('click', () => sendAction('toggle-freeze'));
+
+      // ---------------- CRONÓMETRO DE SERMÓN ----------------
+      function formatTimerTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function updateTimerDisplay() {
+        sermonTimerDisplay.textContent = formatTimerTime(sermonSeconds);
+        if (sermonSeconds >= 3000) { // 50 min
+          sermonTimerDisplay.className = 'timer-clock danger';
+        } else if (sermonSeconds >= 2400) { // 40 min
+          sermonTimerDisplay.className = 'timer-clock warning';
+        } else {
+          sermonTimerDisplay.className = 'timer-clock';
+        }
+      }
+
+      btnTimerToggle.addEventListener('click', () => {
+        hapticVibrate(30);
+        if (sermonRunning) {
+          sermonRunning = false;
+          clearInterval(sermonInterval);
+          btnTimerToggle.textContent = 'Reanudar';
+          timerStatusLabel.textContent = 'Pausado';
+        } else {
+          sermonRunning = true;
+          btnTimerToggle.textContent = 'Pausar';
+          timerStatusLabel.textContent = 'En curso';
+          sermonInterval = setInterval(() => {
+            sermonSeconds++;
+            updateTimerDisplay();
+          }, 1000);
+        }
+      });
+
+      btnTimerReset.addEventListener('click', () => {
+        hapticVibrate(30);
+        sermonRunning = false;
+        clearInterval(sermonInterval);
+        sermonSeconds = 0;
+        updateTimerDisplay();
+        btnTimerToggle.textContent = 'Iniciar';
+        timerStatusLabel.textContent = 'Pausado';
+      });
+
+      // ---------------- SINCRONIZACIÓN EN TIEMPO REAL ----------------
+      function applyState(state, info) {
+        if (!state) return;
+
+        // Estado Tally
+        if (state.isBlackout) {
+          panicBlackout.classList.add('active-blackout');
+          pulpitLiveBadge.textContent = '● EN NEGRO';
+          pulpitLiveBadge.style.color = 'var(--accent-red)';
+          mediaLiveMode.textContent = 'En Negro (F1)';
+        } else {
+          panicBlackout.classList.remove('active-blackout');
+          pulpitLiveBadge.textContent = '● EN PANTALLA';
+          pulpitLiveBadge.style.color = 'var(--accent-green)';
+        }
+
+        if (state.isLogo) {
+          panicLogo.classList.add('active-logo');
+          mediaLiveMode.textContent = 'Logo Institucional';
+        } else {
+          panicLogo.classList.remove('active-logo');
+        }
+
+        if (state.isClearText) {
+          panicClear.classList.add('active-clear');
+        } else {
+          panicClear.classList.remove('active-clear');
+        }
+
+        if (state.isFrozen) {
+          panicFreeze.classList.add('active-freeze');
+          mediaLiveMode.textContent = 'Congelado (F4)';
+        } else {
+          panicFreeze.classList.remove('active-freeze');
+        }
+
+        // Contenido Activo
+        if (state.activeContent) {
+          const c = state.activeContent;
+          const title = c.slideTitle || c.title || c.reference || 'Emisión Activa';
+          const text = c.text || c.notes || '';
+          pulpitSlideTitle.textContent = title;
+          pulpitSlideSnippet.textContent = text || '—';
+          mediaLiveTitle.textContent = title;
+          mediaLiveSnippet.textContent = text ? text.slice(0, 100) + '...' : '—';
+
+          if (c.currentSlide && c.totalSlides) {
+            pulpitSlideCounter.textContent = `Diapositiva ${c.currentSlide} de ${c.totalSlides}`;
+          } else if (c.module === 'bible') {
+            pulpitSlideCounter.textContent = 'Biblia ' + (c.reference || '');
+          } else if (c.module === 'choruses') {
+            pulpitSlideCounter.textContent = 'Corito';
+          } else {
+            pulpitSlideCounter.textContent = 'En Vivo';
+          }
+        } else {
+          pulpitSlideTitle.textContent = 'Sin emisión activa';
+          pulpitSlideSnippet.textContent = 'Esperando contenido desde la consola.';
+          pulpitSlideCounter.textContent = 'Standby';
+          mediaLiveTitle.textContent = 'Sin Emisión Activa';
+          mediaLiveSnippet.textContent = 'Seleccione contenido en la consola.';
+        }
+
+        if (info && info.ip) {
+          systemIpLabel.textContent = `${info.ip}:${info.port || 4545}`;
+        }
+      }
+
+      async function fetchStatus() {
+        try {
+          const res = await fetch(API_BASE + '/api/status', {
+            headers: authToken ? { 'X-Auth-Token': authToken } : {}
+          });
+          if (res.status === 401 && authToken) {
+            localStorage.removeItem('bible_remote_token');
+            authToken = null;
+            showPinScreen();
+            return;
+          }
+          const data = await res.json();
+          if (data.projection) {
+            applyState(data.projection, data);
+          }
+        } catch (err) {
+          // Servidor momentáneamente inaccesible
+        }
+      }
+
+      function startPolling() {
+        stopPolling();
+        fetchStatus();
+        pollTimer = setInterval(fetchStatus, 1200);
+      }
+
+      function stopPolling() {
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+      }
+
+      // Comprobar si ya tenemos token guardado
+      if (authToken) {
+        showMainScreen();
+      } else {
+        showPinScreen();
+      }
+    })();
+  </script>
+</body>
+</html>

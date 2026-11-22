@@ -58,8 +58,9 @@
       <div class="items-manager-box">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span class="form-label" style="margin: 0;">Agregar Valor o Nombre:</span>
-          <button id="btnOpenBatchAdd" class="btn btn-xs" style="padding: 2px 8px; font-size: 11px;" title="Pegar múltiples nombres o valores">
-            📋 Pegar Varios
+          <button id="btnOpenBatchAdd" class="btn btn-xs" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" title="Pegar múltiples nombres o valores">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <span>Pegar Varios</span>
           </button>
         </div>
 
@@ -77,11 +78,13 @@
         <div class="items-quick-tools">
           <span id="itemsCounterLabel" class="items-counter-text">0 elementos</span>
           <div style="display: flex; gap: 6px;">
-            <button id="btnShuffleItems" class="btn btn-xs" title="Mezclar aleatoriamente el orden de los elementos">
-              🔀 Mezclar
+            <button id="btnShuffleItems" class="btn btn-xs" style="display: inline-flex; align-items: center; gap: 4px;" title="Mezclar aleatoriamente el orden de los elementos">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+              <span>Mezclar</span>
             </button>
-            <button id="btnClearAllItems" class="btn btn-xs btn-danger" title="Vaciar todos los elementos de esta lista">
-              🧹 Vaciar
+            <button id="btnClearAllItems" class="btn btn-xs btn-danger" style="display: inline-flex; align-items: center; gap: 4px;" title="Vaciar todos los elementos de esta lista">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Vaciar</span>
             </button>
           </div>
         </div>
@@ -136,7 +139,7 @@
     <div class="roulette-modal-content">
       <div class="roulette-modal-header">
         <h3>Crear Nueva Lista de Ruleta</h3>
-        <button id="btnCloseModalNewList" class="modal-close-btn">✕</button>
+        <button id="btnCloseModalNewList" class="modal-close-btn"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
       <div class="roulette-modal-body">
         <label class="form-label" for="inputNewListName">Nombre de la Lista:</label>
@@ -157,7 +160,7 @@
     <div class="roulette-modal-content">
       <div class="roulette-modal-header">
         <h3>Pegar Múltiples Valores</h3>
-        <button id="btnCloseModalBatch" class="modal-close-btn">✕</button>
+        <button id="btnCloseModalBatch" class="modal-close-btn"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
       <div class="roulette-modal-body">
         <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">

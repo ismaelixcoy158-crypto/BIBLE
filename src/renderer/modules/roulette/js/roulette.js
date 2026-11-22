@@ -145,11 +145,11 @@ export class RouletteController {
     if (this.rouletteTallyChip) {
       if (projected) {
         this.rouletteTallyChip.className = 'roulette-tally-chip projected';
-        this.txtTallyStatus.textContent = '🔴 En Pantalla (Transmitiendo)';
+        this.txtTallyStatus.textContent = 'En Pantalla (Transmitiendo)';
         this.txtBtnProject.textContent = 'Actualizar Pantalla';
       } else {
         this.rouletteTallyChip.className = 'roulette-tally-chip not-projected';
-        this.txtTallyStatus.textContent = '⚪ Ruleta en Espera (No proyectada)';
+        this.txtTallyStatus.textContent = 'Ruleta en Espera (No proyectada)';
         this.txtBtnProject.textContent = 'Proyectar en Pantalla';
       }
     }
@@ -230,8 +230,8 @@ export class RouletteController {
             ${item.label}
           </span>
         </div>
-        <button class="btn btn-icon-sm btn-danger-hover" style="padding: 2px 6px; font-size: 11px; margin-left: 6px;" data-id="${item.id}" title="Eliminar este valor">
-          ✕
+        <button class="btn btn-icon-sm btn-danger-hover" style="padding: 2px 6px; font-size: 11px; margin-left: 6px; display: inline-flex; align-items: center; justify-content: center;" data-id="${item.id}" title="Eliminar este valor">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       `;
 

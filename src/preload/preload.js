@@ -163,5 +163,20 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     resume: () => ipcRenderer.invoke('countdown:resume'),
     reset: () => ipcRenderer.invoke('countdown:reset'),
     project: (payload) => ipcRenderer.invoke('countdown:project', payload)
+  },
+
+  // Control Remoto (Vía Wi-Fi / Móvil)
+  control: {
+    getStatus: () => ipcRenderer.invoke('control:get-status'),
+    startServer: () => ipcRenderer.invoke('control:start-server'),
+    stopServer: () => ipcRenderer.invoke('control:stop-server'),
+    generateNewPin: () => ipcRenderer.invoke('control:generate-new-pin'),
+    setPin: (pin) => ipcRenderer.invoke('control:set-pin', pin),
+    getQrSvg: () => ipcRenderer.invoke('control:get-qr-svg'),
+    onRemoteAction: (callback) => {
+      const subscription = (_event, data) => callback(data);
+      ipcRenderer.on('remote:action', subscription);
+      return () => ipcRenderer.removeListener('remote:action', subscription);
+    }
   }
 });

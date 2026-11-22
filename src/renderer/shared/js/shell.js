@@ -30,6 +30,45 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnClear = document.getElementById('btnPanicClear');
   const btnFreeze = document.getElementById('btnPanicFreeze');
 
+  // Gestor Central de Temas Dinámicos (Warm Pastel Minimalism)
+  const DEFAULT_APP_THEME = 'warm-cream';
+  const VALID_APP_THEMES = ['warm-cream', 'sage', 'lavender', 'peach', 'sky', 'rose', 'dark-elegant', 'dark-blue'];
+
+  async function applyAppTheme(themeId, persist = true) {
+    const target = VALID_APP_THEMES.includes(themeId) ? themeId : DEFAULT_APP_THEME;
+    document.documentElement.setAttribute('data-theme', target);
+    window.__currentAppTheme = target;
+
+    if (persist && window.bibleAPI?.db?.setSetting) {
+      try {
+        await window.bibleAPI.db.setSetting('app_theme', target);
+      } catch (err) {
+        console.warn('[Shell] Error al guardar preferencia de tema:', err);
+      }
+    }
+
+    window.dispatchEvent(new CustomEvent('app-theme-changed', { detail: { theme: target } }));
+  }
+
+  window.setAppTheme = applyAppTheme;
+  window.getCurrentAppTheme = () => window.__currentAppTheme || DEFAULT_APP_THEME;
+
+  async function initAppTheme() {
+    let saved = DEFAULT_APP_THEME;
+    if (window.bibleAPI?.db?.getSetting) {
+      try {
+        const pref = await window.bibleAPI.db.getSetting('app_theme');
+        if (pref && VALID_APP_THEMES.includes(pref)) {
+          saved = pref;
+        }
+      } catch (err) {
+        console.warn('[Shell] Error al leer app_theme:', err);
+      }
+    }
+    await applyAppTheme(saved, false);
+  }
+  await initAppTheme();
+
   // Navegación
   const navButtons = document.querySelectorAll('.nav-item');
   let currentActiveModule = 'bible'; // Inicia directamente en la Biblia para máxima agilidad
@@ -129,8 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         tallyBadge.textContent = 'Logo Activo';
         if (previewTallyIndicator) {
           previewTallyIndicator.textContent = 'LOGO';
-          previewTallyIndicator.style.backgroundColor = 'var(--accent-gold)';
-          previewTallyIndicator.style.color = '#000000';
+          previewTallyIndicator.style.backgroundColor = 'var(--accent-primary)';
+          previewTallyIndicator.style.color = 'var(--text-inverse)';
         }
       } else if (state.activeContent) {
         tallyBadge.className = 'badge-status badge-live';
@@ -287,11 +326,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (isDarkText) {
         previewText.style.color = '#0F172A';
         previewText.style.textShadow = '0 1px 3px rgba(255, 255, 255, 0.9)';
-        previewTitle.style.color = '#92400E';
+        previewTitle.style.color = '#1E40AF';
       } else {
         previewText.style.color = '#FFFFFF';
         previewText.style.textShadow = '0 2px 8px rgba(0, 0, 0, 0.8)';
-        previewTitle.style.color = 'var(--accent-gold)';
+        previewTitle.style.color = '#38BDF8';
       }
     } else {
       previewTitle.textContent = 'Sin Emisión Activa';
@@ -321,6 +360,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnLogo.addEventListener('click', () => window.bibleAPI.projection.toggleLogo());
   btnClear.addEventListener('click', () => window.bibleAPI.projection.toggleClearText());
   btnFreeze.addEventListener('click', () => window.bibleAPI.projection.toggleFreeze());
+
+  // Escuchar acciones emitidas desde el Control Remoto (teléfono del predicador / multimedia)
+  if (window.bibleAPI && window.bibleAPI.control) {
+    window.bibleAPI.control.onRemoteAction((payload) => {
+      const action = payload?.action || payload;
+      console.log('[Shell] Acción de control remoto recibida:', action);
+      window.dispatchEvent(new CustomEvent('remote-control:action', { detail: { action } }));
+    });
+  }
 
   /**
    * Cambia de módulo en el espacio de trabajo
@@ -427,6 +475,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       } catch (err) {
         console.error('[Shell] Error al cargar módulo de Cuenta Regresiva:', err);
+      }
+    }
+
+    // Módulo 8: Control Remoto (Púlpito y Multimedia por Wi-Fi)
+    if (moduleName === 'control') {
+      try {
+        const html = await window.bibleAPI.system.getModuleHtml('control');
+        workspaceContainer.innerHTML = html;
+        const { ControlController } = await import('../../modules/control/js/control.js');
+        new ControlController();
+        return;
+      } catch (err) {
+        console.error('[Shell] Error al cargar módulo de Control Remoto:', err);
       }
     }
 
@@ -638,6 +699,140 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Inicializar separadores del shell
   initShellSplitters();
+
+  /**
+   * Motor de Desplazamiento Ágil (Agile Scroll Engine)
+   * Acelera y despesa el scroll con la rueda del ratón en todos los módulos de la aplicación,
+   * permitiendo recorrer listas largas con agilidad, rapidez y sin fatiga.
+   */
+  function initAgileScroll() {
+    window.addEventListener('wheel', (e) => {
+      // Ignorar zoom con Ctrl o desplazamiento primariamente horizontal
+      if (e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+      let current = e.target;
+      let scrollEl = null;
+
+      // Localizar el contenedor desplazable más cercano bajo el puntero
+      while (current && current !== document.body && current !== document.documentElement) {
+        if (current.scrollHeight > current.clientHeight + 2) {
+          const overflowY = window.getComputedStyle(current).overflowY;
+          if (overflowY === 'auto' || overflowY === 'scroll') {
+            scrollEl = current;
+            break;
+          }
+        }
+        current = current.parentElement;
+      }
+
+      if (!scrollEl) return;
+
+      // Si ya está en los topes físicos, permitir el flujo natural
+      if (e.deltaY < 0 && scrollEl.scrollTop <= 0) return;
+      if (e.deltaY > 0 && scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1) return;
+
+      e.preventDefault();
+
+      // Normalizar unidades de delta (si el SO emite por líneas en vez de píxeles)
+      let delta = e.deltaY;
+      if (e.deltaMode === 1) {
+        delta *= 40;
+      }
+
+      // Factor de aceleración ergonómico para convertir scroll pesado en ágil y fluido
+      const multiplier = Math.abs(delta) >= 30 ? 2.5 : 1.4;
+
+      scrollEl.scrollBy({
+        top: delta * multiplier,
+        behavior: 'auto'
+      });
+    }, { passive: false });
+  }
+
+  initAgileScroll();
+
+  /**
+   * Sistema de Aceptación de Términos, Reglas y Condiciones (Proyecto Ixcoydev)
+   * Requiere aceptación previa al primer uso del sistema tras ser descargado/instalado.
+   * Proporciona acceso posterior para consulta en cualquier momento.
+   */
+  function initTermsAndConditions() {
+    const modal = document.getElementById('termsConditionsModal');
+    const backdrop = document.getElementById('termsBackdrop');
+    const chk = document.getElementById('chkAcceptTerms');
+    const btnAccept = document.getElementById('btnAcceptTerms');
+    const btnClose = document.getElementById('btnCloseTermsModal');
+    const btnCloseRead = document.getElementById('btnCloseTermsRead');
+    const agreementBox = document.getElementById('termsAgreementBox');
+
+    if (!modal) return;
+
+    const TERMS_KEY = 'bible_terms_accepted_v1';
+    let isReviewMode = false;
+
+    // Verificar si ya fue aceptado previamente
+    const alreadyAccepted = localStorage.getItem(TERMS_KEY) === 'true';
+
+    // Función global para abrir el modal (en modo obligatorio o en modo lectura)
+    window.openTermsModal = function(reviewMode = false) {
+      isReviewMode = reviewMode;
+      modal.style.display = 'flex';
+
+      if (isReviewMode) {
+        if (btnClose) btnClose.style.display = 'flex';
+        if (btnCloseRead) btnCloseRead.style.display = 'inline-flex';
+        if (agreementBox) agreementBox.style.display = 'none';
+        if (btnAccept) {
+          btnAccept.disabled = false;
+          const span = btnAccept.querySelector('span');
+          if (span) span.textContent = 'Entendido / Reglas Aceptadas';
+        }
+      } else {
+        if (btnClose) btnClose.style.display = 'none';
+        if (btnCloseRead) btnCloseRead.style.display = 'none';
+        if (agreementBox) agreementBox.style.display = 'block';
+        if (chk) chk.checked = false;
+        if (btnAccept) {
+          btnAccept.disabled = true;
+          const span = btnAccept.querySelector('span');
+          if (span) span.textContent = 'Aceptar y Comenzar a Usar BIBLE';
+        }
+      }
+    };
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    chk?.addEventListener('change', () => {
+      if (btnAccept && !isReviewMode) {
+        btnAccept.disabled = !chk.checked;
+      }
+    });
+
+    btnAccept?.addEventListener('click', () => {
+      localStorage.setItem(TERMS_KEY, 'true');
+      try {
+        window.electronAPI?.db?.setSetting({ key: 'terms_accepted', value: true });
+      } catch (e) {
+        // Silencioso si no está disponible
+      }
+      closeModal();
+    });
+
+    btnClose?.addEventListener('click', () => closeModal());
+    btnCloseRead?.addEventListener('click', () => closeModal());
+    backdrop?.addEventListener('click', () => {
+      if (isReviewMode) closeModal();
+    });
+
+    // Si aún no ha sido aceptado por el usuario, abrir inmediatamente
+    if (!alreadyAccepted) {
+      window.openTermsModal(false);
+    }
+  }
+
+  initTermsAndConditions();
 
   // Carga inicial
   switchModule(currentActiveModule);

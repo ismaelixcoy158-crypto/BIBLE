@@ -300,6 +300,34 @@ class PreachingService {
     );
   }
 
+  /**
+   * Avanza a la siguiente diapositiva de la predicación activa
+   */
+  nextSlide() {
+    this.init();
+    if (!this.activePresentationState.preachingId) return null;
+    const preaching = this.repo.getById(this.activePresentationState.preachingId);
+    if (!preaching || !preaching.slides) return null;
+    const nextIdx = this.activePresentationState.slideIndex + 1;
+    if (nextIdx < preaching.slides.length) {
+      return this.projectSlide(this.activePresentationState.preachingId, nextIdx);
+    }
+    return null;
+  }
+
+  /**
+   * Retrocede a la diapositiva anterior de la predicación activa
+   */
+  prevSlide() {
+    this.init();
+    if (!this.activePresentationState.preachingId) return null;
+    const prevIdx = this.activePresentationState.slideIndex - 1;
+    if (prevIdx >= 0) {
+      return this.projectSlide(this.activePresentationState.preachingId, prevIdx);
+    }
+    return null;
+  }
+
   delete(id) {
     this.init();
     // Eliminar carpeta de medios asociada si existe

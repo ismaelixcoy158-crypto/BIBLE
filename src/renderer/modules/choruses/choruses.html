@@ -3,7 +3,9 @@
   <div id="chorusFloatingQuickCite" class="bible-floating-quick-cite" style="display: none;">
     <div class="hud-capsule">
       <div class="hud-lead-section">
-        <span class="hud-icon">🎵</span>
+        <span class="hud-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </span>
         <div class="hud-text-group">
           <span class="hud-tag">BUSCANDO CORITO:</span>
           <span id="chorusHudRawBuffer" class="hud-raw-buffer">—</span>
@@ -86,9 +88,12 @@
           autocomplete="off" 
           spellcheck="false"
         >
-        <button id="btnClearChorusFilter" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">✕</button>
-        <button id="btnSearchInternetSidebar" class="btn btn-sm btn-secondary" style="display: none; padding: 2px 7px; font-size: 11px; margin-left: auto; flex-shrink: 0;" title="Buscar este canto en Internet">
-          <span>🌐 Internet</span>
+        <button id="btnClearChorusFilter" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <button id="btnSearchInternetSidebar" class="btn btn-sm btn-secondary" style="display: none; padding: 2px 7px; font-size: 11px; margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;" title="Buscar este canto en Internet">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Internet</span>
         </button>
         <span class="hud-key-pill hud-pill-enter" id="hudEnterPill" style="font-size: 10px; padding: 2px 6px; margin-left: auto; flex-shrink: 0;"><kbd>Enter</kbd> Proyectar</span>
       </div>
@@ -97,7 +102,7 @@
       <div id="cardSearchInternetPrompt" class="search-internet-prompt-card" style="display: none;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-            <span style="font-size: 15px;">🌐</span>
+            <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span id="promptInternetQueryText" style="font-size: 11.5px; color: #E2E8F0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               Buscar en Internet
             </span>
@@ -255,7 +260,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <span id="modalChorusTitle" class="modal-title">Registrar Nuevo Corito</span>
-        <button id="btnCloseChorusModal" class="btn btn-sm" style="padding: 4px 8px;">✕</button>
+        <button id="btnCloseChorusModal" class="btn btn-sm" style="padding: 4px 8px;"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <div class="form-group">
@@ -305,13 +310,15 @@
     <div class="modal-card bible-bg-modal-card" style="max-width: 680px; width: 92vw;">
       <div class="modal-header bible-bg-modal-header">
         <div class="bible-bg-modal-title-group">
-          <span class="bible-bg-modal-icon">⌨️</span>
+          <span class="bible-bg-modal-icon">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/></svg>
+          </span>
           <div>
             <h3 class="modal-title bible-bg-modal-title">Atajos de Teclado — Coritos y Alabanzas</h3>
             <p class="modal-subtitle bible-bg-modal-subtitle">Controles de transmisión rápida durante la adoración congregacional</p>
           </div>
         </div>
-        <button id="btnCloseChorusShortcutsModal" class="btn-icon-close" title="Cerrar modal (Esc)">✕</button>
+        <button id="btnCloseChorusShortcutsModal" class="btn-icon-close" title="Cerrar modal (Esc)"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <div class="shortcuts-body" style="padding: 18px 24px; max-height: 70vh; overflow-y: auto;">
@@ -398,19 +405,37 @@
     <div class="modal-card" style="max-width: 470px;">
       <div class="modal-header">
         <span id="modalNewPlaylistTitle" class="modal-title">Crear Día de Culto</span>
-        <button id="btnCloseNewPlaylistModal" class="btn btn-sm" style="padding: 4px 8px;">✕</button>
+        <button id="btnCloseNewPlaylistModal" class="btn btn-sm" style="padding: 4px 8px;"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <!-- Selección Rápida del Día (Presets pentecostales) -->
       <div class="form-group" style="margin-bottom: 12px;">
         <label class="form-label" style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">Selección rápida del día:</label>
         <div id="quickDayChipsContainer" class="quick-day-chips-container">
-          <button type="button" class="btn-day-chip active" data-preset="today">📅 Hoy</button>
-          <button type="button" class="btn-day-chip" data-preset="sunday-morning">☀️ Dom Mañana</button>
-          <button type="button" class="btn-day-chip" data-preset="sunday-evening">🌙 Dom Noche</button>
-          <button type="button" class="btn-day-chip" data-preset="tuesday">🙏 Martes</button>
-          <button type="button" class="btn-day-chip" data-preset="thursday">📖 Jueves</button>
-          <button type="button" class="btn-day-chip" data-preset="vigil">🔥 Vigilia</button>
+          <button type="button" class="btn-day-chip active" data-preset="today">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            <span>Hoy</span>
+          </button>
+          <button type="button" class="btn-day-chip" data-preset="sunday-morning">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" x2="12" y1="1" y2="3"/><line x1="12" x2="12" y1="21" y2="23"/><line x1="4.22" x2="5.64" y1="4.22" y2="5.64"/><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"/><line x1="1" x2="3" y1="12" y2="12"/><line x1="21" x2="23" y1="12" y2="12"/><line x1="4.22" x2="5.64" y1="19.78" y2="18.36"/><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"/></svg>
+            <span>Dom Mañana</span>
+          </button>
+          <button type="button" class="btn-day-chip" data-preset="sunday-evening">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Dom Noche</span>
+          </button>
+          <button type="button" class="btn-day-chip" data-preset="tuesday">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <span>Martes</span>
+          </button>
+          <button type="button" class="btn-day-chip" data-preset="thursday">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M6 6h10M6 10h10"/></svg>
+            <span>Jueves</span>
+          </button>
+          <button type="button" class="btn-day-chip" data-preset="vigil">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 17c1.38 0 2.5-1.12 2.5-2.5 0-1.63-1.04-2.82-1.78-3.66C11.27 10.33 11 9.77 11 9c0-1.66 1.34-3 3-3 0 2.5 3 4 3 7a5 5 0 0 1-10 0c0-3.33 2.5-6.5 4.5-9-.72 2.11-.86 4.38-.86 5.5 0 .73.18 1.4.5 2"/></svg>
+            <span>Vigilia</span>
+          </button>
         </div>
       </div>
 
@@ -427,8 +452,9 @@
           <span style="font-size: 10px; color: var(--accent-primary); font-weight: 600;">(Se genera automático)</span>
         </div>
         <input type="text" id="inputNewPlaylistName" class="input-text" placeholder="Ej: Culto Domingo 22 Nov">
-        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-          💡 Puedes dejar el nombre automático o escribir el que prefieras.
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-primary);"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+          <span>Puedes dejar el nombre automático o escribir el que prefieras.</span>
         </div>
       </div>
 
@@ -447,17 +473,17 @@
     <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
         <span class="modal-title">Agregar a Lista / Repertorio</span>
-        <button id="btnCloseAddToPlaylistModal" class="btn btn-sm" style="padding: 4px 8px;">✕</button>
+        <button id="btnCloseAddToPlaylistModal" class="btn btn-sm" style="padding: 4px 8px;"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <div class="form-group">
         <span class="form-label">Corito seleccionado:</span>
-        <div id="addToPlaylistChorusTitle" style="font-weight: 700; color: #FFFFFF; font-size: 13px; padding: 6px 0;">—</div>
+        <div id="addToPlaylistChorusTitle" style="font-weight: 700; color: var(--text-primary); font-size: 13px; padding: 6px 0;">—</div>
       </div>
 
       <div class="form-group">
         <label class="form-label" for="selectTargetPlaylist">Selecciona el Repertorio / Día:</label>
-        <select id="selectTargetPlaylist" class="input-text" style="background: var(--bg-primary); color: #fff; padding: 8px; border-radius: 6px; border: 1px solid var(--border-default);"></select>
+        <select id="selectTargetPlaylist" class="input-text" style="background: var(--bg-primary); color: var(--text-primary); padding: 8px; border-radius: 6px; border: 1px solid var(--border-default);"></select>
       </div>
 
       <div class="modal-footer">
@@ -475,10 +501,10 @@
     <div class="modal-card" style="max-width: 600px; max-height: 84vh; display: flex; flex-direction: column;">
       <div class="modal-header" style="padding-bottom: 8px;">
         <div style="display: flex; flex-direction: column; gap: 2px;">
-          <span class="modal-title" style="font-weight: 700; color: #fff;">Añadir Cantos al Culto</span>
+          <span class="modal-title" style="font-weight: 700; color: var(--text-primary);">Añadir Cantos al Culto</span>
           <span id="pickChorusSubtitle" style="font-size: 11px; color: var(--accent-primary); font-weight: 600;">0 cantos en lista</span>
         </div>
-        <button id="btnClosePickChorusModal" class="btn btn-sm btn-icon-square" style="padding: 4px 8px;" title="Cerrar (Esc)">✕</button>
+        <button id="btnClosePickChorusModal" class="btn btn-sm btn-icon-square" style="padding: 4px 8px;" title="Cerrar (Esc)"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
 
       <div class="form-group" style="margin-bottom: 8px; position: relative;">
@@ -491,11 +517,11 @@
             id="inputPickChorusSearch" 
             class="input-text" 
             placeholder="Escribe el nombre del corito o una frase de la letra..."
-            style="padding: 9px 34px 9px 34px; font-size: 13px; width: 100%; background: var(--bg-primary); border: 1px solid var(--border-default); color: #fff; border-radius: 6px;"
+            style="padding: 9px 34px 9px 34px; font-size: 13px; width: 100%; background: var(--bg-primary); border: 1px solid var(--border-default); color: var(--text-primary); border-radius: 6px;"
             autocomplete="off"
             spellcheck="false"
           >
-          <button id="btnClearPickChorusSearch" type="button" style="display: none; position: absolute; right: 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px 6px; font-size: 13px; line-height: 1;" title="Borrar búsqueda">✕</button>
+          <button id="btnClearPickChorusSearch" type="button" style="display: none; position: absolute; right: 8px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px 6px; font-size: 13px; line-height: 1;" title="Borrar búsqueda"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
         </div>
       </div>
 
@@ -503,13 +529,14 @@
       <div id="pickModalInternetPrompt" class="search-internet-prompt-card" style="display: none; margin-bottom: 8px;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
           <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-            <span style="font-size: 15px;">🌐</span>
+            <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <span id="pickPromptInternetText" style="font-size: 11.5px; color: #E2E8F0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               ¿No está en la lista? Buscar en Internet
             </span>
           </div>
-          <button id="btnPickSearchInternet" class="btn btn-sm btn-primary" style="font-size: 11px; padding: 3px 8px; flex-shrink: 0;">
-            🌐 Buscar en Internet
+          <button id="btnPickSearchInternet" class="btn btn-sm btn-primary" style="font-size: 11px; padding: 3px 8px; flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>Buscar en Internet</span>
           </button>
         </div>
       </div>
@@ -520,8 +547,10 @@
 
       <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
         <span id="pickChorusStatusText" style="font-size: 11.5px; color: var(--text-muted);">Haz clic en cualquier corito para agregarlo al culto</span>
-        <button id="btnClosePickChorusDone" class="btn btn-primary" style="padding: 6px 16px;">
-          ✓ Listo, Ver Repertorio
+        <button id="btnClosePickChorusDone" class="btn btn-primary" style="padding: 6px 16px; display: inline-flex; align-items: center; gap: 4px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Listo, Ver Repertorio</span>
+        </button>
         </button>
       </div>
     </div>

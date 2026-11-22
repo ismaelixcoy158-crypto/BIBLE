@@ -7,6 +7,7 @@ const churchService = require('../services/church-service.js');
 const preachingService = require('../services/preaching-service.js');
 const spotsService = require('../services/spots-service.js');
 const countdownService = require('../services/countdown-service.js');
+const remoteControlService = require('../services/remote-control-service.js');
 const backgroundService = require('../services/background-service.js');
 const BibleRepository = require('../../database/repositories/bible.repository.js');
 const ChorusesRepository = require('../../database/repositories/choruses.repository.js');
@@ -122,7 +123,7 @@ function registerIpcHandlers() {
   });
 
   ipcMain.handle('system:get-module-html', async (_event, moduleName) => {
-    const validModules = ['church-identity', 'bible', 'choruses', 'preaching', 'spots', 'roulette', 'countdown'];
+    const validModules = ['church-identity', 'bible', 'choruses', 'preaching', 'spots', 'roulette', 'countdown', 'control'];
     if (!validModules.includes(moduleName)) return '<p>Módulo no válido</p>';
     const filePath = path.join(__dirname, `../../renderer/modules/${moduleName}/${moduleName}.html`);
     const fs = require('fs');
@@ -526,6 +527,31 @@ function registerIpcHandlers() {
 
   ipcMain.handle('countdown:project', async (_event, options = {}) => {
     return countdownService.project(options);
+  });
+
+  // --- 11. CONTROL REMOTO (PÚLPITO Y MULTIMEDIA) ---
+  ipcMain.handle('control:get-status', async () => {
+    return remoteControlService.getStatus();
+  });
+
+  ipcMain.handle('control:start-server', async () => {
+    return remoteControlService.start();
+  });
+
+  ipcMain.handle('control:stop-server', async () => {
+    return remoteControlService.stop();
+  });
+
+  ipcMain.handle('control:generate-new-pin', async () => {
+    return remoteControlService.generateNewPin();
+  });
+
+  ipcMain.handle('control:set-pin', async (_event, pin) => {
+    return remoteControlService.setPin(pin);
+  });
+
+  ipcMain.handle('control:get-qr-svg', async () => {
+    return remoteControlService.getQrSvg();
   });
 }
 

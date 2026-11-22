@@ -9,20 +9,22 @@
 
     <div class="preaching-top-actions">
       <!-- Botón de Alternancia Rápida a la Biblia (Tecla Maestra Ctrl+T) -->
-      <button id="btnSwitchToBible" class="bible-switch-pill" title="Abre la Biblia sin interrumpir la diapositiva del predicador (Ctrl+T)">
+      <button id="btnSwitchToBible" class="bible-switch-pill"
+        title="Abre la Biblia sin interrumpir la diapositiva del predicador (Ctrl+T)">
         <svg class="icon icon-sm" viewBox="0 0 24 24">
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-          <path d="M6 6h10M6 10h10"/>
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+          <path d="M6 6h10M6 10h10" />
         </svg>
         <span>Alternar con Biblia</span>
         <kbd>Ctrl+T</kbd>
       </button>
 
-      <button id="btnImportPresentation" class="btn btn-primary" title="Importar presentación fiel con todas sus imágenes, fondos y colores (PDF, PowerPoint o Imágenes)">
+      <button id="btnImportPresentation" class="btn btn-primary"
+        title="Importar presentación fiel con todas sus imágenes, fondos y colores (PDF, PowerPoint o Imágenes)">
         <svg class="icon icon-sm" viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" x2="12" y1="3" y2="15"/>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" x2="12" y1="3" y2="15" />
         </svg>
         <span>Importar Presentación (PDF / PPTX)</span>
       </button>
@@ -36,8 +38,8 @@
       <div class="column-header">
         <div class="column-title">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
-            <rect width="20" height="14" x="2" y="3" rx="2"/>
-            <path d="M8 21h8M12 17v4"/>
+            <rect width="20" height="14" x="2" y="3" rx="2" />
+            <path d="M8 21h8M12 17v4" />
           </svg>
           <span id="preachingCountHeader">Biblioteca de Sermones</span>
         </div>
@@ -54,7 +56,9 @@
           autocomplete="off" 
           spellcheck="false"
         >
-        <button id="btnClearPreachingSearch" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">✕</button>
+        <button id="btnClearPreachingSearch" class="btn-clear-mini" title="Limpiar búsqueda" style="display: none;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div id="presentationsListContainer" class="presentations-list">
@@ -68,14 +72,14 @@
         <div class="viewer-nav-group">
           <button id="btnPrevSlide" class="btn btn-sm" title="Diapositiva anterior (← / ↑)">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="m15 18-6-6 6-6"/>
+              <path d="m15 18-6-6 6-6" />
             </svg>
             <span>Anterior</span>
           </button>
           <button id="btnNextSlide" class="btn btn-sm" title="Siguiente diapositiva (→ / ↓ / Espacio)">
             <span>Siguiente</span>
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="m9 18 6-6-6-6"/>
+              <path d="m9 18 6-6-6-6" />
             </svg>
           </button>
           <span id="slideIndicatorBadge" class="slide-indicator-badge">
@@ -85,30 +89,36 @@
 
         <!-- Grupo de Modo: Mantener Original vs Fondo del Culto (Requerimiento Clave) -->
         <div class="render-mode-toggle-group" title="Modo de Fondo y Fidelidad Visual">
-          <button id="btnModeOriginal" class="btn btn-sm btn-mode-toggle active" title="Proyectar fielmente la diapositiva original del predicador con sus imágenes, fondos y colores tal cual">
-            <span>🖼️ Mantener Original</span>
+          <button id="btnModeOriginal" class="btn btn-sm btn-mode-toggle active"
+            title="Proyectar fielmente la diapositiva original del predicador con sus imágenes, fondos y colores tal cual">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <span>Mantener Original</span>
           </button>
-          <button id="btnModeChurchBg" class="btn btn-sm btn-mode-toggle" title="Proyectar el texto sobre el fondo dinámico del culto">
-            <span>🎨 Fondo del Culto</span>
+          <button id="btnModeChurchBg" class="btn btn-sm btn-mode-toggle"
+            title="Proyectar el texto sobre el fondo dinámico del culto">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <span>Fondo del Culto</span>
           </button>
         </div>
 
         <div class="viewer-action-group">
-          <button id="btnResumePreaching" class="btn btn-sm btn-resume" title="Reanudar exactamente en la diapositiva donde se quedó el predicador (Ctrl+T)">
+          <button id="btnResumePreaching" class="btn btn-sm btn-resume"
+            title="Reanudar exactamente en la diapositiva donde se quedó el predicador (Ctrl+T)">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <polygon points="5 3 19 12 5 21 5 3"/>
+              <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
             <span>Retomar Predicación</span>
           </button>
           <button id="btnDeletePreaching" class="btn btn-sm btn-danger" title="Eliminar presentación">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+              <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
             </svg>
           </button>
-          <button id="btnProjectSlideDirect" class="btn btn-primary btn-project-slide" title="Proyectar de inmediato a la pantalla pública (Enter)">
+          <button id="btnProjectSlideDirect" class="btn btn-primary btn-project-slide"
+            title="Proyectar de inmediato a la pantalla pública (Enter)">
             <svg class="icon icon-sm" viewBox="0 0 24 24">
-              <rect width="20" height="14" x="2" y="3" rx="2"/>
-              <path d="M8 21h8M12 17v4"/>
+              <rect width="20" height="14" x="2" y="3" rx="2" />
+              <path d="M8 21h8M12 17v4" />
             </svg>
             <span>Proyectar Diapositiva (Enter)</span>
           </button>
@@ -126,7 +136,8 @@
   <footer class="toolbar-config preaching-bottom-bar">
     <div class="config-group preaching-customizers">
       <!-- Indicador Tally de Emisión en Vivo -->
-      <div class="live-status-chip live-status-pill" id="liveStatusBadgePreaching" title="Estado actual de emisión hacia la pantalla pública">
+      <div class="live-status-chip live-status-pill" id="liveStatusBadgePreaching"
+        title="Estado actual de emisión hacia la pantalla pública">
         <span class="live-dot live-status-dot"></span>
         <span class="live-status-text">
           <span class="live-status-tag">EN AIRE:</span>
@@ -137,7 +148,8 @@
       <span class="config-divider toolbar-divider"></span>
 
       <!-- Selector de Fondo General (POO Reutilizable - Mismo fondo del culto) -->
-      <button id="btnOpenPreachingBgPicker" class="config-pill btn-bg-selector" title="Cambiar fondo de proyección (Alt+B)">
+      <button id="btnOpenPreachingBgPicker" class="config-pill btn-bg-selector"
+        title="Cambiar fondo de proyección (Alt+B)">
         <span id="activePreachingBgThumb" class="config-pill-thumb bg-thumb-preview"></span>
         <span class="config-pill-text bg-selector-text">
           <span class="config-pill-label bg-selector-label">Fondo</span>
@@ -149,11 +161,13 @@
 
       <!-- Alternar Color de Letra (Blanco / Negro) -->
       <div class="config-toggle-group text-color-toggle-group" title="Color de letra para modo Fondo del Culto (Alt+C)">
-        <button id="btnPreachingTextWhite" class="config-toggle-btn btn-color-choice active" title="Letras blancas (Alt+C)">
+        <button id="btnPreachingTextWhite" class="config-toggle-btn btn-color-choice active"
+          title="Letras blancas (Alt+C)">
           <span class="color-dot dot-white"></span>
           <span>Blanco</span>
         </button>
-        <button id="btnPreachingTextBlack" class="config-toggle-btn btn-color-choice" title="Letras negras para fondos claros (Alt+C)">
+        <button id="btnPreachingTextBlack" class="config-toggle-btn btn-color-choice"
+          title="Letras negras para fondos claros (Alt+C)">
           <span class="color-dot dot-black"></span>
           <span>Negro</span>
         </button>
@@ -162,7 +176,8 @@
       <span class="config-divider toolbar-divider"></span>
 
       <!-- Selector de Tipografía / Tipo de Letra -->
-      <select id="selectPreachingFontFamily" class="config-select config-select-font" title="Tipo de Letra para proyección">
+      <select id="selectPreachingFontFamily" class="config-select config-select-font"
+        title="Tipo de Letra para proyección">
         <option value="sans-serif" selected>Moderna Sans</option>
         <option value="serif">Clásica Bíblica</option>
         <option value="bold">Impacto Bold</option>
@@ -171,9 +186,11 @@
 
       <!-- Tamaño de Letra (A- / A+) -->
       <div class="font-size-stepper-group" title="Tamaño de letra en la proyección">
-        <button id="btnPreachingFontDec" class="btn-font-step btn-font-dec" title="Disminuir tamaño de letra (A-)">A-</button>
+        <button id="btnPreachingFontDec" class="btn-font-step btn-font-dec"
+          title="Disminuir tamaño de letra (A-)">A-</button>
         <span id="preachingFontSizeBadge" class="font-size-badge">100%</span>
-        <button id="btnPreachingFontInc" class="btn-font-step btn-font-inc" title="Aumentar tamaño de letra (A+)">A+</button>
+        <button id="btnPreachingFontInc" class="btn-font-step btn-font-inc"
+          title="Aumentar tamaño de letra (A+)">A+</button>
       </div>
 
       <span class="config-divider toolbar-divider"></span>
@@ -188,19 +205,24 @@
     <div class="config-actions-right preaching-actions-right">
       <div class="nav-button-cluster">
         <button id="btnBottomPrevPreaching" class="btn-nav" title="Diapositiva anterior (← / ↑)">
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
           <span>Anterior</span>
         </button>
         <button id="btnBottomNextPreaching" class="btn-nav" title="Siguiente diapositiva (→ / ↓ / Espacio)">
           <span>Siguiente</span>
-          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
         </button>
       </div>
 
-      <button id="btnBottomProjectPreaching" class="btn btn-primary btn-project-main" title="Proyectar diapositiva seleccionada (Enter)">
+      <button id="btnBottomProjectPreaching" class="btn btn-primary btn-project-main"
+        title="Proyectar diapositiva seleccionada (Enter)">
         <svg class="icon icon-sm" viewBox="0 0 24 24">
-          <rect width="20" height="14" x="2" y="3" rx="2"/>
-          <path d="M8 21h8M12 17v4"/>
+          <rect width="20" height="14" x="2" y="3" rx="2" />
+          <path d="M8 21h8M12 17v4" />
         </svg>
         <span>Proyectar</span>
         <kbd class="kbd-badge">Enter</kbd>

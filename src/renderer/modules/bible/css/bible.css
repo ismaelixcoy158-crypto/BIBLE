@@ -61,9 +61,9 @@
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(251, 191, 36, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.45);
-  color: #FBBF24;
+  background: var(--accent-surface);
+  border: 1px solid var(--border-default);
+  color: var(--accent-primary);
   letter-spacing: 0.5px;
 }
 
@@ -135,9 +135,9 @@
 }
 
 .hud-segment-chapter {
-  background: rgba(251, 191, 36, 0.14);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  color: #FBBF24;
+  background: var(--accent-surface);
+  border: 1px solid var(--border-default);
+  color: var(--accent-primary);
 }
 
 .hud-segment-verse {
@@ -277,8 +277,8 @@
 
 .fts-ch-verse {
   font-size: 10px;
-  font-weight: 600;
-  color: var(--accent-gold);
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 .fts-text-col {
@@ -294,17 +294,18 @@
 }
 
 .fts-highlight {
-  background: rgba(251, 191, 36, 0.35);
-  color: #FDE047;
-  padding: 0 2px;
+  background-color: rgba(37, 99, 235, 0.16);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-primary);
+  padding: 0 3px;
   border-radius: 2px;
   font-weight: 700;
 }
 
 .btn-fts-project {
-  background: rgba(37, 99, 235, 0.2);
-  border: 1px solid rgba(37, 99, 235, 0.5);
-  color: #93C5FD;
+  background: var(--accent-surface);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
   padding: 4px 8px;
   border-radius: var(--radius-xs);
   cursor: pointer;
@@ -343,7 +344,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: var(--accent-gold);
+  color: var(--text-secondary);
   padding: 6px 4px 2px 4px;
   display: flex;
   align-items: center;
@@ -626,7 +627,7 @@
   background-color: var(--bg-primary);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color 100ms ease, border-color 100ms ease;
 }
 
 .verse-card:hover, .verse-item:hover {
@@ -635,8 +636,9 @@
 }
 
 .verse-card.selected, .verse-item.selected {
-  border-color: var(--accent-primary);
-  background-color: rgba(37, 99, 235, 0.08);
+  border: 2px solid var(--accent-primary) !important;
+  background-color: var(--item-selected-bg) !important;
+  box-shadow: 0 0 0 1px var(--accent-primary), inset 5px 0 0 var(--accent-primary) !important;
 }
 
 .verse-card.projected, .verse-item.projected {
@@ -648,8 +650,8 @@
 .verse-num {
   font-family: var(--font-family-mono);
   font-size: 13px;
-  font-weight: 800;
-  color: var(--accent-gold);
+  font-weight: 700;
+  color: var(--accent-primary);
   min-width: 28px;
   line-height: 1.4;
 }
@@ -714,20 +716,21 @@
   height: 28px;
   font-size: 11.5px;
   font-weight: 700;
-  background-color: var(--bg-primary);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  color: #FBBF24;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
   border-radius: var(--radius-sm);
   padding: 0 8px;
   cursor: pointer;
   outline: none;
   transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .version-picker:hover,
 .version-picker:focus {
-  border-color: #FBBF24;
-  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.25);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 .customizer-checkbox-label {
@@ -896,10 +899,11 @@
 }
 
 .bg-source-tab.active {
-  background-color: var(--bg-surface);
-  color: #FFFFFF;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1.5px solid var(--accent-primary) !important;
+  font-weight: 700 !important;
 }
 
 .bg-presets-grid {
@@ -928,8 +932,8 @@
 }
 
 .bg-preset-card.active {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  border: 2.5px solid var(--accent-primary) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 14px rgba(0, 0, 0, 0.45) !important;
 }
 
 .bg-preset-name {
@@ -1091,9 +1095,11 @@
 }
 
 .bg-fit-btn.active {
-  background-color: rgba(37, 99, 235, 0.15);
-  border-color: var(--accent-primary);
-  color: #93C5FD;
+  background-color: var(--bg-surface) !important;
+  border: 2px solid var(--accent-primary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-sm) !important;
 }
 
 .bg-sliders-grid {
@@ -1133,9 +1139,11 @@
 }
 
 .bg-pos-btn.active {
-  background-color: var(--bg-surface);
-  border-color: var(--accent-primary);
-  color: #FFFFFF;
+  background-color: var(--bg-surface) !important;
+  border: 2px solid var(--accent-primary) !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 1px var(--accent-primary) !important;
 }
 
 .scrim-label-row {
@@ -1148,7 +1156,8 @@
 
 .scrim-val {
   font-family: var(--font-family-mono);
-  color: var(--accent-gold);
+  color: var(--accent-primary);
+  font-weight: 700;
 }
 
 .scrim-slider {
@@ -1200,10 +1209,11 @@
 }
 
 .btn-color-choice.active {
-  background-color: var(--bg-surface);
-  color: #FFFFFF;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1.5px solid var(--accent-primary) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-sm) !important;
 }
 
 .color-dot {
@@ -1235,9 +1245,9 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #FFFFFF;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
   margin-left: 6px;
   letter-spacing: 0.3px;
   user-select: none;
@@ -1252,9 +1262,9 @@
   font-weight: 600;
   padding: 1px 5px;
   border-radius: 3px;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #CBD5E1;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
   margin-left: 5px;
   user-select: none;
 }
@@ -1262,6 +1272,8 @@
 .btn-primary .kbd-badge {
   background-color: rgba(0, 0, 0, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
+  color: #FFFFFF;
+}
 }
 
 .btn-clear-search {
@@ -1316,7 +1328,7 @@
   gap: 6px;
   font-size: 11.5px;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: var(--accent-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1343,8 +1355,8 @@
 }
 
 .shortcut-desc code {
-  color: var(--accent-gold);
-  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--accent-primary);
+  background-color: var(--accent-surface);
   padding: 1px 4px;
   border-radius: 3px;
   font-family: var(--font-family-mono);
@@ -1487,7 +1499,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
 }
-.btn-icon-square:hover { color: #FFFFFF; border-color: var(--border-focus); }
+.btn-icon-square:hover { color: var(--text-primary); border-color: var(--border-focus); }
 
 /* Grupo Anterior / Siguiente segmentado */
 .nav-button-cluster {
@@ -1619,7 +1631,7 @@
   font-size: 11px;
   font-weight: 700;
   font-family: var(--font-family-mono);
-  color: var(--accent-gold);
+  color: var(--accent-primary);
 }
 
 .fts-text-col {
@@ -1630,8 +1642,9 @@
 }
 
 .fts-highlight {
-  background-color: rgba(245, 158, 11, 0.25);
-  color: #FDE68A;
+  background-color: rgba(37, 99, 235, 0.16);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-primary);
   padding: 1px 3px;
   border-radius: 3px;
   font-weight: 700;
@@ -1766,10 +1779,12 @@
 }
 
 .highlight-match {
-  background-color: rgba(99, 102, 241, 0.4);
-  color: #FFFFFF;
-  padding: 0 1px;
+  background-color: rgba(37, 99, 235, 0.16);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--accent-primary);
+  padding: 1px 3px;
   border-radius: 2px;
+  font-weight: 700;
 }
 
 .empty-books-notice {
@@ -1961,9 +1976,9 @@
 }
 
 .verse-card.selected {
-  border-color: var(--accent-primary) !important;
-  background-color: rgba(99, 102, 241, 0.12) !important;
-  box-shadow: inset 4px 0 0 var(--accent-primary) !important;
+  border: 2px solid var(--accent-primary) !important;
+  background-color: var(--item-selected-bg) !important;
+  box-shadow: 0 0 0 1px var(--accent-primary), inset 5px 0 0 var(--accent-primary) !important;
 }
 
 .verse-card.in-range {
@@ -2026,21 +2041,21 @@
    - Posiciones, selectores y lógica 100% intactos.
    ========================================================================== */
 .bible-workspace {
-  --bw-col-bg: linear-gradient(180deg, #0e131d 0%, #090c14 100%);
-  --bw-card-bg: linear-gradient(180deg, #121824 0%, #0d121c 100%);
-  --bw-card-hover: linear-gradient(180deg, #172030 0%, #121724 100%);
-  --bw-line: rgba(255, 255, 255, 0.08);
-  --bw-line-strong: rgba(255, 255, 255, 0.16);
-  --bw-accent: #3b82f6;
-  --bw-accent-hover: #60a5fa;
-  --bw-accent-soft: rgba(59, 130, 246, 0.18);
-  --bw-accent-glow: rgba(59, 130, 246, 0.5);
-  --bw-gold: #f59e0b;
-  --bw-gold-soft: rgba(245, 158, 11, 0.16);
-  --bw-gold-glow: rgba(245, 158, 11, 0.45);
-  --bw-live: #10b981;
-  --bw-live-soft: rgba(16, 185, 129, 0.18);
-  --bw-live-glow: rgba(16, 185, 129, 0.45);
+  --bw-col-bg: var(--bg-surface);
+  --bw-card-bg: var(--bg-primary);
+  --bw-card-hover: var(--bg-surface-hover);
+  --bw-line: var(--border-default);
+  --bw-line-strong: var(--border-strong);
+  --bw-accent: var(--accent-primary);
+  --bw-accent-hover: var(--accent-hover);
+  --bw-accent-soft: var(--accent-surface);
+  --bw-accent-glow: var(--accent-glow);
+  --bw-gold: var(--accent-primary);
+  --bw-gold-soft: var(--accent-surface);
+  --bw-gold-glow: var(--accent-glow);
+  --bw-live: var(--status-live);
+  --bw-live-soft: var(--status-live-surface);
+  --bw-live-glow: var(--status-live-glow);
   gap: 10px;
 }
 
@@ -2048,41 +2063,41 @@
 .bible-workspace ::-webkit-scrollbar { width: 7px; height: 7px; }
 .bible-workspace ::-webkit-scrollbar-track { background: transparent; }
 .bible-workspace ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--scrollbar-thumb, rgba(140, 120, 95, 0.25));
   border-radius: 8px;
   border: 1px solid transparent;
   background-clip: padding-box;
 }
 .bible-workspace ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--scrollbar-thumb-hover, rgba(140, 120, 95, 0.45));
   background-clip: padding-box;
 }
 
 /* ---------- Columnas Principales ---------- */
 .bible-workspace .bible-column {
-  background: var(--bw-col-bg);
-  border: 1px solid var(--bw-line);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .bible-workspace .column-header {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border-bottom: 1px solid var(--bw-line);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-default);
   height: 46px;
   min-height: 46px;
 }
 
 .bible-workspace .column-title {
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-size: 11px;
   letter-spacing: 0.9px;
   font-weight: 700;
 }
 
 .bible-workspace .column-title .icon {
-  color: var(--bw-gold);
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.35));
+  color: var(--accent-primary);
+  filter: none;
 }
 
 /* Referencia activa del panel de versículos con alto impacto */
@@ -2090,19 +2105,18 @@
   font-size: 13.5px;
   font-weight: 800;
   letter-spacing: 0.8px;
-  background: linear-gradient(90deg, #FFFFFF 0%, #93C5FD 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: initial;
 }
 
 .bible-workspace .column-badge-caps {
-  background: var(--bw-gold-soft);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  color: #fbbf24;
-  font-weight: 800;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-weight: 700;
   border-radius: 999px;
   padding: 2px 10px;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
 }
 
 .bible-workspace .column-hint {
@@ -2117,7 +2131,7 @@
   top: 30%;
   bottom: 30%;
   background-color: transparent;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 1px, transparent 1.5px);
+  background-image: radial-gradient(circle, var(--border-default) 1px, transparent 1.5px);
   background-size: 2px 6px;
 }
 .bible-workspace .bible-splitter:hover,
@@ -2128,8 +2142,8 @@
   bottom: 8px;
   width: 3px;
   background-image: none;
-  background-color: var(--bw-accent);
-  box-shadow: 0 0 12px var(--bw-accent-glow);
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 /* ---------- Columna 1: Libros ---------- */
@@ -2137,8 +2151,8 @@
   margin: 8px 8px 0;
   padding: 3px;
   gap: 3px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--bw-line);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
   border-radius: 9px;
 }
 
@@ -2149,7 +2163,7 @@
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--text-muted);
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -2158,15 +2172,15 @@
 }
 
 .bible-workspace .tab-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
 }
 
 .bible-workspace .tab-btn.active {
-  color: #ffffff;
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-  border: 1px solid rgba(147, 197, 253, 0.3);
-  box-shadow: 0 2px 10px var(--bw-accent-glow);
+  color: var(--accent-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .bible-workspace .books-filter-input-row {
@@ -2174,21 +2188,21 @@
   padding: 0 10px;
   height: 34px;
   gap: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--bw-line-strong);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   transition: all var(--transition-fast);
 }
 
 .bible-workspace .books-filter-input-row:focus-within {
-  border-color: var(--bw-accent);
-  box-shadow: 0 0 0 3px var(--bw-accent-soft), 0 0 12px rgba(59, 130, 246, 0.25);
-  background: rgba(0, 0, 0, 0.45);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--border-focus);
+  background: var(--bg-surface);
 }
 
 .bible-workspace .book-filter-input {
   font-size: 12px;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .bible-workspace .books-list {
@@ -2202,24 +2216,23 @@
   padding: 6px 10px 6px 12px;
   border-radius: 7px;
   border: 1px solid transparent;
-  color: #d1d5db;
+  color: var(--text-primary);
   font-size: 12.5px;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: background-color 100ms ease, border-color 100ms ease, color 100ms ease;
 }
 
 .bible-workspace .book-item-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-  transform: translateX(2px);
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .bible-workspace .book-item-btn.active {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.04) 100%);
-  border-color: rgba(59, 130, 246, 0.4);
-  color: #ffffff;
+  background: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--text-inverse) !important;
   font-weight: 700;
-  box-shadow: inset 3px 0 0 var(--bw-accent), 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px var(--accent-glow) !important;
 }
 
 .bible-workspace .book-badge-num {
@@ -2227,28 +2240,27 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--bw-line);
-  color: #94a3b8;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
 }
 
 .bible-workspace .book-item-btn.active .book-badge-num {
-  background: var(--bw-accent);
-  border-color: transparent;
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: var(--text-inverse) !important;
 }
 
 /* Tarjetas de Frecuentes */
 .bible-workspace .frequent-item-card {
-  background: var(--bw-card-bg);
-  border: 1px solid var(--bw-line);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 .bible-workspace .frequent-item-card:hover {
-  background: var(--bw-card-hover);
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ---------- Columna 2: Capítulos ---------- */
@@ -2261,28 +2273,26 @@
 .bible-workspace .chapter-btn {
   height: 36px;
   border-radius: 8px;
-  background: var(--bw-card-bg);
-  border: 1px solid var(--bw-line);
-  color: #cbd5e1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transition: all var(--transition-fast);
+  transition: background-color 100ms ease, border-color 100ms ease, color 100ms ease;
 }
 
 .bible-workspace .chapter-btn:hover {
-  background: var(--bw-card-hover);
-  border-color: rgba(59, 130, 246, 0.4);
-  color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .bible-workspace .chapter-btn.active {
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-  border-color: rgba(147, 197, 253, 0.6);
-  color: #ffffff;
-  box-shadow: 0 0 16px var(--bw-accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: var(--accent-primary) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--text-inverse) !important;
+  font-weight: 800;
+  box-shadow: 0 2px 8px var(--accent-glow) !important;
 }
 
 /* ---------- Columna 3: Versículos ---------- */
@@ -2295,16 +2305,15 @@
   gap: 14px;
   padding: 12px 16px 12px 14px;
   border-radius: 10px;
-  background: var(--bw-card-bg);
-  border: 1px solid var(--bw-line);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: all var(--transition-fast);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  transition: background-color 100ms ease, border-color 100ms ease;
 }
 
 .bible-workspace .verse-card:hover {
-  background: var(--bw-card-hover);
-  border-color: rgba(59, 130, 246, 0.35);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Número de versículo en medallón dorado de alto contraste */
@@ -2321,84 +2330,112 @@
   height: 24px;
   padding: 0 6px;
   border-radius: 7px;
-  background: var(--bw-gold-soft);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
-  text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+  transition: all var(--transition-fast);
 }
 
 .bible-workspace .verse-text {
-  color: #f1f5f9;
+  color: var(--text-primary);
   line-height: 1.62;
   letter-spacing: 0.15px;
 }
 
-/* Seleccionado: Zafiro Eléctrico con resplandor */
+/* Seleccionado — Alto Contraste Indiscutible con Subrayador Distinto */
 .bible-workspace .verse-card.selected {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.22) 0%, rgba(59, 130, 246, 0.05) 100%) !important;
-  border-color: #3b82f6 !important;
-  box-shadow: inset 4px 0 0 var(--bw-accent), 0 0 20px rgba(59, 130, 246, 0.25) !important;
+  background: var(--item-selected-bg) !important;
+  border: 2px solid var(--item-selected-border) !important;
+  box-shadow: 0 0 0 1px var(--item-selected-border), inset 5px 0 0 var(--item-selected-border) !important;
 }
-.bible-workspace .verse-card.selected .verse-text { color: #ffffff; }
+.bible-workspace .verse-card.selected .verse-text {
+  color: var(--item-selected-text) !important;
+  font-weight: 600 !important;
+}
 .bible-workspace .verse-card.selected .verse-num {
-  background: var(--bw-accent);
-  border-color: transparent;
-  color: #ffffff;
-  text-shadow: none;
+  background: var(--item-selected-border) !important;
+  border-color: var(--item-selected-border) !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
 }
 
 /* Rango múltiple */
 .bible-workspace .verse-card.in-range {
-  background: rgba(59, 130, 246, 0.09) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  box-shadow: inset 3px 0 0 rgba(59, 130, 246, 0.6) !important;
+  background: var(--accent-surface) !important;
+  border-color: var(--item-selected-border) !important;
+  box-shadow: inset 3px 0 0 var(--item-selected-border) !important;
 }
 
-/* En vivo (al aire): Esmeralda Neón */
+/* En vivo (al aire — solo proyectando) */
 .bible-workspace .verse-card.projected {
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0.05) 100%) !important;
-  border-color: #10b981 !important;
-  box-shadow: inset 4px 0 0 var(--bw-live), 0 0 22px rgba(16, 185, 129, 0.3) !important;
+  background: var(--status-live-surface) !important;
+  border: 2px solid var(--status-live) !important;
+  box-shadow: inset 4px 0 0 var(--status-live) !important;
 }
 .bible-workspace .verse-card.projected .verse-num {
-  background: var(--bw-live);
-  border-color: transparent;
-  color: #052e16;
-  text-shadow: none;
+  background: var(--status-live) !important;
+  border-color: var(--status-live) !important;
+  color: #FFFFFF !important;
+}
+
+/* Elemento AL AIRE y además MARCADO / SELECCIONADO (Estado Dual Único) */
+.bible-workspace .verse-card.projected.selected {
+  background: rgba(16, 185, 129, 0.20) !important;
+  border: 2.5px solid var(--status-live) !important;
+  box-shadow: 0 0 0 2.5px #0284C7, 0 0 16px rgba(16, 185, 129, 0.45), inset 6px 0 0 #0284C7 !important;
+}
+.bible-workspace .verse-card.projected.selected .verse-text {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+.bible-workspace .verse-card.projected.selected .verse-num {
+  background: #0284C7 !important;
+  border-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.6) !important;
 }
 
 .bible-workspace .live-tally-pill {
   border-radius: 999px;
   padding: 2px 7px;
   font-size: 8.5px;
-  background-color: var(--bw-live);
-  color: #052e16;
+  background-color: var(--status-live);
+  color: var(--text-inverse);
   font-weight: 800;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
 .bible-workspace .btn-quick-project-verse {
   border-radius: 8px;
-  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
-  border: 1px solid rgba(147, 197, 253, 0.3);
-  box-shadow: 0 4px 14px var(--bw-accent-glow);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  font-weight: 600;
 }
 .bible-workspace .btn-quick-project-verse:hover {
-  background: linear-gradient(180deg, #60a5fa, #2563eb);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+}
+.bible-workspace .verse-card.projected .btn-quick-project-verse {
+  background: var(--status-live);
+  border-color: var(--status-live);
+  color: #FFFFFF;
 }
 
 /* Zoom de fuente en el encabezado (segmentado) */
 .bible-workspace .verse-font-zoom-group {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--bw-line-strong);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   overflow: hidden;
 }
-.bible-workspace .btn-font-zoom { border: none; background: transparent; color: #cbd5e1; }
-.bible-workspace .btn-font-zoom:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+.bible-workspace .btn-font-zoom { border: none; background: transparent; color: var(--text-secondary); }
+.bible-workspace .btn-font-zoom:hover { background: var(--bg-surface-hover); color: var(--text-primary); }
 
 /* ---------- Barra inferior de Emisión ---------- */
 .bible-workspace .bible-bottom-bar {
@@ -2407,10 +2444,10 @@
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: linear-gradient(180deg, #111724 0%, #0a0e17 100%);
-  border: 1px solid var(--bw-line);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .bible-workspace .bible-customizers {
@@ -2432,7 +2469,7 @@
 
 .bible-workspace .toolbar-divider {
   height: 22px;
-  background-color: var(--bw-line-strong);
+  background-color: var(--border-default);
   margin: 0 2px;
 }
 
@@ -2448,8 +2485,9 @@
 .bible-workspace .live-status-pill {
   height: 36px;
   border-radius: 8px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.25) 100%);
-  border: 1px solid var(--bw-line-strong);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
   transition: all var(--transition-fast);
 }
 
@@ -2458,113 +2496,120 @@
 .bible-workspace .config-select:hover,
 .bible-workspace .customizer-checkbox-label:hover,
 .bible-workspace .btn-icon-square:hover {
-  border-color: rgba(59, 130, 246, 0.6);
-  background: rgba(59, 130, 246, 0.1);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
 }
 
 .bible-workspace .config-select:focus,
 .bible-workspace .customizer-select:focus {
   outline: none;
-  border-color: var(--bw-accent);
-  box-shadow: 0 0 0 3px var(--bw-accent-soft);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--border-focus);
 }
 
 .bible-workspace .bg-thumb-preview {
   border-radius: 6px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 1px var(--border-default);
 }
 
 /* Toggle Blanco / Negro */
 .bible-workspace .btn-color-choice {
   border-radius: 6px;
   font-weight: 700;
+  color: var(--text-secondary);
 }
 .bible-workspace .btn-color-choice.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Stepper A- / A+ */
 .bible-workspace .font-size-stepper-group { padding: 0; overflow: hidden; }
-.bible-workspace .btn-font-step { height: 100%; border: none; background: transparent; color: #cbd5e1; }
-.bible-workspace .btn-font-step:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
-.bible-workspace .font-size-badge { color: #fbbf24; font-weight: 800; }
+.bible-workspace .btn-font-step { height: 100%; border: none; background: transparent; color: var(--text-secondary); }
+.bible-workspace .btn-font-step:hover { background: var(--bg-surface-hover); color: var(--text-primary); }
+.bible-workspace .font-size-badge { color: var(--text-primary); font-weight: 700; }
 
-/* Selector de versión en Oro brillante */
+/* Selector de versión limpio */
 .bible-workspace .version-picker,
 .bible-workspace .config-select-accent {
-  border-color: rgba(245, 158, 11, 0.45);
-  color: #fbbf24;
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0.06) 100%);
-  font-weight: 800;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
 }
 .bible-workspace .version-picker:hover,
 .bible-workspace .version-picker:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 /* Casillas MAYÚS / Versión */
 .bible-workspace .customizer-checkbox-label input[type="checkbox"] {
-  accent-color: var(--bw-accent);
+  accent-color: var(--accent-primary);
   width: 14px;
   height: 14px;
 }
 .bible-workspace .customizer-checkbox-label:has(input:checked) {
-  border-color: rgba(59, 130, 246, 0.6);
-  background: var(--bw-accent-soft);
-  color: #ffffff;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+  border-color: var(--accent-primary);
+  background: var(--accent-surface);
+  color: var(--accent-primary);
 }
 
 /* Indicador EN AIRE */
 .bible-workspace .live-status-pill { padding: 0 12px; }
 .bible-workspace .live-status-pill.live {
-  border-color: rgba(16, 185, 129, 0.65);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.06) 100%);
-  box-shadow: 0 0 14px var(--bw-live-glow);
+  border-color: var(--status-live);
+  background: var(--status-live-surface);
+  color: var(--status-live);
 }
 
 /* Anterior / Siguiente */
 .bible-workspace .nav-button-cluster { overflow: hidden; }
-.bible-workspace .btn-nav { padding: 0 14px; color: #e2e8f0; }
-.bible-workspace .btn-nav + .btn-nav { border-left: 1px solid var(--bw-line-strong); }
-.bible-workspace .btn-nav:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+.bible-workspace .btn-nav { padding: 0 14px; color: var(--text-primary); }
+.bible-workspace .btn-nav + .btn-nav { border-left: 1px solid var(--border-default); }
+.bible-workspace .btn-nav:hover { background: var(--bg-surface-hover); color: var(--text-primary); }
 
 /* Botón principal PROYECTAR */
 .bible-workspace .btn-project-main {
   height: 40px;
   padding: 0 20px;
   border-radius: 10px;
-  border: 1px solid rgba(147, 197, 253, 0.45);
-  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 18px var(--bw-accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
 }
 .bible-workspace .btn-project-main:hover {
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: 0 4px 14px var(--accent-glow);
 }
 .bible-workspace .btn-project-main:active { transform: translateY(0); }
 .bible-workspace .btn-project-main .kbd-badge {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-inverse);
 }
 
 /* ---------- HUD y concordancia ---------- */
 .bible-workspace .hud-capsule {
-  background: rgba(10, 14, 22, 0.94);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(59, 130, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.25);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-primary);
+}
+.bible-workspace .hud-raw-buffer {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
 }
 .bible-workspace .fts-search-results-floating {
+  background: var(--bg-surface);
   border-radius: 12px;
-  border-color: var(--bw-line-strong);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(59, 130, 246, 0.2);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-lg);
 }
-.bible-workspace .fts-result-row:hover { background: var(--bw-accent-soft); }
+.bible-workspace .fts-result-row:hover { background: var(--bg-surface-hover); }

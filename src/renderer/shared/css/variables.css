@@ -1,44 +1,15 @@
-/* BIBLE — Design Tokens: Studio Broadcast Luxury Obsidian System */
+/* BIBLE — Design System: Warm Pastel Minimalism & Dynamic Themes
+   Temas disponibles:
+   1. Warm Cream (predeterminado): crema, marfil y tonos cálidos.
+   2. Sage Green: verde salvia y tonos naturales.
+   3. Soft Lavender: lavanda y tonos suaves.
+   4. Peach: durazno y tonos cálidos.
+   5. Sky Blue: azul cielo y tonos claros.
+   6. Soft Rose: rosa empolvado y tonos neutros.
+   7. Dark Elegant: modo oscuro elegante, evitando el negro absoluto.
+*/
+
 :root {
-  /* Fondos de la aplicación (Luxury Deep Obsidian & Sapphire Graphite) */
-  --bg-app: #07090e;
-  --bg-primary: #0b0f17;
-  --bg-surface: #111723;
-  --bg-surface-elevated: #172030;
-  --bg-surface-hover: #1e293d;
-  --bg-surface-active: #26354f;
-
-  /* Bordes ultra-precisos de estudio con sutil brillo */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.11);
-  --border-strong: rgba(255, 255, 255, 0.20);
-  --border-focus: #3b82f6;
-
-  /* Tipografía y textos de alta legibilidad */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #07090e;
-
-  /* Acentos de interfaz luminosos y de alto impacto */
-  --accent-primary: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-surface: rgba(59, 130, 246, 0.18);
-  --accent-glow: rgba(59, 130, 246, 0.45);
-  --accent-gold: #f59e0b;
-  --accent-gold-surface: rgba(245, 158, 11, 0.16);
-  --accent-gold-glow: rgba(245, 158, 11, 0.4);
-
-  /* Estados de transmisión y botones de pánico de consola */
-  --status-live: #10b981;
-  --status-live-surface: rgba(16, 185, 129, 0.18);
-  --status-live-glow: rgba(16, 185, 129, 0.45);
-  --status-blackout: #ef4444;
-  --status-blackout-surface: rgba(239, 68, 68, 0.18);
-  --status-freeze: #06b6d4;
-  --status-freeze-surface: rgba(6, 182, 212, 0.18);
-  --status-warning: #f59e0b;
-
   /* Tipografías de precisión */
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
@@ -51,12 +22,493 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Sombras y elevaciones sutiles */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
-
   /* Micro-transiciones fluidas */
   --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-theme: background-color 220ms ease, border-color 220ms ease, color 180ms ease, box-shadow 220ms ease;
+
+  /* Estados de Proyección Dual: Proyectando y Marcado simultáneamente */
+  --status-live-active-bg: rgba(16, 185, 129, 0.22);
+  --status-live-active-border: #0284C7;
+}
+
+/* ==========================================================================
+   1. WARM CREAM — Predeterminado (Crema, Marfil y Tonos Cálidos — Limpio y Elegante)
+   ========================================================================== */
+:root,
+:root[data-theme="warm-cream"] {
+  --theme-name: "Warm Cream";
+
+  /* Fondos y Superficies */
+  --bg-app: #F7F4EE;
+  --bg-primary: #EFE9DF;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F2ECE0;
+  --bg-surface-active: #E5DDD0;
+
+  /* Bordes */
+  --border-subtle: rgba(140, 120, 95, 0.16);
+  --border-default: rgba(140, 120, 95, 0.28);
+  --border-strong: rgba(140, 120, 95, 0.48);
+  --border-focus: #1E40AF;
+
+  /* Tipografía */
+  --text-primary: #1C1814;
+  --text-secondary: #483E35;
+  --text-muted: #6E5E50;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste (Azul Zafiro Limpio y Clásico) */
+  --accent-primary: #1E40AF;
+  --accent-hover: #1D4ED8;
+  --accent-surface: rgba(30, 64, 175, 0.10);
+  --accent-glow: rgba(30, 64, 175, 0.25);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Subrayador Distinto y Nítido) */
+  --item-selected-bg: #EEF4FF;
+  --item-selected-border: #1E40AF;
+  --item-selected-text: #0F172A;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #2E86AB;
+  --status-freeze-surface: rgba(46, 134, 171, 0.16);
+  --status-warning: #C28B38;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(70, 50, 30, 0.08);
+  --shadow-md: 0 4px 12px rgba(70, 50, 30, 0.12);
+  --shadow-lg: 0 12px 28px rgba(70, 50, 30, 0.16);
+
+  /* Barras de desplazamiento visibles y fáciles de sujetar */
+  --scrollbar-thumb: rgba(90, 75, 60, 0.38);
+  --scrollbar-thumb-hover: rgba(90, 75, 60, 0.68);
+}
+
+/* ==========================================================================
+   2. SAGE GREEN (Verde Salvia y Tonos Naturales)
+   ========================================================================== */
+:root[data-theme="sage"] {
+  --theme-name: "Sage Green";
+
+  /* Fondos y Superficies */
+  --bg-app: #F2F5F2;
+  --bg-primary: #E4ECE4;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #EBF0EB;
+  --bg-surface-active: #D5E2D5;
+
+  /* Bordes */
+  --border-subtle: rgba(90, 120, 95, 0.16);
+  --border-default: rgba(90, 120, 95, 0.28);
+  --border-strong: rgba(90, 120, 95, 0.48);
+  --border-focus: #386B47;
+
+  /* Tipografía */
+  --text-primary: #111A13;
+  --text-secondary: #334436;
+  --text-muted: #526656;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste */
+  --accent-primary: #386B47;
+  --accent-hover: #2B5437;
+  --accent-surface: rgba(56, 107, 71, 0.16);
+  --accent-glow: rgba(56, 107, 71, 0.35);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Subrayador Distinto al Verde) */
+  --item-selected-bg: #E0F2FE;
+  --item-selected-border: #0284C7;
+  --item-selected-text: #0C4A6E;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #2E86AB;
+  --status-freeze-surface: rgba(46, 134, 171, 0.16);
+  --status-warning: #B88736;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(30, 60, 40, 0.08);
+  --shadow-md: 0 4px 12px rgba(30, 60, 40, 0.12);
+  --shadow-lg: 0 12px 28px rgba(30, 60, 40, 0.16);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(50, 80, 60, 0.38);
+  --scrollbar-thumb-hover: rgba(50, 80, 60, 0.68);
+}
+
+/* ==========================================================================
+   3. SOFT LAVENDER (Lavanda y Tonos Suaves)
+   ========================================================================== */
+:root[data-theme="lavender"] {
+  --theme-name: "Soft Lavender";
+
+  /* Fondos y Superficies */
+  --bg-app: #F6F4F9;
+  --bg-primary: #ECE7F3;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F0ECF6;
+  --bg-surface-active: #DCD4E8;
+
+  /* Bordes */
+  --border-subtle: rgba(120, 100, 150, 0.16);
+  --border-default: rgba(120, 100, 150, 0.28);
+  --border-strong: rgba(120, 100, 150, 0.48);
+  --border-focus: #634E96;
+
+  /* Tipografía */
+  --text-primary: #171120;
+  --text-secondary: #3D334C;
+  --text-muted: #605473;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste */
+  --accent-primary: #634E96;
+  --accent-hover: #503C80;
+  --accent-surface: rgba(99, 78, 150, 0.16);
+  --accent-glow: rgba(99, 78, 150, 0.35);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Subrayador Distinto al Lavanda) */
+  --item-selected-bg: #E0F2FE;
+  --item-selected-border: #0284C7;
+  --item-selected-text: #0C4A6E;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #2E86AB;
+  --status-freeze-surface: rgba(46, 134, 171, 0.16);
+  --status-warning: #BA873B;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(50, 30, 70, 0.08);
+  --shadow-md: 0 4px 12px rgba(50, 30, 70, 0.12);
+  --shadow-lg: 0 12px 28px rgba(50, 30, 70, 0.16);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(75, 60, 105, 0.38);
+  --scrollbar-thumb-hover: rgba(75, 60, 105, 0.68);
+}
+
+/* ==========================================================================
+   4. PEACH (Durazno y Tonos Cálidos)
+   ========================================================================== */
+:root[data-theme="peach"] {
+  --theme-name: "Peach";
+
+  /* Fondos y Superficies */
+  --bg-app: #FAF5F1;
+  --bg-primary: #F4E9E1;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F8EDE6;
+  --bg-surface-active: #E8D6CB;
+
+  /* Bordes */
+  --border-subtle: rgba(160, 110, 85, 0.16);
+  --border-default: rgba(160, 110, 85, 0.28);
+  --border-strong: rgba(160, 110, 85, 0.48);
+  --border-focus: #0284C7;
+
+  /* Tipografía */
+  --text-primary: #1A120E;
+  --text-secondary: #4A332A;
+  --text-muted: #6E4E40;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste (Azul Océano Limpio — Cero Naranja) */
+  --accent-primary: #0284C7;
+  --accent-hover: #0369A1;
+  --accent-surface: rgba(2, 132, 199, 0.12);
+  --accent-glow: rgba(2, 132, 199, 0.28);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Subrayador Distinto al Durazno) */
+  --item-selected-bg: #E0F2FE;
+  --item-selected-border: #0284C7;
+  --item-selected-text: #0C4A6E;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #2E86AB;
+  --status-freeze-surface: rgba(46, 134, 171, 0.16);
+  --status-warning: #BD7E32;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(70, 40, 30, 0.08);
+  --shadow-md: 0 4px 12px rgba(70, 40, 30, 0.12);
+  --shadow-lg: 0 12px 28px rgba(70, 40, 30, 0.16);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(110, 65, 45, 0.38);
+  --scrollbar-thumb-hover: rgba(110, 65, 45, 0.68);
+}
+
+/* ==========================================================================
+   5. SKY BLUE (Azul Cielo y Tonos Claros — Alto Contraste)
+   ========================================================================== */
+:root[data-theme="sky"] {
+  --theme-name: "Sky Blue";
+
+  /* Fondos y Superficies */
+  --bg-app: #F0F5FA;
+  --bg-primary: #E1EDF7;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #EAF2F9;
+  --bg-surface-active: #CEE1F2;
+
+  /* Bordes */
+  --border-subtle: rgba(30, 90, 140, 0.16);
+  --border-default: rgba(30, 90, 140, 0.28);
+  --border-strong: rgba(30, 90, 140, 0.48);
+  --border-focus: #12639B;
+
+  /* Tipografía */
+  --text-primary: #0A141E;
+  --text-secondary: #24384D;
+  --text-muted: #48627D;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste */
+  --accent-primary: #12639B;
+  --accent-hover: #0C4E7C;
+  --accent-surface: rgba(18, 99, 155, 0.16);
+  --accent-glow: rgba(18, 99, 155, 0.35);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Cobalto Profundo — Distinto al Azul Claro) */
+  --item-selected-bg: #EEF2FF;
+  --item-selected-border: #1E40AF;
+  --item-selected-text: #1E1B4B;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #1B769E;
+  --status-freeze-surface: rgba(27, 118, 158, 0.16);
+  --status-warning: #B58434;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(20, 45, 70, 0.08);
+  --shadow-md: 0 4px 12px rgba(20, 45, 70, 0.12);
+  --shadow-lg: 0 12px 28px rgba(20, 45, 70, 0.16);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(30, 80, 120, 0.38);
+  --scrollbar-thumb-hover: rgba(30, 80, 120, 0.68);
+}
+
+/* ==========================================================================
+   6. SOFT ROSE (Rosa Empolvado y Tonos Neutros)
+   ========================================================================== */
+:root[data-theme="rose"] {
+  --theme-name: "Soft Rose";
+
+  /* Fondos y Superficies */
+  --bg-app: #FAF4F6;
+  --bg-primary: #F4E8EC;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F8EDF1;
+  --bg-surface-active: #E8D2DB;
+
+  /* Bordes */
+  --border-subtle: rgba(160, 100, 120, 0.16);
+  --border-default: rgba(160, 100, 120, 0.28);
+  --border-strong: rgba(160, 100, 120, 0.48);
+  --border-focus: #9C3B53;
+
+  /* Tipografía */
+  --text-primary: #1C0F14;
+  --text-secondary: #4B2E37;
+  --text-muted: #6E4854;
+  --text-inverse: #FFFFFF;
+
+  /* Acentos y Selección de Alto Contraste */
+  --accent-primary: #9C3B53;
+  --accent-hover: #822C41;
+  --accent-surface: rgba(156, 59, 83, 0.16);
+  --accent-glow: rgba(156, 59, 83, 0.35);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual (Subrayador Distinto al Rosa) */
+  --item-selected-bg: #E0F2FE;
+  --item-selected-border: #0284C7;
+  --item-selected-text: #0C4A6E;
+
+  /* Estados y Pánico */
+  --status-live: #1B7A50;
+  --status-live-surface: rgba(27, 122, 80, 0.16);
+  --status-live-glow: rgba(27, 122, 80, 0.35);
+  --status-blackout: #D44238;
+  --status-blackout-surface: rgba(212, 66, 56, 0.16);
+  --status-freeze: #2E86AB;
+  --status-freeze-surface: rgba(46, 134, 171, 0.16);
+  --status-warning: #B88236;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(60, 30, 45, 0.08);
+  --shadow-md: 0 4px 12px rgba(60, 30, 45, 0.12);
+  --shadow-lg: 0 12px 28px rgba(60, 30, 45, 0.16);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(110, 50, 70, 0.38);
+  --scrollbar-thumb-hover: rgba(110, 50, 70, 0.68);
+}
+
+/* ==========================================================================
+   7. DARK ELEGANT (Modo Oscuro Sofisticado — Evitando Negro Absoluto)
+   ========================================================================== */
+:root[data-theme="dark-elegant"] {
+  --theme-name: "Dark Elegant";
+
+  /* Fondos y Superficies (Gris antracita refinado) */
+  --bg-app: #15181F;
+  --bg-primary: #1C2028;
+  --bg-surface: #242934;
+  --bg-surface-elevated: #2C3240;
+  --bg-surface-hover: #32394A;
+  --bg-surface-active: #3C4558;
+
+  /* Bordes sutiles y definidos */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.26);
+  --border-focus: #5A8DF5;
+
+  /* Tipografía marfil y suave */
+  --text-primary: #F0F3F8;
+  --text-secondary: #A6B0C0;
+  --text-muted: #727C8E;
+  --text-inverse: #0F131A;
+
+  /* Acentos azul zafiro moderno */
+  --accent-primary: #5A8DF5;
+  --accent-hover: #75A2F8;
+  --accent-surface: rgba(90, 141, 245, 0.2);
+  --accent-glow: rgba(90, 141, 245, 0.4);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual */
+  --item-selected-bg: #1F2A3F;
+  --item-selected-border: #5A8DF5;
+  --item-selected-text: #FFFFFF;
+
+  /* Estados y Pánico */
+  --status-live: #27AE75;
+  --status-live-surface: rgba(39, 174, 117, 0.2);
+  --status-live-glow: rgba(39, 174, 117, 0.45);
+  --status-blackout: #E55353;
+  --status-blackout-surface: rgba(229, 83, 83, 0.2);
+  --status-freeze: #3AA8C1;
+  --status-freeze-surface: rgba(58, 168, 193, 0.2);
+  --status-warning: #E5AE4B;
+
+  /* Sombras oscuras profundas */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.65);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.32);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.6);
+}
+
+/* ==========================================================================
+   8. DARK BLUE (Modo Oscuro Azul — Deep Midnight Navy)
+   ========================================================================== */
+:root[data-theme="dark-blue"] {
+  --theme-name: "Dark Blue";
+
+  /* Fondos y Superficies (Azul Marino Profundo Elegante) */
+  --bg-app: #0B1320;
+  --bg-primary: #101B2E;
+  --bg-surface: #17263F;
+  --bg-surface-elevated: #1F3252;
+  --bg-surface-hover: #263C60;
+  --bg-surface-active: #2F4975;
+
+  /* Bordes sutiles y definidos con tinte azul */
+  --border-subtle: rgba(100, 160, 240, 0.15);
+  --border-default: rgba(100, 160, 240, 0.25);
+  --border-strong: rgba(100, 160, 240, 0.45);
+  --border-focus: #38BDF8;
+
+  /* Tipografía marfil y azul hielo */
+  --text-primary: #F0F6FC;
+  --text-secondary: #94A9C4;
+  --text-muted: #62799B;
+  --text-inverse: #0B1320;
+
+  /* Acentos azul cian eléctrico y dorado */
+  --accent-primary: #38BDF8;
+  --accent-hover: #60A5FA;
+  --accent-surface: rgba(56, 189, 248, 0.18);
+  --accent-glow: rgba(56, 189, 248, 0.45);
+  --accent-gold: var(--accent-primary);
+  --accent-gold-surface: var(--accent-surface);
+  --accent-gold-glow: var(--accent-glow);
+
+  /* Tokens de Selección con Alto Impacto Visual */
+  --item-selected-bg: #162E50;
+  --item-selected-border: #38BDF8;
+  --item-selected-text: #FFFFFF;
+
+  /* Estados y Pánico */
+  --status-live: #22C55E;
+  --status-live-surface: rgba(34, 197, 94, 0.2);
+  --status-live-glow: rgba(34, 197, 94, 0.45);
+  --status-blackout: #EF4444;
+  --status-blackout-surface: rgba(239, 68, 68, 0.2);
+  --status-freeze: #38BDF8;
+  --status-freeze-surface: rgba(56, 189, 248, 0.2);
+  --status-warning: #F59E0B;
+
+  /* Sombras oscuras azuladas */
+  --shadow-sm: 0 1px 3px rgba(3, 8, 16, 0.4);
+  --shadow-md: 0 4px 14px rgba(3, 8, 16, 0.55);
+  --shadow-lg: 0 10px 28px rgba(3, 8, 16, 0.7);
+
+  /* Barras de desplazamiento */
+  --scrollbar-thumb: rgba(100, 160, 240, 0.35);
+  --scrollbar-thumb-hover: rgba(100, 160, 240, 0.65);
 }

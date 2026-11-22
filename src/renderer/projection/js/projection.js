@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.035);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function playFanfareSound() {
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         osc.start(startTime);
         osc.stop(startTime + duration);
       });
-    } catch (_) {}
+    } catch (_) { }
   }
 
   function startConfetti() {
@@ -429,8 +429,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       mainText.textContent = text || '';
 
       // Tamaño de letra dinámico (porcentaje 60% - 220%)
-      const activeFontSize = state.activeContent.fontSize !== undefined 
-        ? state.activeContent.fontSize 
+      const activeFontSize = state.activeContent.fontSize !== undefined
+        ? state.activeContent.fontSize
         : (state.currentFontSize || 100);
 
       if (state.activeContent.module === 'countdown') {
@@ -607,13 +607,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (isDarkText) {
         contentLayer.classList.add('dark-text');
         mainText.style.color = '#0F172A';
-        refTop.style.color = '#92400E';
-        refBottom.style.color = '#92400E';
+        refTop.style.color = '#1E40AF';
+        refBottom.style.color = '#1E40AF';
       } else {
         contentLayer.classList.remove('dark-text');
         mainText.style.color = '#FFFFFF';
-        refTop.style.color = '#FCD34D';
-        refBottom.style.color = '#FCD34D';
+        refTop.style.color = '#38BDF8';
+        refBottom.style.color = '#38BDF8';
       }
 
       // Estilos tipográficos adicionales

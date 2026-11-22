@@ -237,8 +237,8 @@ export class BibleController {
     const filtered = this.books.filter(b => {
       if (this.filterTestament !== 'ALL' && b.testament !== this.filterTestament) return false;
       if (!query) return true;
-      return b.name.toLowerCase().includes(query) || 
-             b.standard_abbrev.toLowerCase().includes(query);
+      return b.name.toLowerCase().includes(query) ||
+        b.standard_abbrev.toLowerCase().includes(query);
     });
 
     if (this.booksCountHeader) {
@@ -290,7 +290,7 @@ export class BibleController {
     if (this.recentCites && this.recentCites.length > 0) {
       const recHeader = document.createElement('div');
       recHeader.className = 'frequent-cat-header';
-      recHeader.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-gold); fill: none; stroke: currentColor; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Leídos en este Culto</span>';
+      recHeader.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-primary); fill: none; stroke: currentColor; stroke-width: 2.2;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Leídos en este Culto</span>';
       container.appendChild(recHeader);
 
       this.recentCites.forEach(cite => {
@@ -319,26 +319,32 @@ export class BibleController {
 
     // 2. Frecuentes Canónicos de Estudio y Culto
     const presets = [
-      { cat: 'Promesas y Salvación', items: [
-        { ref: 'Juan 3:16', preview: 'De tal manera amó Dios al mundo...' },
-        { ref: 'Romanos 8:28', preview: 'Todas las cosas ayudan a bien...' },
-        { ref: 'Filipenses 4:13', preview: 'Todo lo puedo en Cristo que me fortalece...' },
-        { ref: 'Efesios 2:8', preview: 'Por gracia sois salvos por medio de la fe...' },
-        { ref: 'Jeremías 29:11', preview: 'Pensamientos de paz y no de mal...' }
-      ]},
-      { cat: 'Salmos y Adoración', items: [
-        { ref: 'Salmos 23:1', preview: 'Jehová es mi pastor; nada me faltará...' },
-        { ref: 'Salmos 91:1', preview: 'El que habita al abrigo del Altísimo...' },
-        { ref: 'Salmos 121:1', preview: 'Alzaré mis ojos a los montes...' },
-        { ref: 'Salmos 100:1', preview: 'Cantad alegres a Dios, habitantes...' },
-        { ref: 'Salmos 119:105', preview: 'Lámpara es a mis pies tu palabra...' }
-      ]},
-      { cat: 'Poder y Fe', items: [
-        { ref: 'Hechos 1:8', preview: 'Recibiréis poder cuando haya venido...' },
-        { ref: 'Mateo 28:19', preview: 'Por tanto, id, y haced discípulos...' },
-        { ref: 'Isaías 40:31', preview: 'Los que esperan en Jehová tendrán nuevas fuerzas...' },
-        { ref: '1 Corintios 13:4', preview: 'El amor es sufrido, es benigno...' }
-      ]}
+      {
+        cat: 'Promesas y Salvación', items: [
+          { ref: 'Juan 3:16', preview: 'De tal manera amó Dios al mundo...' },
+          { ref: 'Romanos 8:28', preview: 'Todas las cosas ayudan a bien...' },
+          { ref: 'Filipenses 4:13', preview: 'Todo lo puedo en Cristo que me fortalece...' },
+          { ref: 'Efesios 2:8', preview: 'Por gracia sois salvos por medio de la fe...' },
+          { ref: 'Jeremías 29:11', preview: 'Pensamientos de paz y no de mal...' }
+        ]
+      },
+      {
+        cat: 'Salmos y Adoración', items: [
+          { ref: 'Salmos 23:1', preview: 'Jehová es mi pastor; nada me faltará...' },
+          { ref: 'Salmos 91:1', preview: 'El que habita al abrigo del Altísimo...' },
+          { ref: 'Salmos 121:1', preview: 'Alzaré mis ojos a los montes...' },
+          { ref: 'Salmos 100:1', preview: 'Cantad alegres a Dios, habitantes...' },
+          { ref: 'Salmos 119:105', preview: 'Lámpara es a mis pies tu palabra...' }
+        ]
+      },
+      {
+        cat: 'Poder y Fe', items: [
+          { ref: 'Hechos 1:8', preview: 'Recibiréis poder cuando haya venido...' },
+          { ref: 'Mateo 28:19', preview: 'Por tanto, id, y haced discípulos...' },
+          { ref: 'Isaías 40:31', preview: 'Los que esperan en Jehová tendrán nuevas fuerzas...' },
+          { ref: '1 Corintios 13:4', preview: 'El amor es sufrido, es benigno...' }
+        ]
+      }
     ];
 
     presets.forEach(group => {
@@ -585,8 +591,8 @@ export class BibleController {
       // 2. Estado de emisión en vivo (Projected)
       let isProjected = false;
       if (this.isCurrentlyProjecting && this.projectedReference) {
-        if (this.projectedReference.bookId === this.currentBook.id && 
-            this.projectedReference.chapter === this.currentChapter) {
+        if (this.projectedReference.bookId === this.currentBook.id &&
+          this.projectedReference.chapter === this.currentChapter) {
           if (this.projectedReference.endVerse) {
             isProjected = (v.verse >= this.projectedReference.startVerse && v.verse <= this.projectedReference.endVerse);
           } else {
@@ -621,7 +627,7 @@ export class BibleController {
   scrollToSelectedVerse() {
     const selected = this.versesContainer.querySelector('.verse-card.selected');
     if (selected) {
-      selected.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      selected.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     }
   }
 
@@ -1203,7 +1209,7 @@ export class BibleController {
       if (saved.chapters && saved.chapters >= 100 && saved.chapters <= 350) {
         colChapters.style.width = `${saved.chapters}px`;
       }
-    } catch {}
+    } catch { }
 
     const saveWidths = () => {
       try {
@@ -1212,7 +1218,7 @@ export class BibleController {
           chapters: Math.round(colChapters.getBoundingClientRect().width)
         };
         localStorage.setItem('bible_column_widths_v2', JSON.stringify(widths));
-      } catch {}
+      } catch { }
     };
 
     // Separador 1: Arrastrar entre Libros y Capítulos
@@ -1242,7 +1248,7 @@ export class BibleController {
       isDragging1 = false;
       splitter1.classList.remove('dragging');
       document.body.classList.remove('resizing-columns');
-      try { splitter1.releasePointerCapture(e.pointerId); } catch {}
+      try { splitter1.releasePointerCapture(e.pointerId); } catch { }
       saveWidths();
     };
 
@@ -1282,7 +1288,7 @@ export class BibleController {
       isDragging2 = false;
       splitter2.classList.remove('dragging');
       document.body.classList.remove('resizing-columns');
-      try { splitter2.releasePointerCapture(e.pointerId); } catch {}
+      try { splitter2.releasePointerCapture(e.pointerId); } catch { }
       saveWidths();
     };
 
@@ -1293,6 +1299,15 @@ export class BibleController {
     splitter2.addEventListener('dblclick', () => {
       colChapters.style.width = '156px';
       saveWidths();
+    });
+
+    // Control Remoto Móvil (Wi-Fi)
+    window.addEventListener('remote-control:action', (e) => {
+      if (e.detail?.action === 'next') {
+        this.nextVerse();
+      } else if (e.detail?.action === 'prev') {
+        this.prevVerse();
+      }
     });
   }
 

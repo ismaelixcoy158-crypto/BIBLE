@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BIBLE — Centro de Descargas</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border: rgba(148, 163, 184, 0.15);
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 40px;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+      margin-bottom: 14px;
+    }
+    .logo-container svg {
+      width: 38px;
+      height: 38px;
+      fill: #ffffff;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .server-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 6px 14px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #34d399;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .download-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .download-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-icon-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon-box.green { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .icon-box.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .icon-box.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge.green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge.purple { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 13px 18px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+    .btn-green {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+    }
+    .btn-green:hover { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: #ffffff;
+    }
+    .btn-blue:hover { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); }
+
+    .btn-purple {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+    }
+    .btn-purple:hover { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); }
+
+    .steps-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .steps-box strong {
+      color: #e2e8f0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 36px;
+      color: #64748b;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    footer a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-1 18H6V4h12v16zm-5-14H7v2h6V6zm0 4H7v2h6v-2zm-6 4h4v2H7v-2z"/>
+        </svg>
+      </div>
+      <h1>Centro de Descargas BIBLE</h1>
+      <p class="subtitle">Descarga el instalador para tu celular o para otra computadora</p>
+      <div class="server-status-pill">
+        <span class="status-dot"></span> Servidor Local Activo • Red Wi-Fi Directa
+      </div>
+    </header>
+
+    <div class="cards-grid">
+      <!-- 1. INSTALADOR PARA WINDOWS (PC / LAPTOP) -->
+      <div class="download-card" style="border: 2px solid rgba(59, 130, 246, 0.4); background: rgba(30, 41, 59, 0.85);">
+        <div class="card-top">
+          <div class="card-icon-title">
+            <div class="icon-box blue">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.401H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.949-1.801"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">BIBLE para Windows (PC / Laptop)</h2>
+              <span class="badge blue">Windows 10 / 11 • Instalador Menú Inicio • 16 MB</span>
+            </div>
+          </div>
+        </div>
+        <p class="card-desc">
+          Instala BIBLE en cualquier computadora con <strong>Windows</strong>. Crea automáticamente el ícono en el <strong>Escritorio</strong> y se registra en el <strong>Menú Inicio de Windows</strong> para que cualquier persona en la iglesia pueda presionar la tecla Windows, escribir <em>"BIBLE"</em> y abrir la app al instante.
+        </p>
+        <a href="/download/bible-windows-setup.zip" class="btn btn-blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Descargar Instalador BIBLE para Windows (.zip)
+        </a>
+        <div class="steps-box">
+          <strong>¿Cómo instalar en la computadora Windows?</strong><br>
+          1. Descarga el archivo <code>bible-windows-setup.zip</code> y dale clic derecho > <em>Extraer todo</em>.<br>
+          2. Entra a la carpeta y haz doble clic en <strong><code>instalar-acceso-directo-windows.bat</code></strong>.<br>
+          3. ¡Listo! Quedará el ícono en el Escritorio y ya la puedes buscar en el menú Inicio escribiendo <em>BIBLE</em>.
+        </div>
+      </div>
+
+      <!-- 2. APK PARA ANDROID -->
+      <div class="download-card">
+        <div class="card-top">
+          <div class="card-icon-title">
+            <div class="icon-box green">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.68-.05-.85.26l-1.88 3.24c-1.33-.61-2.82-.95-4.45-.95s-3.12.34-4.45.95L5.67 5.71c-.17-.31-.56-.41-.85-.26-.3.16-.42.54-.26.85l1.84 3.18C3.59 11.08 1.8 13.84 1.5 17h21c-.3-3.16-2.09-5.92-4.9-7.52zM7 14.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">APK para Teléfono Android</h2>
+              <span class="badge green">Android APK • 89 KB • 100% Offline</span>
+            </div>
+          </div>
+        </div>
+        <p class="card-desc">
+          Instala el <strong>Control Remoto Nativo</strong> en cualquier teléfono o tablet Android. Te permite cambiar diapositivas desde el púlpito o cabina multimedia sin internet y con respuesta táctil instantánea.
+        </p>
+        <a href="/download/bible-control.apk" class="btn btn-green">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Descargar APK de Android (bible-control.apk)
+        </a>
+        <div class="steps-box">
+          <strong>¿Cómo instalar en el celular?</strong><br>
+          1. Pulsa en <em>Descargar APK</em>.<br>
+          2. Abre el archivo descargado y presiona <em>Instalar</em> (si te pregunta, permite instalar apps de fuentes desconocidas).<br>
+          3. Abre la app e ingresa el PIN de 4 dígitos que figura en la computadora del operador.
+        </div>
+      </div>
+
+      <!-- 2. APLICACIÓN DE ESCRITORIO PARA OTRA COMPUTADORA -->
+      <div class="download-card">
+        <div class="card-top">
+          <div class="card-icon-title">
+            <div class="icon-box blue">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">BIBLE para otra Computadora (PC / Laptop)</h2>
+              <span class="badge blue">Linux Portable • 121 MB • Sin instalación</span>
+            </div>
+          </div>
+        </div>
+        <p class="card-desc">
+          Lleva el <strong>Sistema Completo de Proyección BIBLE</strong> a otra computadora de la iglesia. Incluye toda la Biblia Reina-Valera 1960, himnarios, coritos, modo púlpito, módulo multimedia y control en doble pantalla.
+        </p>
+        <a href="/download/bible-desktop-linux.tar.gz" class="btn btn-blue">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Descargar Sistema BIBLE para PC (bible-desktop-linux.tar.gz)
+        </a>
+        <div class="steps-box">
+          <strong>¿Cómo usar en otra computadora?</strong><br>
+          1. Descarga el paquete comprimido en la otra computadora.<br>
+          2. Haz clic derecho y selecciona <em>Extraer aquí</em> (o ejecuta <code>tar -xzf bible-desktop-linux.tar.gz</code>).<br>
+          3. Entra en la carpeta y haz doble clic en <code>iniciar-bible.sh</code>. ¡Se abre al instante sin instalar Node ni nada!
+        </div>
+      </div>
+
+      <!-- 3. CONTROL REMOTO WEB DIRECTO -->
+      <div class="download-card">
+        <div class="card-top">
+          <div class="card-icon-title">
+            <div class="icon-box purple">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="card-title">Abrir Control Remoto Web Inmediato</h2>
+              <span class="badge purple">Universal • iPhone • Android • PC</span>
+            </div>
+          </div>
+        </div>
+        <p class="card-desc">
+          ¿Prefieres no instalar nada? Puedes abrir la consola táctil del predicador y de multimedia directamente en cualquier navegador web moderno (Chrome, Safari, Firefox o Edge).
+        </p>
+        <a href="/" class="btn btn-purple">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Abrir Control Remoto en este Navegador
+        </a>
+      </div>
+    </div>
+
+    <footer>
+      <p><strong>BIBLE — Church Media & Projection System</strong></p>
+      <p>Desarrollado para iglesias locales por el equipo de <strong>Ixcoydev</strong>. Sin fines de lucro.</p>
+    </footer>
+  </div>
+</body>
+</html>
+

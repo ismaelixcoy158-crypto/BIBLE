@@ -24,7 +24,7 @@
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.8px;
-  color: var(--accent-gold);
+  color: var(--text-secondary);
 }
 
 .spots-header-title h2 {
@@ -75,8 +75,11 @@
 }
 
 .spot-tab-btn.active {
-  background-color: var(--accent-primary);
-  color: #FFFFFF;
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+  font-weight: 700 !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 /* ==========================================================================
@@ -130,7 +133,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all var(--transition-fast);
+  transition: border-color 100ms ease, box-shadow 100ms ease;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   position: relative;
@@ -138,22 +141,27 @@
 
 .spot-card:hover {
   border-color: var(--accent-primary);
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .spot-card.selected {
-  border-color: var(--accent-primary);
-  background-color: rgba(37, 99, 235, 0.08);
+  border: 2.5px solid var(--item-selected-border) !important;
+  background-color: var(--item-selected-bg) !important;
+  box-shadow: 0 0 0 1px var(--item-selected-border), 0 4px 12px var(--accent-glow) !important;
+}
+
+.spot-card.selected .spot-card-title {
+  color: var(--item-selected-text) !important;
+  font-weight: 700 !important;
 }
 
 .spot-card.projected {
-  border-color: var(--status-live);
+  border: 2.5px solid var(--status-live) !important;
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
 }
 
 .spot-card.projected::after {
-  content: "EN AIRE 🔴";
+  content: "EN AIRE";
   position: absolute;
   top: 6px;
   left: 6px;
@@ -162,8 +170,20 @@
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   background: var(--status-live);
-  color: #000000;
+  color: #FFFFFF;
   z-index: 5;
+}
+
+/* Spot AL AIRE y además SELECCIONADO (Estado Dual Único) */
+.spot-card.projected.selected {
+  border: 2.5px solid var(--status-live) !important;
+  box-shadow: 0 0 0 2.5px #0284C7, 0 0 16px rgba(16, 185, 129, 0.45) !important;
+}
+
+.spot-card.projected.selected::after {
+  content: "EN AIRE (ACTIVO)";
+  background: #0284C7 !important;
+  color: #FFFFFF !important;
 }
 
 .spot-thumbnail-box {
@@ -212,8 +232,8 @@
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   background: rgba(0, 0, 0, 0.8);
-  color: var(--accent-gold);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   z-index: 4;
@@ -337,7 +357,7 @@
   font-family: var(--font-family-mono, monospace);
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--accent-gold);
+  color: var(--text-secondary);
   min-width: 48px;
 }
 

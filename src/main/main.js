@@ -6,11 +6,15 @@ const SecurityConfig = require('./security/security-config.js');
 const dbManager = require('../database/database.js');
 const projectionService = require('./services/projection-service.js');
 const churchService = require('./services/church-service.js');
+const remoteControlService = require('./services/remote-control-service.js');
 const windowManager = require('./windows/window-manager.js');
 const registerIpcHandlers = require('./ipc/register-ipc-handlers.js');
 
 // 1. Registrar esquemas privilegiados y políticas de autoplay antes de app.whenReady
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+if (!app.commandLine.hasSwitch('remote-debugging-port')) {
+  app.commandLine.appendSwitch('remote-debugging-port', '9222');
+}
 SecurityConfig.registerSchemes();
 
 // 2. Ciclo de vida principal
@@ -56,6 +60,14 @@ app.whenReady().then(() => {
     console.warn('[Main] No se pudo inicializar identidad de la iglesia:', err);
   }
 
+  // Iniciar servidor local de control remoto (púlpito y multimedia)
+  try {
+    remoteControlService.init({ operatorWindow, publicWindow });
+    remoteControlService.start();
+  } catch (err) {
+    console.warn('[Main] No se pudo inicializar control remoto:', err);
+  }
+
   // Escuchar conexiones/desconexiones de monitores HDMI
   windowManager.setupDisplayListeners(projectionService);
 
@@ -64,6 +76,9 @@ app.whenReady().then(() => {
 
 // Salir cuando todas las ventanas se cierran
 app.on('window-all-closed', () => {
+  try {
+    remoteControlService.stop();
+  } catch (e) {}
   dbManager.close();
   if (process.platform !== 'darwin') {
     app.quit();

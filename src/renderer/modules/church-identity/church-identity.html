@@ -12,7 +12,7 @@
   <!-- Sección 1: Nombre de la Iglesia -->
   <section class="identity-card">
     <div class="card-title">
-      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-gold);">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary);">
         <path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-5a2 2 0 0 1 4 0v5"/>
       </svg>
       <span>Nombre Oficial de la Congregación</span>
@@ -70,7 +70,7 @@
       <!-- Caja interactiva de previsualización (Soporta clic y Drag & Drop) -->
       <div id="logoPreviewBox" class="logo-preview-box" title="Haz clic o arrastra un archivo de imagen aquí">
         <div id="logoPlaceholder" class="logo-placeholder">
-          <svg class="icon icon-lg" viewBox="0 0 24 24" style="width: 44px; height: 44px; color: var(--accent-gold); opacity: 0.85;">
+          <svg class="icon icon-lg" viewBox="0 0 24 24" style="width: 44px; height: 44px; color: var(--accent-primary); opacity: 0.85;">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="17 8 12 3 7 8"/>
             <line x1="12" x2="12" y1="3" y2="15"/>
@@ -132,19 +132,24 @@
             <span class="form-label" style="font-size: 11px;">O elige un emblema institucional predeterminado:</span>
             <div class="sample-emblems-row">
               <button class="btn-sample-emblem" data-emblem="bible_official" title="Logotipo Oficial de BIBLE Church Media System">
-                <span>👑 BIBLE Oficial</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>BIBLE Oficial</span>
               </button>
               <button class="btn-sample-emblem" data-emblem="cross" title="Cruz Celestial Dorada">
-                <span>✝ Cruz Dorada</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 2h2v6h6v2h-6v12h-2V10H5V8h6V2z"/></svg>
+                <span>Cruz Dorada</span>
               </button>
               <button class="btn-sample-emblem" data-emblem="dove" title="Paloma de la Paz">
-                <span>🕊 Paloma de Paz</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                <span>Paloma de Paz</span>
               </button>
               <button class="btn-sample-emblem" data-emblem="bible" title="Sagrada Biblia Abierta">
-                <span>📖 Santa Biblia</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/><path d="M6 6h10M6 10h10"/></svg>
+                <span>Santa Biblia</span>
               </button>
               <button class="btn-sample-emblem" data-emblem="flame" title="Llama de Fuego Pentecostal">
-                <span>🔥 Fuego Santo</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 17c1.38 0 2.5-1.12 2.5-2.5 0-1.63-1.04-2.82-1.78-3.66C11.27 10.33 11 9.77 11 9c0-1.66 1.34-3 3-3 0 2.5 3 4 3 7a5 5 0 0 1-10 0c0-3.33 2.5-6.5 4.5-9-.72 2.11-.86 4.38-.86 5.5 0 .73.18 1.4.5 2"/></svg>
+                <span>Fuego Santo</span>
               </button>
             </div>
           </div>
@@ -170,7 +175,325 @@
     </div>
   </section>
 
-  <!-- Sección 3: Zona de Restablecimiento -->
+  <!-- Sección 3: Apariencia y Sistema de Temas (Warm Pastel Minimalism) -->
+  <section class="identity-card" id="appearanceSection">
+    <div class="card-title" style="justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary);">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a7 7 0 0 0 7 7c0 2-2 3-2 3s.5 1 0 2-2 1-2 1c-1 0-1-1-2-1s-1 1-2 1a2 2 0 0 1-2-2c0-1.5 1.5-2 1.5-3.5A6.5 6.5 0 0 1 12 2Z"/>
+        </svg>
+        <span>Apariencia</span>
+      </div>
+      <button id="btnResetDefaultTheme" class="btn btn-sm btn-secondary" title="Restablecer tema predeterminado Warm Cream">
+        <svg class="icon icon-xs" viewBox="0 0 24 24">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>Restaurar Tema Predeterminado</span>
+      </button>
+    </div>
+
+    <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">
+      Selecciona la atmósfera visual que prefieras para la consola del operador. Cada tema aplica una paleta minimalista de colores pastel suaves o modo oscuro refinado, con guardado automático instantáneo.
+    </p>
+
+    <!-- Grid de Temas Disponibles -->
+    <div class="theme-presets-grid" id="themePresetsGrid">
+      <!-- 1. Warm Cream -->
+      <div class="theme-card" data-theme-id="warm-cream" tabindex="0" role="button" title="Warm Cream: Crema, marfil y tonos cálidos">
+        <div class="theme-preview-box preview-warm-cream">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Warm Cream</span>
+            <span class="theme-desc">Crema, marfil y tonos cálidos</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #F7F4EE;" title="Fondo"></span>
+            <span class="dot" style="background: #EFE9DF;" title="Superficie"></span>
+            <span class="dot" style="background: #B38E65;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 2. Sage Green -->
+      <div class="theme-card" data-theme-id="sage" tabindex="0" role="button" title="Sage Green: Verde salvia y tonos naturales">
+        <div class="theme-preview-box preview-sage">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Sage Green</span>
+            <span class="theme-desc">Verde salvia y tonos naturales</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #F2F5F2;" title="Fondo"></span>
+            <span class="dot" style="background: #E4ECE4;" title="Superficie"></span>
+            <span class="dot" style="background: #5B8A68;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 3. Soft Lavender -->
+      <div class="theme-card" data-theme-id="lavender" tabindex="0" role="button" title="Soft Lavender: Lavanda y tonos suaves">
+        <div class="theme-preview-box preview-lavender">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Soft Lavender</span>
+            <span class="theme-desc">Lavanda y tonos suaves</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #F6F4F9;" title="Fondo"></span>
+            <span class="dot" style="background: #ECE7F3;" title="Superficie"></span>
+            <span class="dot" style="background: #7E68A8;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 4. Peach -->
+      <div class="theme-card" data-theme-id="peach" tabindex="0" role="button" title="Peach: Durazno y tonos cálidos">
+        <div class="theme-preview-box preview-peach">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Peach</span>
+            <span class="theme-desc">Durazno y tonos cálidos</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #FAF5F1;" title="Fondo"></span>
+            <span class="dot" style="background: #F4E9E1;" title="Superficie"></span>
+            <span class="dot" style="background: #C46E52;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 5. Sky Blue -->
+      <div class="theme-card" data-theme-id="sky" tabindex="0" role="button" title="Sky Blue: Azul cielo y tonos claros">
+        <div class="theme-preview-box preview-sky">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Sky Blue</span>
+            <span class="theme-desc">Azul cielo y tonos claros</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #F2F6FA;" title="Fondo"></span>
+            <span class="dot" style="background: #E4EDF5;" title="Superficie"></span>
+            <span class="dot" style="background: #4A85B8;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 6. Soft Rose -->
+      <div class="theme-card" data-theme-id="rose" tabindex="0" role="button" title="Soft Rose: Rosa empolvado y tonos neutros">
+        <div class="theme-preview-box preview-rose">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Soft Rose</span>
+            <span class="theme-desc">Rosa empolvado y tonos neutros</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #FAF4F6;" title="Fondo"></span>
+            <span class="dot" style="background: #F4E8EC;" title="Superficie"></span>
+            <span class="dot" style="background: #B56176;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 7. Dark Elegant -->
+      <div class="theme-card" data-theme-id="dark-elegant" tabindex="0" role="button" title="Dark Elegant: Modo oscuro elegante, evitando el negro absoluto">
+        <div class="theme-preview-box preview-dark-elegant">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Dark Elegant</span>
+            <span class="theme-desc">Modo oscuro elegante sin negro absoluto</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #16181E;" title="Fondo"></span>
+            <span class="dot" style="background: #242831;" title="Superficie"></span>
+            <span class="dot" style="background: #6B8BB8;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+
+      <!-- 8. Dark Blue (Modo Oscuro Azul) -->
+      <div class="theme-card" data-theme-id="dark-blue" tabindex="0" role="button" title="Dark Blue: Modo oscuro azul marino elegante">
+        <div class="theme-preview-box preview-dark-blue">
+          <div class="preview-mini-shell">
+            <div class="preview-mini-header"></div>
+            <div class="preview-mini-body">
+              <div class="preview-mini-sidebar"></div>
+              <div class="preview-mini-content">
+                <div class="preview-mini-bar"></div>
+                <div class="preview-mini-active"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="theme-info-row">
+          <div class="theme-text-meta">
+            <span class="theme-name">Dark Blue</span>
+            <span class="theme-desc">Modo oscuro azul marino elegante</span>
+          </div>
+          <div class="theme-palette-dots">
+            <span class="dot" style="background: #0B1320;" title="Fondo"></span>
+            <span class="dot" style="background: #17263F;" title="Superficie"></span>
+            <span class="dot" style="background: #38BDF8;" title="Acento"></span>
+          </div>
+        </div>
+        <div class="theme-active-badge">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Activo</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 4: Misión, Términos y Proyecto Ixcoydev -->
+  <section class="identity-card" id="ixcoydevAboutSection">
+    <div class="card-title">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" style="color: var(--accent-primary);">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+      <span>Misión Ministerial, Reglas de Uso y Proyecto Ixcoydev</span>
+    </div>
+    <div class="ixcoydev-info-box">
+      <div class="ixcoydev-badge-row">
+        <span class="ixcoydev-chip">STARTUP DE PROYECTO IXCOYDEV</span>
+        <span class="ixcoydev-chip chip-free">100% SIN FINES DE LUCRO</span>
+        <span class="ixcoydev-chip chip-updates">ACTUALIZACIONES EN CURSO</span>
+      </div>
+      <p style="font-size: 12px; line-height: 1.55; color: var(--text-secondary); margin: 8px 0;">
+        <strong>BIBLE</strong> fue creado y desarrollado por la startup de proyecto <strong>Ixcoydev</strong> con la única misión de <strong>ayudar y bendecir a las iglesias y congregaciones cristianas sin ningún fin de lucro</strong>, entregando una solución visual moderna, ágil y profesional para cultos y ministerios.
+      </p>
+      <div class="ixcoydev-notice-banner">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-primary); flex-shrink: 0; margin-top: 1px;">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span style="font-size: 11px; line-height: 1.45; color: var(--text-secondary);">
+          <strong>Próximas Actualizaciones:</strong> Se continuarán lanzando actualizaciones y mejoras periódicas. Les invitamos a estar atentos a las novedades que <strong>Ixcoydev</strong> publicará para enriquecer el sistema.
+        </span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+        <button id="btnOpenTermsModal" class="btn btn-secondary btn-sm" type="button">
+          <svg class="icon icon-xs" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Consultar Reglas, Términos y Condiciones de Uso</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección 5: Zona de Restablecimiento -->
   <section class="identity-card danger-zone">
     <div class="card-title" style="color: var(--status-blackout);">
       <svg class="icon icon-sm" viewBox="0 0 24 24">

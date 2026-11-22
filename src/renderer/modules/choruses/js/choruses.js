@@ -420,7 +420,7 @@ export class ChorusesController {
     if (!items || !items.length) {
       this.chorusesList.innerHTML = `
         <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px; line-height: 1.6;">
-          <div style="font-size: 28px; margin-bottom: 8px;">📋</div>
+          <svg class="icon" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
           <div style="font-weight: 600; color: #FFFFFF; margin-bottom: 4px;">Este repertorio está vacío</div>
           <p style="margin: 0 0 12px 0;">Añade los cantos que se entonarán en este culto o día especial.</p>
           <button id="btnEmptyAddSongs" class="btn btn-sm btn-primary" style="margin: 0 auto;">
@@ -447,9 +447,15 @@ export class ChorusesController {
             <span class="chorus-card-title">${item.title}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 2px; margin-left: auto;">
-            <button class="btn-reorder-repertoire btn-reorder-up" title="Mover hacia arriba" ${index === 0 ? 'disabled' : ''}>▲</button>
-            <button class="btn-reorder-repertoire btn-reorder-down" title="Mover hacia abajo" ${index === items.length - 1 ? 'disabled' : ''}>▼</button>
-            <button class="btn-remove-repertoire" title="Quitar este canto de este culto">✕</button>
+            <button class="btn-reorder-repertoire btn-reorder-up" title="Mover hacia arriba" ${index === 0 ? 'disabled' : ''}>
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+            </button>
+            <button class="btn-reorder-repertoire btn-reorder-down" title="Mover hacia abajo" ${index === items.length - 1 ? 'disabled' : ''}>
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button class="btn-remove-repertoire" title="Quitar este canto de este culto">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
           </div>
         </div>
         <div class="chorus-card-snippet">${previewText}</div>
@@ -712,7 +718,7 @@ export class ChorusesController {
           await this.loadPlaylistItems(this.activePlaylistId);
         }
         const activePl = this.playlists.find(p => p.id === this.activePlaylistId);
-        alert(`✓ "${this.currentChorus.title}" añadido al repertorio: ${activePl ? activePl.name : 'Culto'}`);
+        alert(`"${this.currentChorus.title}" añadido al repertorio: ${activePl ? activePl.name : 'Culto'}`);
         return;
       } catch (err) {
         alert('Error al agregar al repertorio: ' + err.message);
@@ -776,7 +782,7 @@ export class ChorusesController {
       }
 
       const targetPl = this.playlists.find(p => p.id === playlistId);
-      alert(`✓ "${this.currentChorus.title}" agregado a: ${targetPl ? targetPl.name : 'Repertorio'}`);
+      alert(`"${this.currentChorus.title}" agregado a: ${targetPl ? targetPl.name : 'Repertorio'}`);
     } catch (err) {
       alert('Error al agregar al repertorio: ' + err.message);
     }
@@ -791,7 +797,7 @@ export class ChorusesController {
     }
     if (this.pickChorusStatusText) {
       this.pickChorusStatusText.textContent = count > 0 
-        ? `✓ ${count} cantos agregados a este culto. Escribe para buscar más o pulsa "Listo".`
+        ? `${count} cantos agregados a este culto. Escribe para buscar más o pulsa "Listo".`
         : 'Haz clic en cualquier corito para agregarlo al culto';
     }
   }
@@ -886,7 +892,8 @@ export class ChorusesController {
             <div>No se encontraron coritos locales con "<strong>${q}</strong>".</div>
             <div style="margin-top: 12px;">
               <button id="btnEmptyModalSearchOnline" class="btn btn-sm btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
-                <span>🌐 Buscar "${q}" en Internet</span>
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>Buscar "${q}" en Internet</span>
               </button>
             </div>
           </div>
@@ -915,7 +922,7 @@ export class ChorusesController {
             <span class="pick-chorus-preview">${c.match_snippet || previewText}</span>
           </div>
           <button class="btn btn-sm ${isAlreadyAdded ? 'btn-secondary' : 'btn-primary'} btn-add-pick" style="flex-shrink: 0;" ${isAlreadyAdded ? 'disabled' : ''}>
-            ${isAlreadyAdded ? `✓ En lista (#${existingIndex})` : '+ Añadir'}
+            ${isAlreadyAdded ? `En lista (#${existingIndex})` : '+ Añadir'}
           </button>
         `;
 
@@ -928,7 +935,7 @@ export class ChorusesController {
             existingIds.add(c.id);
             this.playlistItems = await window.bibleAPI.choruses.getPlaylistItems(this.activePlaylistId);
             const pos = this.playlistItems.length;
-            btnAdd.textContent = `✓ Añadido (#${pos})`;
+            btnAdd.textContent = `Añadido (#${pos})`;
             btnAdd.classList.remove('btn-primary');
             btnAdd.classList.add('btn-secondary');
             btnAdd.disabled = true;
@@ -966,7 +973,7 @@ export class ChorusesController {
 
     this.pickChorusListContainer.innerHTML = `
       <div style="padding: 30px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-        <div style="font-size: 26px; margin-bottom: 8px;">🌐</div>
+        <svg class="icon" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <div style="font-weight: 600; color: #FFFFFF; margin-bottom: 4px;">Buscando "${q}" en Internet...</div>
         <div style="font-size: 11px;">Consultando base de datos de alabanzas y letras cristianas...</div>
       </div>
@@ -979,8 +986,8 @@ export class ChorusesController {
       if (!onlineResults || onlineResults.length === 0) {
         this.pickChorusListContainer.innerHTML = `
           <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-            <div style="font-size: 24px; margin-bottom: 6px;">🌐</div>
-            <div style="font-weight: 600; color: #fff;">No se encontraron cantos en internet para "${q}".</div>
+            <svg class="icon" style="width: 28px; height: 28px; margin-bottom: 6px; opacity: 0.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div style="font-weight: 600; color: var(--text-primary);">No se encontraron cantos en internet para "${q}".</div>
             <div style="margin-top: 4px; font-size: 11px;">Verifica la ortografía o intenta con otra palabra clave.</div>
           </div>
         `;
@@ -990,8 +997,11 @@ export class ChorusesController {
       const infoHeader = document.createElement('div');
       infoHeader.style.cssText = 'padding: 6px 10px; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center; background: rgba(37,99,235,0.08); border-radius: 4px; margin-bottom: 6px;';
       infoHeader.innerHTML = `
-        <span style="color: #60A5FA; font-weight: 600;">🌐 Encontrados en Internet (Se guardarán en biblioteca):</span>
-        <span style="font-weight: 700; color: #fff;">${onlineResults.length} cantos</span>
+        <span style="color: var(--accent-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Encontrados en Internet (Se guardarán en biblioteca):</span>
+        </span>
+        <span style="font-weight: 700; color: var(--text-primary);">${onlineResults.length} cantos</span>
       `;
       this.pickChorusListContainer.appendChild(infoHeader);
 
@@ -1003,7 +1013,7 @@ export class ChorusesController {
           <div class="pick-chorus-info" style="flex: 1; min-width: 0;">
             <div style="display: flex; align-items: center; gap: 6px;">
               <span class="pick-chorus-title">${c.title}</span>
-              <span class="search-internet-badge">🌐 ${c.artist || 'Internet'}</span>
+              <span class="search-internet-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> ${c.artist || 'Internet'}</span>
             </div>
             <span class="pick-chorus-preview">${c.match_snippet}</span>
           </div>
@@ -1029,9 +1039,9 @@ export class ChorusesController {
             if (this.activePlaylistId) {
               await window.bibleAPI.choruses.addToPlaylist(this.activePlaylistId, saved.id);
               this.playlistItems = await window.bibleAPI.choruses.getPlaylistItems(this.activePlaylistId);
-              btnAdd.textContent = `✓ Guardado (#${this.playlistItems.length})`;
+              btnAdd.textContent = `Guardado (#${this.playlistItems.length})`;
             } else {
-              btnAdd.textContent = '✓ Guardado en Biblioteca';
+              btnAdd.textContent = 'Guardado en Biblioteca';
             }
 
             btnAdd.classList.remove('btn-primary');
@@ -1060,7 +1070,7 @@ export class ChorusesController {
       console.error('[ChorusesController] Error al buscar cantos en internet:', err);
       this.pickChorusListContainer.innerHTML = `
         <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-          ⚠️ Error al consultar internet: ${err.message}. Verifica tu conexión de red.
+          Error al consultar internet: ${err.message}. Verifica tu conexión de red.
         </div>
       `;
     }
@@ -1078,7 +1088,7 @@ export class ChorusesController {
 
     this.chorusesList.innerHTML = `
       <div style="padding: 30px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-        <div style="font-size: 26px; margin-bottom: 8px;">🌐</div>
+        <svg class="icon" style="width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <div style="font-weight: 600; color: #FFFFFF; margin-bottom: 4px;">Buscando "${q}" en Internet...</div>
         <div style="font-size: 11px;">Consultando base de datos de alabanzas y letras cristianas...</div>
       </div>
@@ -1091,8 +1101,8 @@ export class ChorusesController {
       if (!onlineResults || onlineResults.length === 0) {
         this.chorusesList.innerHTML = `
           <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-            <div style="font-size: 24px; margin-bottom: 6px;">🌐</div>
-            <div style="font-weight: 600; color: #fff;">No se encontraron cantos en internet para "${q}".</div>
+            <svg class="icon" style="width: 28px; height: 28px; margin-bottom: 6px; opacity: 0.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div style="font-weight: 600; color: var(--text-primary);">No se encontraron cantos en internet para "${q}".</div>
             <div style="margin-top: 4px; font-size: 11px;">Intenta con otra palabra o revisa tu conexión a internet.</div>
           </div>
         `;
@@ -1102,8 +1112,11 @@ export class ChorusesController {
       const infoHeader = document.createElement('div');
       infoHeader.style.cssText = 'padding: 6px 10px; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center; background: rgba(37,99,235,0.08);';
       infoHeader.innerHTML = `
-        <span style="color: #60A5FA; font-weight: 600;">🌐 Encontrados en Internet:</span>
-        <span style="font-weight: 700; color: #fff;">${onlineResults.length} cantos</span>
+        <span style="color: var(--accent-primary); font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Encontrados en Internet:</span>
+        </span>
+        <span style="font-weight: 700; color: var(--text-primary);">${onlineResults.length} cantos</span>
       `;
       this.chorusesList.appendChild(infoHeader);
 
@@ -1117,10 +1130,10 @@ export class ChorusesController {
           <div class="chorus-card-header">
             <div style="display: flex; align-items: center; min-width: 0; gap: 6px; flex: 1;">
               <span class="chorus-card-title">${c.title}</span>
-              <span class="search-internet-badge">🌐 ${c.artist || 'Internet'}</span>
+              <span class="search-internet-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> ${c.artist || 'Internet'}</span>
             </div>
             <button class="btn btn-sm btn-primary btn-save-online" style="font-size: 10px; padding: 2px 7px; flex-shrink: 0;">
-              ${isRepMode ? '+ Añadir y Guardar' : '💾 Guardar'}
+              ${isRepMode ? '+ Añadir y Guardar' : 'Guardar'}
             </button>
           </div>
           <div class="chorus-card-snippet">${c.match_snippet}</div>
@@ -1142,9 +1155,9 @@ export class ChorusesController {
             if (isRepMode) {
               await window.bibleAPI.choruses.addToPlaylist(this.activePlaylistId, saved.id);
               this.playlistItems = await window.bibleAPI.choruses.getPlaylistItems(this.activePlaylistId);
-              btnSave.textContent = `✓ En culto (#${this.playlistItems.length})`;
+              btnSave.textContent = `En culto (#${this.playlistItems.length})`;
             } else {
-              btnSave.textContent = '✓ Guardado';
+              btnSave.textContent = 'Guardado';
             }
 
             btnSave.classList.remove('btn-primary');
@@ -1154,7 +1167,7 @@ export class ChorusesController {
             await this.selectChorus(saved.id);
           } catch (err) {
             btnSave.disabled = false;
-            btnSave.textContent = isRepMode ? '+ Añadir y Guardar' : '💾 Guardar';
+            btnSave.textContent = isRepMode ? '+ Añadir y Guardar' : 'Guardar';
             alert('Error al guardar canto: ' + err.message);
           }
         };
@@ -1178,7 +1191,7 @@ export class ChorusesController {
       console.error('[ChorusesController] Error al buscar en internet:', err);
       this.chorusesList.innerHTML = `
         <div style="padding: 24px 16px; color: var(--text-muted); text-align: center; font-size: 13px;">
-          ⚠️ Error al consultar internet: ${err.message}. Verifica tu conexión.
+          Error al consultar internet: ${err.message}. Verifica tu conexión.
         </div>
       `;
     }
@@ -1199,7 +1212,7 @@ export class ChorusesController {
     cards.forEach(card => card.classList.remove('active'));
 
     this.detailTitle.textContent = this.currentChorus.title;
-    this.detailCategory.textContent = item.artist ? `🌐 ${item.artist}` : '🌐 Internet';
+    this.detailCategory.textContent = item.artist ? item.artist : 'Internet';
 
     this.renderSlides(item.slides || []);
   }
@@ -1221,7 +1234,7 @@ export class ChorusesController {
     const infoHeader = document.createElement('div');
     infoHeader.style.cssText = 'padding: 6px 10px; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center; background: rgba(37,99,235,0.06);';
     infoHeader.innerHTML = `
-      <span>Resultados para añadir a: <strong style="color: #fff;">${currentPl ? currentPl.name : 'Culto'}</strong></span>
+      <span>Resultados para añadir a: <strong style="color: var(--text-primary);">${currentPl ? currentPl.name : 'Culto'}</strong></span>
       <span style="font-weight: 700; color: var(--accent-primary);">${results.length} cantos</span>
     `;
     this.chorusesList.appendChild(infoHeader);
@@ -1240,7 +1253,7 @@ export class ChorusesController {
             <span class="chorus-card-title">${c.title}</span>
           </div>
           <button class="btn btn-sm ${isAlreadyAdded ? 'btn-secondary' : 'btn-primary'} btn-quick-add-rep" style="font-size: 10px; padding: 2px 7px; flex-shrink: 0;" ${isAlreadyAdded ? 'disabled' : ''}>
-            ${isAlreadyAdded ? '✓ En culto' : '+ Añadir'}
+            ${isAlreadyAdded ? 'En culto' : '+ Añadir'}
           </button>
         </div>
         <div class="chorus-card-snippet">${c.match_snippet || previewText}</div>
@@ -1254,7 +1267,7 @@ export class ChorusesController {
           existingIds.add(c.id);
           this.playlistItems = await window.bibleAPI.choruses.getPlaylistItems(this.activePlaylistId);
           const pos = this.playlistItems.length;
-          btnAdd.textContent = `✓ En culto (#${pos})`;
+          btnAdd.textContent = `En culto (#${pos})`;
           btnAdd.classList.remove('btn-primary');
           btnAdd.classList.add('btn-secondary');
           btnAdd.disabled = true;
@@ -1379,7 +1392,7 @@ export class ChorusesController {
     cards.forEach((card, idx) => {
       if (idx === index) {
         card.classList.add('active');
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        card.scrollIntoView({ behavior: 'auto', block: 'nearest' });
       } else {
         card.classList.remove('active');
       }
@@ -1836,6 +1849,15 @@ export class ChorusesController {
       } else if (e.key === 'Enter') {
         e.preventDefault();
         this.projectSelectedSlide();
+      }
+    });
+
+    // Control Remoto Móvil (Wi-Fi)
+    window.addEventListener('remote-control:action', (e) => {
+      if (e.detail?.action === 'next') {
+        this.nextSlide();
+      } else if (e.detail?.action === 'prev') {
+        this.prevSlide();
       }
     });
   }

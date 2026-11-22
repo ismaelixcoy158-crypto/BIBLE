@@ -182,7 +182,7 @@ export class CountdownController {
       if (this.countdownTallyChip) {
         if (isProjectedNow) {
           this.countdownTallyChip.className = 'countdown-tally-chip projected';
-          if (this.txtCountdownTally) this.txtCountdownTally.textContent = '🔴 EN PANTALLA PÚBLICA';
+          if (this.txtCountdownTally) this.txtCountdownTally.textContent = 'EN PANTALLA PÚBLICA';
           if (this.btnProjectCountdown) {
             this.btnProjectCountdown.classList.add('btn-primary');
             this.btnProjectCountdown.classList.remove('btn-secondary');
@@ -190,7 +190,7 @@ export class CountdownController {
           if (this.txtBtnProjectCountdown) this.txtBtnProjectCountdown.textContent = 'En Pantalla Pública';
         } else {
           this.countdownTallyChip.className = 'countdown-tally-chip not-projected';
-          if (this.txtCountdownTally) this.txtCountdownTally.textContent = '⚪ Temporizador en Espera';
+          if (this.txtCountdownTally) this.txtCountdownTally.textContent = 'Temporizador en Espera';
           if (this.btnProjectCountdown) {
             this.btnProjectCountdown.classList.remove('btn-primary');
             this.btnProjectCountdown.classList.add('btn-secondary');

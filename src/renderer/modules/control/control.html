@@ -1,0 +1,213 @@
+<div class="control-module-container">
+  <!-- Encabezado del Módulo -->
+  <div class="control-header-panel">
+    <div class="control-header-left">
+      <div class="control-module-icon">
+        <svg viewBox="0 0 24 24">
+          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+          <path d="M12 18h.01"/>
+          <path d="m9 7 3-3 3 3"/>
+          <path d="m9 11 3 3 3-3"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="control-module-title">Control Remoto Móvil</h1>
+        <p class="control-module-subtitle">Controla la predicación, coritos, biblia y botones de pánico desde cualquier teléfono sin internet y sin instalar apps.</p>
+      </div>
+    </div>
+    <div class="control-header-right">
+      <div id="controlServerStatusBadge" class="status-chip chip-online">
+        <span class="status-pulse-dot"></span>
+        <span id="controlServerStatusText">Servidor Activo (Puerto 4545)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Principal: Tarjetas de Configuración y Código QR -->
+  <div class="control-grid-layout">
+    <!-- Columna 1: Código QR Vectorial -->
+    <div class="control-card control-qr-card">
+      <div class="card-header-clean">
+        <div class="card-title-wrap">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="5" height="5" x="3" y="3" rx="1"/>
+            <rect width="5" height="5" x="16" y="3" rx="1"/>
+            <rect width="5" height="5" x="3" y="16" rx="1"/>
+            <path d="M21 16h-3a2 2 0 0 0-2 2v3"/>
+            <path d="M21 21v.01"/>
+            <path d="M12 7v3a2 2 0 0 1-2 2H7"/>
+            <path d="M3 12h.01"/>
+            <path d="M12 3h.01"/>
+            <path d="M12 16v.01"/>
+            <path d="M16 12h1"/>
+            <path d="M21 12v.01"/>
+            <path d="M12 21v-1"/>
+          </svg>
+          <span class="card-title-text">Escaneo Rápido con Cámara</span>
+        </div>
+        <span class="tag-pill">Cero Internet</span>
+      </div>
+
+      <div class="qr-preview-wrapper">
+        <div id="qrCodeSvgContainer" class="qr-svg-frame">
+          <!-- El SVG se renderiza dinámicamente aquí -->
+          <div class="qr-loading-placeholder">Cargando código QR...</div>
+        </div>
+      </div>
+
+      <p class="qr-instruction-text">
+        Apunta la cámara de cualquier teléfono Android o iPhone conectado al Wi-Fi del templo para abrir el control instantáneamente.
+      </p>
+
+      <button id="btnRefreshQr" class="btn btn-secondary btn-sm" style="width: 100%;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        <span>Refrescar Código QR</span>
+      </button>
+    </div>
+
+    <!-- Columna 2: Enlace Wi-Fi y Conexión -->
+    <div class="control-card">
+      <div class="card-header-clean">
+        <div class="card-title-wrap">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+            <line x1="12" y1="20" x2="12.01" y2="20"/>
+          </svg>
+          <span class="card-title-text">Dirección en Red Local (Wi-Fi)</span>
+        </div>
+      </div>
+
+      <p class="card-body-description">
+        Si el teléfono no lee el código QR, abre cualquier navegador móvil (Chrome, Safari) e ingresa esta dirección:
+      </p>
+
+      <div class="url-copy-box">
+        <input type="text" id="controlUrlInput" class="input-url-display" readonly value="http://127.0.0.1:4545">
+        <button id="btnCopyUrl" class="btn btn-primary" title="Copiar enlace al portapapeles">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span id="btnCopyUrlLabel">Copiar</span>
+        </button>
+      </div>
+
+      <div class="network-info-chips">
+        <div class="info-chip">
+          <span class="info-chip-label">IP Servidor:</span>
+          <span id="networkIpLabel" class="info-chip-val">127.0.0.1</span>
+        </div>
+        <div class="info-chip">
+          <span class="info-chip-label">Puerto:</span>
+          <span class="info-chip-val">4545</span>
+        </div>
+        <div class="info-chip">
+          <span class="info-chip-label">Dispositivos Activos:</span>
+          <span id="activeClientsCount" class="info-chip-val" style="color: var(--accent-primary); font-weight: 700;">0</span>
+        </div>
+      </div>
+
+      <div class="server-action-box">
+        <button id="btnToggleServer" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 10px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="btnToggleServerText">Reiniciar Servidor HTTP</span>
+        </button>
+
+        <!-- Centro de Descargas (APK Android + Paquete para otra PC) -->
+        <div class="apk-download-box" style="padding: 12px; background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">Descargas Disponibles</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">APK Celular (89 KB) y Sistema PC (121 MB)</div>
+            </div>
+            <a id="btnOpenDownloadCenter" href="http://127.0.0.1:4545/download" target="_blank" class="tag-pill" style="text-decoration: none; cursor: pointer; background: rgba(59, 130, 246, 0.2); color: var(--accent-primary);">
+              Ver Centro Web
+            </a>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <a id="btnDownloadApk" href="http://127.0.0.1:4545/download/bible-control.apk" class="btn btn-primary btn-sm" download="bible-control.apk" style="text-decoration: none; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem;">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Descargar APK</span>
+            </a>
+            <a id="btnDownloadDesktop" href="http://127.0.0.1:4545/download/bible-desktop-linux.tar.gz" class="btn btn-secondary btn-sm" download="bible-desktop-linux.tar.gz" style="text-decoration: none; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem;">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+              <span>Descargar PC</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna 3: PIN de Seguridad -->
+    <div class="control-card">
+      <div class="card-header-clean">
+        <div class="card-title-wrap">
+          <svg class="icon icon-sm" viewBox="0 0 24 24">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="card-title-text">PIN de Seguridad (4 Dígitos)</span>
+        </div>
+        <span class="tag-pill tag-secure">Protección Activa</span>
+      </div>
+
+      <p class="card-body-description">
+        Evita que miembros no autorizados conectados a la red Wi-Fi cambien las diapositivas o activen pantallas negras.
+      </p>
+
+      <div class="pin-display-wrapper">
+        <div class="pin-badge-giant" id="controlPinDisplay">1234</div>
+      </div>
+
+      <div class="pin-actions-row">
+        <button id="btnGeneratePin" class="btn btn-secondary btn-sm" style="flex: 1;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span>Regenerar PIN</span>
+        </button>
+        <button id="btnEditPin" class="btn btn-secondary btn-sm" style="flex: 1;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Personalizar</span>
+        </button>
+      </div>
+
+      <div id="customPinForm" class="custom-pin-form" style="display: none;">
+        <input type="text" id="inputCustomPin" maxlength="4" placeholder="Ej: 5678" class="input-custom-pin" pattern="[0-9]*" inputmode="numeric">
+        <button id="btnSaveCustomPin" class="btn btn-primary btn-sm">Guardar</button>
+        <button id="btnCancelCustomPin" class="btn btn-secondary btn-sm">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección Inferior: Guía y Modos de Uso Disponibles -->
+  <div class="control-features-section">
+    <h2 class="features-title">Capacidades del Control Remoto Móvil</h2>
+    
+    <div class="features-grid">
+      <!-- Tarjeta Modo Predicador -->
+      <div class="feature-item-card">
+        <div class="feature-icon feature-icon-pulpit">
+          🎙️
+        </div>
+        <div class="feature-text-content">
+          <h3 class="feature-item-title">Modo Predicador (Smart Pulpit Clicker)</h3>
+          <p class="feature-item-desc">
+            Diseñado para que el pastor o predicador avance diapositivas desde su teléfono colocado en el atril con botones táctiles gigantes, vibración háptica de confirmación, cronómetro de sermón y miniatura de lectura en vivo de la diapositiva en pantalla.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tarjeta Modo Multimedia -->
+      <div class="feature-item-card">
+        <div class="feature-icon feature-icon-media">
+          🎛️
+        </div>
+        <div class="feature-text-content">
+          <h3 class="feature-item-title">Modo Multimedia (Pocket Operator)</h3>
+          <p class="feature-item-desc">
+            Permite al equipo técnico moverse libremente por el templo y activar de inmediato los botones de pánico F1 (Pantalla a Negro), F2 (Logo Institucional), F3 (Limpiar Texto) y F4 (Congelar Proyección), además de avanzar coritos y versículos bíblicos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

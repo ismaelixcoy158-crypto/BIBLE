@@ -23,7 +23,7 @@
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.8px;
-  color: var(--accent-gold);
+  color: var(--text-secondary);
 }
 
 .roulette-header-title h2 {
@@ -442,7 +442,7 @@
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--accent-primary);
 }
 
 .winner-banner-name {

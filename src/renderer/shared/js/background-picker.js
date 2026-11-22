@@ -294,7 +294,7 @@ export class BackgroundPickerController {
         } else {
           card.style.backgroundImage = p.value;
         }
-        card.innerHTML = `<span class="bg-preset-name">${p.name}</span>`;
+        card.innerHTML = `<span class="bg-preset-name">${p.name}</span><span class="bg-preset-check-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>`;
 
         card.addEventListener('click', async () => {
           await this.setBackground(p);
@@ -349,7 +349,7 @@ export class BackgroundPickerController {
             await this.setBackground(res);
             if (this.localFileStatus) {
               this.localFileStatus.style.display = 'block';
-              this.localFileStatus.textContent = `✓ Fondo cargado: ${res.name} (${res.type.toUpperCase()})`;
+              this.localFileStatus.textContent = `Fondo cargado: ${res.name} (${res.type.toUpperCase()})`;
             }
           }
         } catch (err) {
@@ -402,7 +402,7 @@ export class BackgroundPickerController {
           if (res && res.success) {
             await this.setBackground(res);
             if (this.urlStatus) {
-              this.urlStatus.textContent = `✓ Fondo web listo: ${res.name}`;
+              this.urlStatus.textContent = `Fondo web listo: ${res.name}`;
               this.urlStatus.style.color = 'var(--status-live)';
               this.urlStatus.style.borderColor = 'rgba(16, 185, 129, 0.4)';
             }

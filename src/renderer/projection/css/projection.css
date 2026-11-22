@@ -119,7 +119,7 @@ html, body {
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 700;
   letter-spacing: 1px;
-  color: #FCD34D; /* Dorado / Amarillo suave de alta visibilidad */
+  color: #38BDF8; /* Azul cielo luminoso de alta legibilidad — Cero Naranja */
   text-shadow: var(--text-shadow-scrim);
   margin-top: 24px;
 }
@@ -136,7 +136,7 @@ html, body {
 }
 
 .projection-content.dark-text .projection-reference {
-  color: #92400E; /* Ámbar oscuro de alta elegancia */
+  color: #1E40AF; /* Zafiro real de alta legibilidad y elegancia — Cero Naranja */
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 14px rgba(255, 255, 255, 0.8);
 }
 
@@ -232,11 +232,11 @@ html, body {
   font-size: clamp(11px, 1.1vw, 15px);
   font-weight: 800;
   letter-spacing: 2px;
-  color: #FCD34D;
+  color: #38BDF8;
   background: rgba(0, 0, 0, 0.6);
   padding: 4px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(252, 211, 77, 0.5);
+  border: 1px solid rgba(56, 189, 248, 0.5);
   text-transform: uppercase;
 }
 
@@ -330,7 +330,7 @@ html, body {
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #FCD34D;
+  color: #38BDF8;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
