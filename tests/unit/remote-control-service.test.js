@@ -150,6 +150,41 @@ describe('RemoteControlService — Control Remoto Móvil (Wi-Fi Local)', () => {
     assert.ok(res.length > 50000, 'El APK debe pesar más de 50 KB');
   });
 
+  test('debe permitir descargar el instalador ejecutable de Windows en GET /download/BIBLE-Instalador-Windows.exe', async () => {
+    const port = remoteControlService.getStatus().port;
+
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://127.0.0.1:${port}/download/BIBLE-Instalador-Windows.exe`, (r) => {
+        const chunks = [];
+        r.on('data', chunk => {
+          chunks.push(chunk);
+          if (Buffer.concat(chunks).length > 2048) {
+            r.destroy(); // Solo necesitamos verificar cabeceras y primeros bytes del binario PE
+            resolve({
+              statusCode: r.statusCode,
+              headers: r.headers,
+              firstBytes: Buffer.concat(chunks).slice(0, 2).toString()
+            });
+          }
+        });
+        r.on('end', () => resolve({
+          statusCode: r.statusCode,
+          headers: r.headers,
+          firstBytes: Buffer.concat(chunks).slice(0, 2).toString()
+        }));
+      }).on('error', (err) => {
+        // Ignorar error si fue por destroy tras recibir bytes
+        if (err.code === 'ECONNRESET') return;
+        reject(err);
+      });
+    });
+
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.headers['content-type'], 'application/vnd.microsoft.portable-executable');
+    assert.ok(res.headers['content-disposition'].includes('BIBLE-Instalador-Windows.exe'));
+    assert.equal(res.firstBytes, 'MZ', 'Debe ser un ejecutable PE válido con cabecera MZ');
+  });
+
   test('debe responder GET /api/qr con código SVG en Content-Type image/svg+xml', async () => {
     const port = remoteControlService.getStatus().port;
 

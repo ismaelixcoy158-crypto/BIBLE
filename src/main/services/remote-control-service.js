@@ -359,6 +359,46 @@ class RemoteControlService {
       }
     }
 
+    // Descarga directa del Instalador Automático de Windows (.exe 1-Clic, se instala solo)
+    if ((pathname === '/BIBLE-Instalador-Windows.exe' || pathname === '/download/BIBLE-Instalador-Windows.exe') && isGetOrHead) {
+      const winExePath = path.join(__dirname, 'downloads/BIBLE-Instalador-Windows.exe');
+      if (fs.existsSync(winExePath)) {
+        const stat = fs.statSync(winExePath);
+        res.writeHead(200, {
+          'Content-Type': 'application/vnd.microsoft.portable-executable',
+          'Content-Length': stat.size,
+          'Content-Disposition': 'attachment; filename="BIBLE-Instalador-Windows.exe"'
+        });
+        if (req.method === 'HEAD') { res.end(); return; }
+        fs.createReadStream(winExePath).pipe(res);
+        return;
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('Instalador de Windows no disponible en este momento');
+        return;
+      }
+    }
+
+    // Descarga directa de BIBLE Portable para Windows (Con BIBLE.exe 100% listo, sin instalar Node ni Git)
+    if ((pathname === '/BIBLE-Windows-Portable.zip' || pathname === '/download/BIBLE-Windows-Portable.zip') && isGetOrHead) {
+      const winPortablePath = path.join(__dirname, 'downloads/BIBLE-Windows-Portable.zip');
+      if (fs.existsSync(winPortablePath)) {
+        const stat = fs.statSync(winPortablePath);
+        res.writeHead(200, {
+          'Content-Type': 'application/zip',
+          'Content-Length': stat.size,
+          'Content-Disposition': 'attachment; filename="BIBLE-Windows-Portable.zip"'
+        });
+        if (req.method === 'HEAD') { res.end(); return; }
+        fs.createReadStream(winPortablePath).pipe(res);
+        return;
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('BIBLE Portable para Windows no disponible en este momento');
+        return;
+      }
+    }
+
     // Descarga directa del paquete instalador para Computadora Windows (PC / Laptop)
     if ((pathname === '/bible-windows-setup.zip' || pathname === '/download/bible-windows-setup.zip') && isGetOrHead) {
       const winPath = path.join(__dirname, 'downloads/bible-windows-setup.zip');

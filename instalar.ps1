@@ -1,4 +1,4 @@
-﻿# BIBLE - Instalador Nativo PowerShell para Windows
+# BIBLE - Instalador Nativo PowerShell para Windows
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host "       BIBLE — Sistema Multimedia para Iglesias" -ForegroundColor White
 Write-Host "     Instalador de Escritorio y Menú Inicio Windows" -ForegroundColor Yellow
@@ -70,3 +70,4 @@ Write-Host "  2. Ya quedó registrado en el Menú Inicio de Windows:" -Foregroun
 Write-Host "     presiona la tecla Windows y escribe 'BIBLE' para abrirla." -ForegroundColor Yellow
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host ""
+
