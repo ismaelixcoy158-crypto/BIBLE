@@ -315,6 +315,24 @@
           <div class="bg-presets-grid" id="bgPresetsGrid">
             <!-- Renderizado dinámico de preajustes -->
           </div>
+
+          <!-- Selector de Color Personalizado / Libre -->
+          <div class="custom-color-control-box" id="customColorControlBox">
+            <div class="custom-color-header">
+              <div class="custom-color-title">
+                <svg class="icon icon-xs" viewBox="0 0 24 24" style="color: var(--accent-primary);"><circle cx="12" cy="12" r="10"/><path d="m12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10a10 10 0 0 1-10-10"/></svg>
+                <span>Configurar Color Personalizado</span>
+              </div>
+              <div class="custom-color-picker-wrap">
+                <input type="color" id="bgCustomColorInput" value="#FFFFFF" title="Haz clic para elegir cualquier color">
+                <span id="bgCustomColorHex">#FFFFFF</span>
+              </div>
+            </div>
+            <div class="quick-swatches-label">Paleta rápida de colores para la iglesia:</div>
+            <div class="quick-swatches-grid" id="quickColorSwatches">
+              <!-- Swatches generados dinámicamente -->
+            </div>
+          </div>
         </div>
 
         <!-- Tab 2: Archivo Local -->

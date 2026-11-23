@@ -740,6 +740,118 @@ kbd, .kbd-chip {
   border-bottom-right-radius: var(--radius-md);
 }
 
+/* Panel de Configuración de Color Personalizado */
+.custom-color-control-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.custom-color-control-box.highlight {
+  border-color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
+}
+
+.custom-color-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.custom-color-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.custom-color-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-color-picker-wrap input[type="color"] {
+  cursor: pointer;
+  width: 32px;
+  height: 26px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0;
+  background: none;
+}
+
+.custom-color-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.custom-color-picker-wrap input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--radius-sm);
+}
+
+#bgCustomColorHex {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.quick-swatches-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.quick-swatches-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.color-swatch-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  outline: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.color-swatch-btn:hover {
+  transform: scale(1.18);
+  border-color: #FFFFFF;
+}
+
+.color-swatch-btn.active {
+  transform: scale(1.15);
+  border: 2.5px solid var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 2px 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.color-swatch-btn[data-color="#FFFFFF"],
+.color-swatch-btn[data-color="#FBF8EE"],
+.color-swatch-btn[data-color="#FEF9C3"],
+.color-swatch-btn[data-color="#E0F2FE"] {
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
 /* Zona de Carga de Archivos Locales (Dropzone) */
 .bg-upload-dropzone {
   border: 2px dashed var(--border-default);

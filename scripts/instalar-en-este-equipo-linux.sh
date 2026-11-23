@@ -69,3 +69,4 @@ echo "  • Icono en el Escritorio: Haz doble clic en BIBLE     "
 echo "  • En el Menú de Linux Mint: Búscalo como 'BIBLE'      "
 echo "  • En la Terminal: Escribe 'bible' o 'start bible'     "
 echo "========================================================"
+

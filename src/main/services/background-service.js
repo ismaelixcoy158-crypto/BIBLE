@@ -415,42 +415,57 @@ class BackgroundService {
         name: 'Negro Clásico',
         type: 'color',
         value: '#000000',
-        preview: '#000000'
+        preview: '#000000',
+        textColor: 'white'
+      },
+      {
+        id: 'white',
+        name: 'Blanco / Color Libre',
+        type: 'color',
+        value: '#FFFFFF',
+        preview: '#FFFFFF',
+        textColor: 'black',
+        isCustom: true
       },
       {
         id: 'deep-ocean',
         name: 'Océano Profundo',
         type: 'gradient',
         value: 'linear-gradient(145deg, #0a2e5c 0%, #124e8c 35%, #1a6cb8 65%, #0e3b6e 100%)',
-        preview: 'linear-gradient(145deg, #0a2e5c 0%, #124e8c 35%, #1a6cb8 65%, #0e3b6e 100%)'
+        preview: 'linear-gradient(145deg, #0a2e5c 0%, #124e8c 35%, #1a6cb8 65%, #0e3b6e 100%)',
+        textColor: 'white'
       },
       {
         id: 'blue-night',
         name: 'Obsidiana Noche',
         type: 'gradient',
         value: 'linear-gradient(145deg, #111e38 0%, #1e3a8a 40%, #2e4cad 70%, #152244 100%)',
-        preview: 'linear-gradient(145deg, #111e38 0%, #1e3a8a 40%, #2e4cad 70%, #152244 100%)'
+        preview: 'linear-gradient(145deg, #111e38 0%, #1e3a8a 40%, #2e4cad 70%, #152244 100%)',
+        textColor: 'white'
       },
       {
         id: 'celestial-purple',
         name: 'Púrpura Solemne',
         type: 'gradient',
         value: 'linear-gradient(145deg, #2b0938 0%, #581c87 40%, #7e22ce 70%, #350c45 100%)',
-        preview: 'linear-gradient(145deg, #2b0938 0%, #581c87 40%, #7e22ce 70%, #350c45 100%)'
+        preview: 'linear-gradient(145deg, #2b0938 0%, #581c87 40%, #7e22ce 70%, #350c45 100%)',
+        textColor: 'white'
       },
       {
         id: 'emerald-dawn',
         name: 'Aurora Esmeralda',
         type: 'gradient',
         value: 'linear-gradient(145deg, #063828 0%, #047857 40%, #059669 70%, #084331 100%)',
-        preview: 'linear-gradient(145deg, #063828 0%, #047857 40%, #059669 70%, #084331 100%)'
+        preview: 'linear-gradient(145deg, #063828 0%, #047857 40%, #059669 70%, #084331 100%)',
+        textColor: 'white'
       },
       {
         id: 'warm-charcoal',
         name: 'Carbón y Oro',
         type: 'gradient',
         value: 'linear-gradient(145deg, #2b180a 0%, #78350f 40%, #b45309 70%, #3d210d 100%)',
-        preview: 'linear-gradient(145deg, #2b180a 0%, #78350f 40%, #b45309 70%, #3d210d 100%)'
+        preview: 'linear-gradient(145deg, #2b180a 0%, #78350f 40%, #b45309 70%, #3d210d 100%)',
+        textColor: 'white'
       }
     ];
   }

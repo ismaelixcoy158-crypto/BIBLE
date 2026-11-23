@@ -79,5 +79,22 @@ test('BackgroundService - Normalización y Procesamiento Universal de Enlaces (U
       }
     );
   });
+
+  await t.test('debe incluir preajuste blanco/color libre con textColor negro en getPresets()', () => {
+    const presets = backgroundService.getPresets();
+    assert.ok(Array.isArray(presets));
+    assert.ok(presets.length >= 7);
+
+    const whitePreset = presets.find(p => p.id === 'white');
+    assert.ok(whitePreset, 'Debe existir el preajuste con id white');
+    assert.equal(whitePreset.type, 'color');
+    assert.equal(whitePreset.value, '#FFFFFF');
+    assert.equal(whitePreset.textColor, 'black');
+    assert.equal(whitePreset.isCustom, true);
+
+    const blackPreset = presets.find(p => p.id === 'black');
+    assert.ok(blackPreset, 'Debe existir el preajuste con id black');
+    assert.equal(blackPreset.textColor, 'white');
+  });
 });
 

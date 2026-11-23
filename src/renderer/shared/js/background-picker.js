@@ -74,6 +74,10 @@ export class BackgroundPickerController {
       this.labelScrim = this.modal.querySelector('#scrimValueLabel');
       this.btnModalTextWhite = this.modal.querySelector('#btnModalTextWhite');
       this.btnModalTextBlack = this.modal.querySelector('#btnModalTextBlack');
+      this.customColorBox = this.modal.querySelector('#customColorControlBox');
+      this.customColorInput = this.modal.querySelector('#bgCustomColorInput');
+      this.customColorHex = this.modal.querySelector('#bgCustomColorHex');
+      this.quickColorSwatches = this.modal.querySelector('#quickColorSwatches');
     }
   }
 
@@ -277,6 +281,126 @@ export class BackgroundPickerController {
     if (this.inputUrl && this.currentBackground?.originalUrl) {
       this.inputUrl.value = this.currentBackground.originalUrl;
     }
+
+    if (this.currentBackground?.type === 'color' && this.currentBackground?.value) {
+      const hex = this.currentBackground.value.toUpperCase();
+      if (this.customColorInput && hex.startsWith('#')) this.customColorInput.value = hex;
+      if (this.customColorHex) this.customColorHex.textContent = hex;
+      if (this.customColorBox && (this.currentBackground.isCustom || hex === '#FFFFFF')) {
+        this.customColorBox.classList.add('highlight');
+      }
+    }
+  }
+
+  isLightColor(hex) {
+    if (!hex || typeof hex !== 'string') return false;
+    let c = hex.replace('#', '').trim();
+    if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+    const luminance = (r * 299 + g * 587 + b * 114) / 1000;
+    return luminance > 155;
+  }
+
+  renderQuickSwatches() {
+    if (!this.quickColorSwatches) return;
+    this.quickColorSwatches.innerHTML = '';
+
+    const CHURCH_SWATCHES = [
+      { name: 'Blanco Puro', color: '#FFFFFF' },
+      { name: 'Crema Marfil', color: '#FBF8EE' },
+      { name: 'Celeste Cielo', color: '#E0F2FE' },
+      { name: 'Oro Pálido', color: '#FEF9C3' },
+      { name: 'Verde Menta', color: '#DCFCE7' },
+      { name: 'Rosa Suave', color: '#FCE7F3' },
+      { name: 'Gris Nieve', color: '#F1F5F9' },
+      { name: 'Azul Noche', color: '#1E3A8A' },
+      { name: 'Púrpura', color: '#581C87' },
+      { name: 'Vino Santo', color: '#7F1D1D' },
+      { name: 'Esmeralda', color: '#047857' },
+      { name: 'Negro Clásico', color: '#000000' }
+    ];
+
+    const currentVal = (this.currentBackground?.type === 'color' && this.currentBackground?.value)
+      ? this.currentBackground.value.toUpperCase()
+      : '';
+
+    CHURCH_SWATCHES.forEach(swatch => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'color-swatch-btn';
+      btn.dataset.color = swatch.color;
+      btn.title = swatch.name;
+      btn.style.backgroundColor = swatch.color;
+      if (currentVal === swatch.color.toUpperCase()) {
+        btn.classList.add('active');
+      }
+
+      btn.addEventListener('click', async () => {
+        await this.applyCustomColor(swatch.color, swatch.name);
+      });
+
+      this.quickColorSwatches.appendChild(btn);
+    });
+  }
+
+  async applyCustomColor(hexColor, customName = null) {
+    if (!hexColor) return;
+    let cleanHex = hexColor.trim().toUpperCase();
+    if (!cleanHex.startsWith('#')) cleanHex = '#' + cleanHex;
+    const isLight = this.isLightColor(cleanHex);
+
+    if (this.customColorInput) {
+      this.customColorInput.value = cleanHex;
+    }
+    if (this.customColorHex) {
+      this.customColorHex.textContent = cleanHex;
+    }
+
+    if (this.quickColorSwatches) {
+      const allSwatches = this.quickColorSwatches.querySelectorAll('.color-swatch-btn');
+      allSwatches.forEach(s => {
+        s.classList.toggle('active', s.dataset.color.toUpperCase() === cleanHex);
+      });
+    }
+
+    // Actualizar tarjeta personalizada en la grilla de presets
+    if (this.presetsGrid) {
+      const customCard = this.presetsGrid.querySelector('[data-preset-id="white"]') ||
+                         this.presetsGrid.querySelector('.bg-preset-custom-color');
+      if (customCard) {
+        customCard.style.backgroundColor = cleanHex;
+        if (isLight) {
+          customCard.style.border = '2px solid rgba(0, 0, 0, 0.25)';
+        } else {
+          customCard.style.border = '2px solid var(--border-subtle)';
+        }
+        const allCards = this.presetsGrid.querySelectorAll('.bg-preset-card');
+        allCards.forEach(c => c.classList.remove('active'));
+        customCard.classList.add('active');
+      }
+    }
+
+    if (this.customColorBox) {
+      this.customColorBox.classList.add('highlight');
+    }
+
+    // Auto-adaptar color del texto según luminosidad
+    await this.setTextColor(isLight ? 'black' : 'white');
+
+    const name = customName || (cleanHex === '#FFFFFF' ? 'Blanco Puro' : `Color Libre (${cleanHex})`);
+    await this.setBackground({
+      id: 'custom-color',
+      name,
+      type: 'color',
+      value: cleanHex,
+      preview: cleanHex,
+      textColor: isLight ? 'black' : 'white',
+      isCustom: true
+    });
   }
 
   async renderPresets() {
@@ -287,23 +411,58 @@ export class BackgroundPickerController {
       const presets = await window.bibleAPI.bible.getBackgroundPresets();
       presets.forEach(p => {
         const card = document.createElement('div');
-        const isActive = this.currentBackground && (this.currentBackground.id === p.id || this.currentBackground.value === p.value);
+        const isCustomMatch = p.isCustom && (
+          this.currentBackground?.isCustom ||
+          this.currentBackground?.id === 'white' ||
+          this.currentBackground?.id === 'custom-color'
+        );
+        const isActive = this.currentBackground && (
+          isCustomMatch ||
+          this.currentBackground.id === p.id ||
+          this.currentBackground.value === p.value
+        );
         card.className = `bg-preset-card ${isActive ? 'active' : ''}`;
-        if (p.type === 'color') {
+        card.dataset.presetId = p.id;
+
+        if (p.isCustom) {
+          card.classList.add('bg-preset-custom-color');
+          const currentColorVal = (this.currentBackground?.isCustom && this.currentBackground.value) ? this.currentBackground.value : p.value;
+          card.style.backgroundColor = currentColorVal;
+          if (this.isLightColor(currentColorVal)) {
+            card.style.border = '2px solid rgba(0, 0, 0, 0.25)';
+          }
+        } else if (p.type === 'color') {
           card.style.backgroundColor = p.value;
+          if (this.isLightColor(p.value)) {
+            card.style.border = '2px solid rgba(0, 0, 0, 0.25)';
+          }
         } else {
           card.style.backgroundImage = p.value;
         }
+
         card.innerHTML = `<span class="bg-preset-name">${p.name}</span><span class="bg-preset-check-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>`;
 
         card.addEventListener('click', async () => {
-          await this.setBackground(p);
+          if (p.isCustom) {
+            const colorToApply = (this.currentBackground?.isCustom && this.currentBackground.value) ? this.currentBackground.value : p.value;
+            await this.applyCustomColor(colorToApply, p.name);
+          } else {
+            if (this.customColorBox) {
+              this.customColorBox.classList.remove('highlight');
+            }
+            if (p.textColor) {
+              await this.setTextColor(p.textColor);
+            }
+            await this.setBackground(p);
+          }
           const allCards = this.presetsGrid.querySelectorAll('.bg-preset-card');
           allCards.forEach(c => c.classList.remove('active'));
           card.classList.add('active');
         });
         this.presetsGrid.appendChild(card);
       });
+
+      this.renderQuickSwatches();
     } catch (err) {
       console.warn('[BackgroundPickerController] Error al renderizar preajustes:', err);
     }
@@ -505,6 +664,17 @@ export class BackgroundPickerController {
     setupColorBtn(this.btnTextBlack, 'black');
     setupColorBtn(this.btnModalTextWhite, 'white');
     setupColorBtn(this.btnModalTextBlack, 'black');
+
+    // Selector de color interactivo
+    if (this.customColorInput) {
+      const handleColorChange = async (e) => {
+        const hex = e.target.value.toUpperCase();
+        if (this.customColorHex) this.customColorHex.textContent = hex;
+        await this.applyCustomColor(hex);
+      };
+      this.customColorInput.addEventListener('input', handleColorChange);
+      this.customColorInput.addEventListener('change', handleColorChange);
+    }
 
     // Sincronización en tiempo real con emisión de fondo si cambia externamente
     if (window.bibleAPI?.projection?.onPreviewUpdate) {
