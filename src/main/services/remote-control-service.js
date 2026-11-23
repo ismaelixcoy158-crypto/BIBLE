@@ -154,6 +154,10 @@ class RemoteControlService {
    */
   getCloudUrl() {
     const roomId = this.getRoomId();
+    const ip = this.getLocalIpAddress();
+    if (ip && ip !== '127.0.0.1') {
+      return `https://bible-remote-ixcoy.web.app/?room=${roomId}&ip=${ip}`;
+    }
     return `https://bible-remote-ixcoy.web.app/?room=${roomId}`;
   }
 

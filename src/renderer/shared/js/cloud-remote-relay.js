@@ -17,9 +17,10 @@ export class CloudRemoteRelay {
     this.lastState = null;
 
     // Brokers públicos de alta disponibilidad WSS (HTTPS WebSockets)
+    // Prioridad EMQX (conexión ultrarrápida sin problemas de enrutamiento IPv6)
     this.brokers = [
-      { name: 'HiveMQ', host: 'broker.hivemq.com', port: 8884, path: '/mqtt' },
-      { name: 'EMQX', host: 'broker.emqx.io', port: 8084, path: '/mqtt' }
+      { name: 'EMQX', host: 'broker.emqx.io', port: 8084, path: '/mqtt' },
+      { name: 'HiveMQ', host: 'broker.hivemq.com', port: 8884, path: '/mqtt' }
     ];
     this.currentBrokerIdx = 0;
   }
@@ -110,10 +111,18 @@ export class CloudRemoteRelay {
           const cmdTopic = `bible/room/${this.roomId}/cmd`;
           this.client.subscribe(cmdTopic, { qos: 1 });
 
+          // Anunciar presencia inmediata de la laptop en la sala
+          this.publishResponse({
+            type: 'presence',
+            roomId: this.roomId,
+            online: true,
+            timestamp: Date.now()
+          });
+
           // Transmitir estado actual inicial de la laptop
           this.broadcastCurrentState();
 
-          // Iniciar latido periódico cada 15s
+          // Iniciar latido periódico cada 12s
           this.startHeartbeat();
         },
         onFailure: (err) => {
@@ -177,22 +186,36 @@ export class CloudRemoteRelay {
 
     if (!data || !data.action) return;
 
-    // Verificar PIN de seguridad
+    // Acción 'ping' para detección de laptop en vivo (no requiere PIN)
+    if (data.action === 'ping') {
+      console.log(`[CloudRemoteRelay] Ping recibido desde celular para sala: ${this.roomId}`);
+      this.publishResponse({
+        type: 'pong',
+        roomId: this.roomId,
+        online: true,
+        timestamp: Date.now()
+      });
+      return;
+    }
+
+    // Verificar PIN de seguridad para todas las acciones protegidas
     const inputPin = String(data.pin || '').trim();
     const activePin = String(this.pin || '').trim();
 
     if (inputPin !== activePin) {
       console.warn('[CloudRemoteRelay] Intento de acceso remoto con PIN inválido:', inputPin);
       this.publishResponse({
+        type: 'auth_response',
         success: false,
+        authenticated: false,
         error: 'PIN incorrecto. Verifica el PIN en la pantalla de la laptop.',
         timestamp: Date.now()
       });
       return;
     }
 
-    // Acción especial 'ping' o 'auth': Solo autentica y devuelve el estado actual
-    if (data.action === 'auth' || data.action === 'ping') {
+    // Acción especial 'auth': Solo autentica y devuelve el estado actual
+    if (data.action === 'auth') {
       console.log('[CloudRemoteRelay] Celular autenticado con éxito en Sala:', this.roomId);
       await this.broadcastCurrentState({ authenticated: true });
       return;

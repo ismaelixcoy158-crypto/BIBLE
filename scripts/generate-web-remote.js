@@ -684,8 +684,13 @@ const html = `<!DOCTYPE html>
         <span id="pinRoomLabel">SALA: BIB-7842</span>
       </div>
 
+      <div id="pinConnectionBadge" class="pin-status-pill" style="display:inline-flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:700; color:var(--accent-amber); background:rgba(245, 158, 11, 0.15); border:1px solid rgba(245, 158, 11, 0.35); padding:4px 12px; border-radius:9999px; margin-bottom:12px; transition: all 0.3s ease;">
+        <span id="pinStatusDot" style="width:7px; height:7px; border-radius:50%; background:currentColor; display:inline-block;"></span>
+        <span id="pinConnectionLabel">Conectando a la laptop...</span>
+      </div>
+
       <h1 class="pin-title">BIBLE Control</h1>
-      <p class="pin-subtitle" id="pinSubtitle">Laptop vinculada con éxito. Ingresa el PIN de 4 dígitos:</p>
+      <p class="pin-subtitle" id="pinSubtitle">Ingresa el PIN de 4 dígitos de la laptop:</p>
 
       <div class="pin-display">
         <div class="pin-dot" id="dot0"></div>
@@ -892,19 +897,21 @@ ${pahoCode}
       if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
 
       // 2. Estado de conexión
+      const localIpDirect = urlParams.get('ip') || '';
       const isLocalHost = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || /^192\\.168\\./.test(window.location.hostname);
-      const API_BASE = window.location.origin.startsWith('http') ? '' : 'http://127.0.0.1:4545';
+      const API_BASE = isLocalHost ? (window.location.origin.startsWith('http') ? '' : 'http://127.0.0.1:4545') : (localIpDirect ? ('http://' + localIpDirect + ':4545') : '');
       let savedPin = localStorage.getItem('bible_remote_pin') || '';
       let enteredPin = '';
       let pollTimer = null;
       let sermonSeconds = 0;
       let sermonRunning = false;
       let sermonInterval = null;
+      let authTimeoutTimer = null;
 
-      // Brokers MQTT en la nube
+      // Brokers MQTT en la nube (EMQX prioritario por alta estabilidad WSS)
       const BROKERS = [
-        { name: 'HiveMQ', host: 'broker.hivemq.com', port: 8884, path: '/mqtt' },
-        { name: 'EMQX', host: 'broker.emqx.io', port: 8084, path: '/mqtt' }
+        { name: 'EMQX', host: 'broker.emqx.io', port: 8084, path: '/mqtt' },
+        { name: 'HiveMQ', host: 'broker.hivemq.com', port: 8884, path: '/mqtt' }
       ];
       let activeBrokerIdx = 0;
       let mqttClient = null;
@@ -967,6 +974,27 @@ ${pahoCode}
       }
 
       // ---------------- MQTT CLOUD RELAY ----------------
+      function updatePinConnectionStatus(online, text) {
+        const badge = document.getElementById('pinConnectionBadge');
+        const dot = document.getElementById('pinStatusDot');
+        const label = document.getElementById('pinConnectionLabel');
+        if (!badge || !label) return;
+
+        if (online) {
+          badge.style.color = 'var(--accent-green)';
+          badge.style.background = 'rgba(34, 197, 94, 0.15)';
+          badge.style.borderColor = 'rgba(34, 197, 94, 0.35)';
+          if (dot) dot.style.background = 'var(--accent-green)';
+          label.textContent = text || 'Laptop BIBLE Conectada';
+        } else {
+          badge.style.color = 'var(--accent-amber)';
+          badge.style.background = 'rgba(245, 158, 11, 0.15)';
+          badge.style.borderColor = 'rgba(245, 158, 11, 0.35)';
+          if (dot) dot.style.background = 'var(--accent-amber)';
+          label.textContent = text || 'Buscando laptop BIBLE...';
+        }
+      }
+
       function connectMqtt() {
         if (isMqttConnected || !window.Paho || !window.Paho.MQTT || !currentRoomId) return;
         const broker = BROKERS[activeBrokerIdx];
@@ -979,6 +1007,7 @@ ${pahoCode}
             console.warn('[MQTT] Conexión perdida:', resp?.errorMessage);
             isMqttConnected = false;
             updateConnectionBadge(false);
+            updatePinConnectionStatus(false, 'Reconectando con la nube...');
             setTimeout(connectMqtt, 3000);
           };
 
@@ -1002,6 +1031,9 @@ ${pahoCode}
               // Suscribirse a actualizaciones de proyección de la laptop
               mqttClient.subscribe('bible/room/' + currentRoomId + '/state', { qos: 1 });
 
+              // Enviar ping inicial para comprobar presencia de la laptop
+              sendRelayCmd({ action: 'ping' });
+
               // Si ya tenemos PIN guardado, autenticar automáticamente
               if (savedPin) {
                 sendRelayCmd({ action: 'auth', pin: savedPin });
@@ -1010,8 +1042,9 @@ ${pahoCode}
             onFailure: (err) => {
               console.warn('[MQTT] Falló conexión con ' + broker.name + ':', err);
               isMqttConnected = false;
+              updatePinConnectionStatus(false, 'Servidor ocupado, reintentando...');
               activeBrokerIdx = (activeBrokerIdx + 1) % BROKERS.length;
-              setTimeout(connectMqtt, 3500);
+              setTimeout(connectMqtt, 2500);
             }
           });
         } catch (err) {
@@ -1036,14 +1069,26 @@ ${pahoCode}
       function handleRelayMessage(payload) {
         if (!payload) return;
 
-        // Respuesta a intento de PIN
+        // Cancelar timer de espera de autenticación si recibimos cualquier respuesta
+        if (authTimeoutTimer) {
+          clearTimeout(authTimeoutTimer);
+          authTimeoutTimer = null;
+        }
+        if (pinSubtitle) pinSubtitle.textContent = 'Ingresa el PIN de 4 dígitos de la laptop:';
+
+        // Manejar presencia / pong o actualización de estado de la laptop
+        if (payload.type === 'pong' || payload.type === 'presence' || payload.type === 'state') {
+          updatePinConnectionStatus(true, 'Laptop BIBLE Conectada');
+        }
+
+        // Respuesta a intento de PIN con error
         if (payload.error) {
           hapticVibrate([60, 40, 60]);
           pinErrorMsg.textContent = payload.error;
           pinErrorMsg.classList.add('visible');
           enteredPin = '';
           updatePinDots();
-          setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3500);
+          setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 4000);
           return;
         }
 
@@ -1091,40 +1136,90 @@ ${pahoCode}
       async function verifyPin() {
         if (enteredPin.length !== 4) return;
 
-        // 1. Prioridad: Vía Cloud Relay MQTT
+        if (pinSubtitle) pinSubtitle.textContent = 'Verificando con la laptop...';
+
+        // Timer de seguridad: si la laptop no responde en 4 segundos, avisar al usuario y limpiar puntos
+        if (authTimeoutTimer) clearTimeout(authTimeoutTimer);
+        authTimeoutTimer = setTimeout(() => {
+          authTimeoutTimer = null;
+          hapticVibrate([60, 40, 60]);
+          if (pinSubtitle) pinSubtitle.textContent = 'Ingresa el PIN de 4 dígitos de la laptop:';
+          pinErrorMsg.textContent = '⚠️ La laptop no responde. Verifica que BIBLE esté abierto en la computadora con la Sala: ' + currentRoomId;
+          pinErrorMsg.classList.add('visible');
+          enteredPin = '';
+          updatePinDots();
+          setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 5000);
+        }, 4000);
+
+        // 1. Si tenemos IP local vía URL (?room=...&ip=...), probar primero por Wi-Fi directo
+        if (localIpDirect) {
+          try {
+            const controller = new AbortController();
+            const toId = setTimeout(() => controller.abort(), 1500);
+            const res = await fetch('http://' + localIpDirect + ':4545/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ pin: enteredPin }),
+              signal: controller.signal
+            });
+            clearTimeout(toId);
+            const data = await res.json();
+            if (data && data.success && data.token) {
+              if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
+              hapticVibrate(60);
+              savedPin = enteredPin;
+              localStorage.setItem('bible_remote_pin', savedPin);
+              localStorage.setItem('bible_remote_token', data.token);
+              enteredPin = '';
+              updatePinDots();
+              showMainScreen();
+              return;
+            }
+          } catch (e) {
+            // Wi-Fi local falló, continuar a Cloud Relay
+          }
+        }
+
+        // 2. Prioridad Cloud Relay MQTT
         if (isMqttConnected) {
           sendRelayCmd({ action: 'auth', pin: enteredPin });
           return;
         }
 
-        // 2. Fallback: Vía Local HTTP si no hay conexión MQTT
-        try {
-          const res = await fetch(API_BASE + '/api/auth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pin: enteredPin })
-          });
-          const data = await res.json();
-          if (data.success && data.token) {
-            hapticVibrate(60);
-            savedPin = enteredPin;
-            localStorage.setItem('bible_remote_pin', savedPin);
-            localStorage.setItem('bible_remote_token', data.token);
-            enteredPin = '';
-            updatePinDots();
-            showMainScreen();
-          } else {
-            hapticVibrate([50, 50, 50]);
-            pinErrorMsg.textContent = data.error || 'PIN incorrecto. Intenta de nuevo.';
+        // 3. Fallback: Vía Local HTTP si estamos en la misma máquina o IP local
+        if (isLocalHost && API_BASE) {
+          try {
+            const res = await fetch(API_BASE + '/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ pin: enteredPin })
+            });
+            const data = await res.json();
+            if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
+            if (data.success && data.token) {
+              hapticVibrate(60);
+              savedPin = enteredPin;
+              localStorage.setItem('bible_remote_pin', savedPin);
+              localStorage.setItem('bible_remote_token', data.token);
+              enteredPin = '';
+              updatePinDots();
+              showMainScreen();
+            } else {
+              hapticVibrate([50, 50, 50]);
+              pinErrorMsg.textContent = data.error || 'PIN incorrecto. Intenta de nuevo.';
+              pinErrorMsg.classList.add('visible');
+              enteredPin = '';
+              updatePinDots();
+              setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3000);
+            }
+          } catch (err) {
+            if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
+            pinErrorMsg.textContent = 'No se pudo conectar a la laptop. Verifica que esté en la misma red Wi-Fi.';
             pinErrorMsg.classList.add('visible');
             enteredPin = '';
             updatePinDots();
-            setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3000);
+            setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3500);
           }
-        } catch (err) {
-          pinErrorMsg.textContent = 'Conectando con la laptop... Por favor espera';
-          pinErrorMsg.classList.add('visible');
-          setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3000);
         }
       }
 
