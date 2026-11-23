@@ -194,18 +194,29 @@ html, body {
 }
 
 /* Estilos para el módulo de Cuenta Regresiva en Pantalla Pública */
+.projection-content.module-countdown {
+  max-width: 96vw;
+  width: 96%;
+}
+
 .projection-content.module-countdown .projection-text {
-  font-family: var(--font-family-mono), 'Montserrat', sans-serif;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 4px;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: clamp(2px, 0.4vw, 8px);
   font-weight: 800;
+  white-space: nowrap;
+  line-height: 1;
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9), 0 0 35px rgba(37, 99, 235, 0.5);
+  transition: font-size 150ms ease-out;
 }
 
 .projection-content.module-countdown.finished .projection-text {
   font-family: inherit;
   letter-spacing: normal;
   font-weight: 800;
+  white-space: normal;
+  line-height: 1.25;
   color: #34D399;
   text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95), 0 0 35px rgba(16, 185, 129, 0.6);
 }

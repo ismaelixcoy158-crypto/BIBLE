@@ -473,21 +473,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? state.activeContent.fontSize
         : (state.currentFontSize || 100);
 
-      if (state.activeContent.module === 'countdown') {
-        contentLayer.classList.add('module-countdown');
-        const isFinished = Boolean(state.activeContent.countdown?.isFinished);
-        if (isFinished) {
-          contentLayer.classList.add('finished');
-          mainText.style.fontSize = `calc(clamp(2.2rem, 5vw, 4.5rem) * ${activeFontSize / 100})`;
-        } else {
-          contentLayer.classList.remove('finished');
-          mainText.style.fontSize = `calc(clamp(3.8rem, 9.5vw, 7.8rem) * ${activeFontSize / 100})`;
-        }
-      } else {
-        contentLayer.classList.remove('module-countdown', 'finished');
-        mainText.style.fontSize = `calc(clamp(2.2rem, 5vw, 4.5rem) * ${activeFontSize / 100})`;
-      }
-
       // Tipo de letra / Tipografía
       const activeFontFamily = state.activeContent.fontFamily || state.currentFontFamily || 'sans-serif';
       const fontFamilies = {
@@ -497,7 +482,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         'condensed': '"Arial Narrow", "Franklin Gothic Medium", Impact, sans-serif'
       };
       const chosenFont = fontFamilies[activeFontFamily] || fontFamilies['sans-serif'];
-      mainText.style.fontFamily = chosenFont;
+
+      if (state.activeContent.module === 'countdown') {
+        contentLayer.classList.add('module-countdown');
+        const isFinished = Boolean(state.activeContent.countdown?.isFinished);
+        if (isFinished) {
+          contentLayer.classList.add('finished');
+          mainText.style.fontSize = `calc(clamp(2rem, 4.2vw, 4rem) * ${activeFontSize / 100})`;
+          mainText.style.whiteSpace = 'normal';
+          mainText.style.letterSpacing = 'normal';
+          mainText.style.lineHeight = '1.25';
+          mainText.style.fontFamily = chosenFont;
+        } else {
+          contentLayer.classList.remove('finished');
+          // Reloj digital de alta precisión: white-space nowrap y límite seguro para que nunca se desborde ni se corte
+          mainText.style.fontSize = `min(calc(clamp(3.2rem, 7.5vw, 7.2rem) * ${activeFontSize / 100}), 15vw, 32vh)`;
+          mainText.style.whiteSpace = 'nowrap';
+          mainText.style.letterSpacing = 'clamp(2px, 0.4vw, 8px)';
+          mainText.style.lineHeight = '1';
+          mainText.style.fontFamily = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
+          mainText.style.fontVariantNumeric = 'tabular-nums';
+        }
+      } else {
+        contentLayer.classList.remove('module-countdown', 'finished');
+        mainText.style.fontSize = `calc(clamp(2.2rem, 5vw, 4.5rem) * ${activeFontSize / 100})`;
+        mainText.style.whiteSpace = 'pre-line';
+        mainText.style.letterSpacing = 'normal';
+        mainText.style.lineHeight = '1.25';
+        mainText.style.fontVariantNumeric = 'normal';
+        mainText.style.fontFamily = chosenFont;
+      }
+
       if (refTop) refTop.style.fontFamily = chosenFont;
       if (refBottom) refBottom.style.fontFamily = chosenFont;
 

@@ -20,19 +20,31 @@ class CountdownService {
       endMessage: '¡Bienvenidos a la Casa de Dios! El culto ha comenzado',
       subtitle: 'El culto comenzará en breve',
       background: null,
-      textColor: 'white',
-      fontSize: 100,
-      fontFamily: 'sans-serif'
+      textColor: null,
+      fontSize: null,
+      fontFamily: null
     };
     this.targetEndTime = null;
     this.isProjected = false;
   }
 
   project(options = {}) {
-    if (options.background) this.state.background = options.background;
-    if (options.textColor) this.state.textColor = options.textColor;
-    if (options.fontSize) this.state.fontSize = options.fontSize;
-    if (options.fontFamily) this.state.fontFamily = options.fontFamily;
+    if (options.background) {
+      this.state.background = options.background;
+      projectionService.updateBackground(options.background);
+    }
+    if (options.textColor) {
+      this.state.textColor = options.textColor;
+      projectionService.updateTextColor(options.textColor);
+    }
+    if (options.fontSize) {
+      this.state.fontSize = options.fontSize;
+      projectionService.updateFontSize(options.fontSize);
+    }
+    if (options.fontFamily) {
+      this.state.fontFamily = options.fontFamily;
+      projectionService.updateFontFamily(options.fontFamily);
+    }
     this.isProjected = true;
     this.emitSync(true);
     return this.getState();
@@ -51,7 +63,13 @@ class CountdownService {
   }
 
   getState() {
-    return { ...this.state };
+    return {
+      ...this.state,
+      fontSize: projectionService.state.currentFontSize || this.state.fontSize || 100,
+      fontFamily: projectionService.state.currentFontFamily || this.state.fontFamily || 'sans-serif',
+      textColor: projectionService.state.currentTextColor || this.state.textColor || 'white',
+      background: this.state.background || projectionService.state.currentBackground
+    };
   }
 
   formatTime(totalSecs) {
@@ -130,11 +148,14 @@ class CountdownService {
       if (diffSecs <= 0) {
         this.finish();
       } else {
-        this.state.remainingSeconds = Math.ceil(diffSecs);
-        this.state.formattedTime = this.formatTime(this.state.remainingSeconds);
-        this.emitSync();
+        const remaining = Math.ceil(diffSecs);
+        if (remaining !== this.state.remainingSeconds) {
+          this.state.remainingSeconds = remaining;
+          this.state.formattedTime = this.formatTime(this.state.remainingSeconds);
+          this.emitSync();
+        }
       }
-    }, 500);
+    }, 250);
 
     return this.getState();
   }
@@ -163,11 +184,14 @@ class CountdownService {
       if (diffSecs <= 0) {
         this.finish();
       } else {
-        this.state.remainingSeconds = Math.ceil(diffSecs);
-        this.state.formattedTime = this.formatTime(this.state.remainingSeconds);
-        this.emitSync();
+        const remaining = Math.ceil(diffSecs);
+        if (remaining !== this.state.remainingSeconds) {
+          this.state.remainingSeconds = remaining;
+          this.state.formattedTime = this.formatTime(this.state.remainingSeconds);
+          this.emitSync();
+        }
       }
-    }, 500);
+    }, 250);
 
     this.emitSync();
     return this.getState();
@@ -210,16 +234,21 @@ class CountdownService {
     }
     this.isProjected = true;
     const isFinished = Boolean(this.state.isFinished);
+    const activeFontSize = projectionService.state.currentFontSize || this.state.fontSize || 100;
+    const activeFontFamily = projectionService.state.currentFontFamily || this.state.fontFamily || 'sans-serif';
+    const activeTextColor = projectionService.state.currentTextColor || this.state.textColor || 'white';
+    const activeBackground = this.state.background || projectionService.state.currentBackground;
+
     projectionService.project({
       module: 'countdown',
       title: isFinished ? (this.state.subtitle || 'Culto Iniciado') : (this.state.subtitle || 'Cuenta Regresiva'),
       text: isFinished ? this.state.endMessage : this.state.formattedTime,
       reference: isFinished ? '¡Bienvenidos!' : (this.state.subtitle || 'Inicio de Culto'),
       refPosition: 'top',
-      background: this.state.background || projectionService.state.currentBackground,
-      textColor: this.state.textColor || projectionService.state.currentTextColor,
-      fontSize: this.state.fontSize || projectionService.state.currentFontSize,
-      fontFamily: this.state.fontFamily || projectionService.state.currentFontFamily,
+      background: activeBackground,
+      textColor: activeTextColor,
+      fontSize: activeFontSize,
+      fontFamily: activeFontFamily,
       countdown: { ...this.state }
     });
   }

@@ -78,6 +78,22 @@ describe('CountdownService - Temporizador de Precisión y Proyección', () => {
     assert.equal(projState.currentFontFamily, 'bold');
   });
 
+  test('debe preservar y sincronizar el tamaño de letra personalizado sin revertir a 100%', () => {
+    countdownService.setTime(300);
+    countdownService.project();
+
+    // El operador aumenta el tamaño de letra al 160% desde la barra inferior
+    projectionService.updateFontSize(160);
+    assert.equal(projectionService.getState().currentFontSize, 160);
+    assert.equal(projectionService.getState().activeContent?.fontSize, 160);
+
+    // Al emitir un tick de sincronización, NO debe restablecerse al 100%
+    countdownService.emitSync();
+    const projState = projectionService.getState();
+    assert.equal(projState.currentFontSize, 160);
+    assert.equal(projState.activeContent?.fontSize, 160);
+  });
+
   test('debe emitir mensaje de bienvenida al finalizar', () => {
     countdownService.setTime(2, '¡Bienvenidos a la congregación!');
     countdownService.finish();
