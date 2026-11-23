@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const blackoutLayer = document.getElementById('blackoutLayer');
   const mediaSpotLayer = document.getElementById('mediaSpotLayer');
   const spotVideo = document.getElementById('spotVideo');
+  const spotYoutube = document.getElementById('spotYoutube');
   const spotImage = document.getElementById('spotImage');
   const slideLayer = document.getElementById('slideLayer');
   const slideImg = document.getElementById('slideImg');
@@ -26,6 +27,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const projWinnerBanner = document.getElementById('projWinnerBanner');
   const projWinnerLabel = document.getElementById('projWinnerLabel');
   const projConfettiCanvas = document.getElementById('projConfettiCanvas');
+
+  // Helper para enviar comandos a reproductor de YouTube incrustado (IFrame API)
+  function sendYoutubeCommand(command, args = []) {
+    if (spotYoutube && spotYoutube.contentWindow) {
+      try {
+        spotYoutube.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: command,
+          args: args
+        }), '*');
+      } catch (err) {
+        console.warn('[YouTube Proyección] Error enviando comando:', err);
+      }
+    }
+  }
 
   // Motor de Ruleta en Pantalla de Proyección
   let projWheelRotation = 0;
@@ -318,7 +334,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (bgScrim) bgScrim.style.opacity = '0';
         mediaSpotLayer.style.display = 'flex';
 
-        if (state.activeContent.fileType === 'video') {
+        if (state.activeContent.isYoutube) {
+          spotVideo.pause();
+          spotVideo.removeAttribute('src');
+          spotVideo.style.display = 'none';
+          spotImage.style.display = 'none';
+          if (spotYoutube) {
+            spotYoutube.style.display = 'block';
+            const targetUrl = state.activeContent.mediaUrl;
+            if (spotYoutube.src !== targetUrl) {
+              spotYoutube.src = targetUrl;
+            }
+          }
+        } else if (state.activeContent.fileType === 'video') {
+          if (spotYoutube) {
+            spotYoutube.src = 'about:blank';
+            spotYoutube.style.display = 'none';
+          }
           spotImage.style.display = 'none';
           spotVideo.style.display = 'block';
 
@@ -340,6 +372,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           spotVideo.pause();
           spotVideo.removeAttribute('src');
           spotVideo.style.display = 'none';
+          if (spotYoutube) {
+            spotYoutube.src = 'about:blank';
+            spotYoutube.style.display = 'none';
+          }
           spotImage.style.display = 'block';
           spotImage.src = state.activeContent.mediaUrl;
         }
@@ -350,6 +386,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       spotVideo.pause();
       spotVideo.removeAttribute('src');
       spotVideo.load();
+      if (spotYoutube) {
+        spotYoutube.src = 'about:blank';
+        spotYoutube.style.display = 'none';
+      }
       mediaSpotLayer.style.display = 'none';
 
       // Manejo específico del módulo de Ruleta Dinámica
@@ -652,33 +692,45 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Escuchar comandos de transporte de video (Play, Pause, Seek, Volume, Loop, Stop)
   if (window.bibleAPI?.projection?.onMediaCommand) {
     window.bibleAPI.projection.onMediaCommand((cmd) => {
-      if (!cmd || !spotVideo) return;
+      if (!cmd) return;
       switch (cmd.action) {
         case 'play':
-          spotVideo.play().catch(console.warn);
+          if (spotVideo) spotVideo.play().catch(console.warn);
+          sendYoutubeCommand('playVideo');
           break;
         case 'pause':
-          spotVideo.pause();
+          if (spotVideo) spotVideo.pause();
+          sendYoutubeCommand('pauseVideo');
           break;
         case 'seek':
           if (typeof cmd.time === 'number' && !isNaN(cmd.time)) {
-            spotVideo.currentTime = cmd.time;
+            if (spotVideo) spotVideo.currentTime = cmd.time;
+            sendYoutubeCommand('seekTo', [cmd.time, true]);
           }
           break;
         case 'volume':
           if (typeof cmd.volume === 'number') {
-            spotVideo.volume = Math.max(0, Math.min(1, cmd.volume));
+            if (spotVideo) spotVideo.volume = Math.max(0, Math.min(1, cmd.volume));
+            sendYoutubeCommand('setVolume', [Math.round(cmd.volume * 100)]);
           }
           if (typeof cmd.muted === 'boolean') {
-            spotVideo.muted = cmd.muted;
+            if (spotVideo) spotVideo.muted = cmd.muted;
+            sendYoutubeCommand(cmd.muted ? 'mute' : 'unMute');
           }
           break;
         case 'loop':
-          spotVideo.loop = Boolean(cmd.loop);
+          if (spotVideo) spotVideo.loop = Boolean(cmd.loop);
           break;
         case 'stop':
-          spotVideo.pause();
-          spotVideo.currentTime = 0;
+          if (spotVideo) {
+            spotVideo.pause();
+            spotVideo.currentTime = 0;
+          }
+          sendYoutubeCommand('stopVideo');
+          if (spotYoutube) {
+            spotYoutube.src = 'about:blank';
+            spotYoutube.style.display = 'none';
+          }
           if (mediaSpotLayer) mediaSpotLayer.style.display = 'none';
           break;
       }

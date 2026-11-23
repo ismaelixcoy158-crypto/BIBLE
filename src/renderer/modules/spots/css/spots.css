@@ -239,6 +239,12 @@
   z-index: 4;
 }
 
+.spot-type-badge.youtube-badge {
+  background: #E11D48 !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
 .spot-card-footer {
   padding: 8px 10px;
   display: flex;
@@ -316,10 +322,21 @@
 }
 
 .operator-spot-video,
-.operator-spot-image {
+.operator-spot-image,
+.operator-spot-youtube {
   width: 100%;
   height: 100%;
+  border: none;
+}
+
+.operator-spot-video {
   object-fit: contain;
+}
+
+.operator-spot-image {
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .spot-standby-screen {

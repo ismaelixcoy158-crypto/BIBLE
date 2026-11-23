@@ -71,6 +71,16 @@ class SpotsService {
   }
 
   /**
+   * Extrae el ID de video de cualquier formato de enlace de YouTube (watch, embed, short, youtu.be)
+   */
+  extractYoutubeId(url) {
+    if (!url || typeof url !== 'string') return null;
+    const clean = url.trim();
+    const match = clean.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([a-zA-Z0-9_-]{11})/i);
+    return match ? match[1] : null;
+  }
+
+  /**
    * Formatea un spot para resolver si es URL HTTP/HTTPS directa o archivo local en bible-media://
    */
   formatSpot(spot) {
@@ -79,11 +89,32 @@ class SpotsService {
       spot.stored_filename.startsWith('https://') ||
       spot.stored_filename.startsWith('data:')
     );
-    const mediaUrl = isHttp ? spot.stored_filename : `bible-media://spots/${spot.stored_filename}`;
+
+    const youtubeId = isHttp ? this.extractYoutubeId(spot.stored_filename) : null;
+    const isYoutube = Boolean(youtubeId);
+
+    let mediaUrl;
+    let thumbnailUrl;
+
+    if (isYoutube) {
+      // URL optimizada para reproducción profesional con audio completo y API JS
+      mediaUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1&playsinline=1`;
+      thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+    } else if (isHttp) {
+      mediaUrl = spot.stored_filename;
+      thumbnailUrl = spot.stored_filename;
+    } else {
+      mediaUrl = `bible-media://spots/${spot.stored_filename}`;
+      thumbnailUrl = mediaUrl;
+    }
+
     return {
       ...spot,
       mediaUrl,
-      isHttp: Boolean(isHttp)
+      thumbnailUrl,
+      isHttp: Boolean(isHttp),
+      isYoutube,
+      youtubeId
     };
   }
 
@@ -147,8 +178,32 @@ class SpotsService {
    */
   async createFromUrl({ url, title, fileType = null, loopEnabled = true, downloadLocal = false }) {
     this.init();
-    const cleanUrl = (url || '').trim();
-    if (!cleanUrl) throw new Error('La URL es requerida');
+    const rawUrl = (url || '').trim();
+    if (!rawUrl) throw new Error('La URL es requerida');
+
+    // 1. Detección de video de YouTube (soporta watch, embed, shorts, youtu.be)
+    const youtubeId = this.extractYoutubeId(rawUrl);
+    if (youtubeId) {
+      const defaultTitle = title?.trim() || `Video de YouTube (${youtubeId})`;
+      const created = this.repo.create({
+        title: defaultTitle,
+        file_type: 'video',
+        original_filename: rawUrl,
+        stored_filename: rawUrl,
+        mime_type: 'video/youtube',
+        file_size: 0,
+        duration_seconds: 0,
+        loop_enabled: loopEnabled ? 1 : 0
+      });
+      return this.formatSpot(created);
+    }
+
+    // 2. Normalización de URL para imágenes y videos (Google Drive, Dropbox, Google Imágenes)
+    let cleanUrl = rawUrl;
+    try {
+      const backgroundService = require('./background-service.js');
+      cleanUrl = backgroundService.normalizeUrl(rawUrl);
+    } catch {}
 
     // Detección automática de video o imagen
     let detectedType = fileType;
@@ -270,6 +325,9 @@ class SpotsService {
       title: spot.title,
       fileType: spot.file_type,
       mediaUrl: spot.mediaUrl,
+      thumbnailUrl: spot.thumbnailUrl,
+      isYoutube: Boolean(spot.isYoutube),
+      youtubeId: spot.youtubeId || null,
       loop: Boolean(spot.loop_enabled),
       volume,
       currentTime

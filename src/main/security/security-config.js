@@ -133,11 +133,13 @@ class SecurityConfig {
           ...details.responseHeaders,
           'Content-Security-Policy': [
             "default-src 'self'; " +
-            "script-src 'self' 'unsafe-inline'; " +
+            "script-src 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com; " +
             "style-src 'self' 'unsafe-inline'; " +
-            "img-src 'self' data: bible-media: http: https: blob:; " +
+            "img-src 'self' data: bible-media: http: https: blob: https://*.ytimg.com https://*.googleusercontent.com; " +
             "media-src 'self' bible-media: http: https: blob:; " +
-            "connect-src 'self' http: https: blob: data:; " +
+            "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; " +
+            "child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; " +
+            "connect-src 'self' http: https: blob: data: https://www.youtube.com; " +
             "font-src 'self';"
           ]
         }

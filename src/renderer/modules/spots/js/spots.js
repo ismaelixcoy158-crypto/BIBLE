@@ -30,6 +30,7 @@ export class SpotsController {
 
     // Elementos DOM - Monitor del Operador
     this.operatorVideo = document.getElementById('operatorSpotVideo');
+    this.operatorYoutube = document.getElementById('operatorSpotYoutube');
     this.operatorImage = document.getElementById('operatorSpotImage');
     this.standbyScreen = document.getElementById('spotStandbyScreen');
     this.tallyBadge = document.getElementById('spotTallyBadge');
@@ -78,6 +79,18 @@ export class SpotsController {
     this.checkUrlDownload = document.getElementById('checkSpotDownloadLocal');
 
     this.init();
+  }
+
+  sendOperatorYoutubeCommand(command, args = []) {
+    if (this.operatorYoutube && this.operatorYoutube.contentWindow) {
+      try {
+        this.operatorYoutube.contentWindow.postMessage(JSON.stringify({
+          event: 'command',
+          func: command,
+          args: args
+        }), '*');
+      } catch (_) {}
+    }
   }
 
   async init() {
@@ -169,11 +182,20 @@ export class SpotsController {
       card.dataset.id = spot.id;
 
       const isVideo = spot.file_type === 'video';
-      const extBadge = spot.isHttp ? 'WEB' : (spot.stored_filename?.split('.').pop() || spot.file_type).toUpperCase();
-      const sizeMB = spot.file_size ? `${(spot.file_size / (1024 * 1024)).toFixed(1)} MB` : 'Stream Web';
+      const isYoutube = Boolean(spot.isYoutube);
+      let extBadge = spot.isHttp ? 'WEB' : (spot.stored_filename?.split('.').pop() || spot.file_type).toUpperCase();
+      if (isYoutube) extBadge = 'YOUTUBE';
+      const sizeMB = isYoutube ? 'YouTube' : (spot.file_size ? `${(spot.file_size / (1024 * 1024)).toFixed(1)} MB` : 'Stream Web');
 
       let thumbnailHtml = '';
-      if (isVideo) {
+      if (isYoutube) {
+        thumbnailHtml = `
+          <img src="${spot.thumbnailUrl || spot.mediaUrl}" class="spot-thumbnail-img" alt="${spot.title}" loading="lazy" style="position: relative; z-index: 2; object-fit: cover;">
+          <div class="spot-play-overlay-icon" style="background: rgba(225, 29, 72, 0.9); z-index: 3;">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        `;
+      } else if (isVideo) {
         thumbnailHtml = `
           <video src="${spot.mediaUrl}#t=0.5" preload="metadata" class="spot-thumbnail-video" muted playsinline></video>
           <div class="spot-play-overlay-icon">
@@ -190,13 +212,13 @@ export class SpotsController {
       card.innerHTML = `
         <div class="spot-thumbnail-box">
           ${thumbnailHtml}
-          <span class="spot-type-badge">${extBadge}</span>
+          <span class="spot-type-badge ${isYoutube ? 'youtube-badge' : ''}">${extBadge}</span>
         </div>
         <div class="spot-card-footer">
           <span class="spot-card-title" title="${spot.title}">${spot.title}</span>
           <div class="spot-meta-row">
             <span>${sizeMB}</span>
-            <span>${isVideo ? (spot.loop_enabled ? 'Bucle' : '1 vez') : 'Foto'}</span>
+            <span>${isYoutube ? 'En línea' : (isVideo ? (spot.loop_enabled ? 'Bucle' : '1 vez') : 'Foto')}</span>
           </div>
           <div class="spot-card-actions">
             <button class="btn btn-primary btn-project-spot" style="flex: 1; font-size: 11px; padding: 5px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;" title="Proyectar a la pantalla pública">
@@ -257,7 +279,30 @@ export class SpotsController {
     // Actualizar Monitor del Operador
     if (this.standbyScreen) this.standbyScreen.style.display = 'none';
 
-    if (spot.file_type === 'video') {
+    if (spot.isYoutube) {
+      if (this.operatorVideo) {
+        this.operatorVideo.pause();
+        this.operatorVideo.style.display = 'none';
+      }
+      if (this.operatorImage) this.operatorImage.style.display = 'none';
+      if (this.operatorYoutube) {
+        this.operatorYoutube.style.display = 'block';
+        if (this.operatorYoutube.src !== spot.mediaUrl) {
+          this.operatorYoutube.src = spot.mediaUrl;
+        }
+      }
+      this.timeline.disabled = false;
+      this.btnPlayPause.disabled = false;
+      this.btnRestart.disabled = false;
+      this.btnLoop.disabled = false;
+      if (this.labelLoop) {
+        this.labelLoop.textContent = spot.loop_enabled ? 'Bucle: Sí' : 'Bucle: No';
+      }
+    } else if (spot.file_type === 'video') {
+      if (this.operatorYoutube) {
+        this.operatorYoutube.src = 'about:blank';
+        this.operatorYoutube.style.display = 'none';
+      }
       if (this.operatorImage) this.operatorImage.style.display = 'none';
       if (this.operatorVideo) {
         this.operatorVideo.style.display = 'block';
@@ -275,6 +320,10 @@ export class SpotsController {
         this.labelLoop.textContent = spot.loop_enabled ? 'Bucle: Sí' : 'Bucle: No';
       }
     } else {
+      if (this.operatorYoutube) {
+        this.operatorYoutube.src = 'about:blank';
+        this.operatorYoutube.style.display = 'none';
+      }
       if (this.operatorVideo) {
         this.operatorVideo.pause();
         this.operatorVideo.style.display = 'none';
@@ -291,10 +340,10 @@ export class SpotsController {
 
     // Actualizar Ficha de Detalles
     if (this.detailTitle) this.detailTitle.textContent = spot.title;
-    if (this.detailType) this.detailType.textContent = spot.file_type === 'video' ? 'Video' : 'Fotografía / Imagen';
-    if (this.detailOrigin) this.detailOrigin.textContent = spot.isHttp ? 'Enlace Web (HTTP/HTTPS)' : 'Archivo Local en Disco';
+    if (this.detailType) this.detailType.textContent = spot.isYoutube ? 'Video de YouTube (Online)' : (spot.file_type === 'video' ? 'Video' : 'Fotografía / Imagen');
+    if (this.detailOrigin) this.detailOrigin.textContent = spot.isYoutube ? 'YouTube (Audio oficial)' : (spot.isHttp ? 'Enlace Web (HTTP/HTTPS)' : 'Archivo Local en Disco');
     if (this.detailSize) {
-      this.detailSize.textContent = spot.file_size ? `${(spot.file_size / (1024 * 1024)).toFixed(1)} MB` : 'En línea';
+      this.detailSize.textContent = spot.isYoutube ? 'Streaming Web' : (spot.file_size ? `${(spot.file_size / (1024 * 1024)).toFixed(1)} MB` : 'En línea');
     }
     if (this.detailLiveStatus) {
       const isLive = Boolean(this.projectedSpot && this.projectedSpot.id === spot.id);
@@ -365,6 +414,11 @@ export class SpotsController {
     if (this.operatorVideo) {
       this.operatorVideo.pause();
       this.operatorVideo.currentTime = 0;
+    }
+    if (this.operatorYoutube) {
+      this.sendOperatorYoutubeCommand('stopVideo');
+      this.operatorYoutube.src = 'about:blank';
+      this.operatorYoutube.style.display = 'none';
     }
     if (this.timeline) this.timeline.value = 0;
     if (this.timeCurrent) this.timeCurrent.textContent = '00:00';
@@ -437,11 +491,13 @@ export class SpotsController {
     if (this.isPlaying) {
       await window.bibleAPI.spots.pause();
       if (this.operatorVideo) this.operatorVideo.pause();
+      this.sendOperatorYoutubeCommand('pauseVideo');
       this.isPlaying = false;
       this.updatePlayPauseUI(false);
     } else {
       await window.bibleAPI.spots.play();
       if (this.operatorVideo) this.operatorVideo.play().catch(() => {});
+      this.sendOperatorYoutubeCommand('playVideo');
       this.isPlaying = true;
       this.updatePlayPauseUI(true);
     }
@@ -449,6 +505,11 @@ export class SpotsController {
 
   async stopVideo() {
     await window.bibleAPI.spots.stop();
+    this.sendOperatorYoutubeCommand('stopVideo');
+    if (this.operatorYoutube) {
+      this.operatorYoutube.src = 'about:blank';
+      this.operatorYoutube.style.display = 'none';
+    }
     this.handleStopped();
   }
 
@@ -456,6 +517,7 @@ export class SpotsController {
     if (this.projectedSpot) {
       await window.bibleAPI.spots.seek(0);
       if (this.operatorVideo) this.operatorVideo.currentTime = 0;
+      this.sendOperatorYoutubeCommand('seekTo', [0, true]);
     }
   }
 
