@@ -120,7 +120,7 @@ class RemoteControlService {
   }
 
   /**
-   * Establece un Código de Sala personalizado
+   * Establece un Código de Sala personalizado y sincroniza el PIN correspondiente
    */
   setRoomId(roomId) {
     const clean = String(roomId || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
@@ -134,6 +134,15 @@ class RemoteControlService {
           INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
           ON CONFLICT(key) DO UPDATE SET value = excluded.value
         `).run(clean);
+
+        // Si el código termina en 4 dígitos (ej: BIB-7842), sincronizar el PIN para que nunca vayan separados
+        const match = clean.match(/\d{4}$/);
+        if (match) {
+          db.prepare(`
+            INSERT INTO settings (key, value) VALUES ('remote_control_pin', ?)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+          `).run(match[0]);
+        }
       }
     } catch (err) {
       console.warn('[RemoteControlService] Error al guardar roomId:', err.message);
@@ -142,32 +151,38 @@ class RemoteControlService {
   }
 
   /**
-   * Genera y guarda un nuevo Código de Sala aleatorio
+   * Genera y guarda un nuevo Código de Sala y PIN sincronizados
    */
   generateNewRoomId() {
-    const newRoomId = `BIB-${Math.floor(1000 + Math.random() * 9000)}`;
-    return this.setRoomId(newRoomId);
+    const num = Math.floor(1000 + Math.random() * 9000).toString();
+    const newRoomId = `BIB-${num}`;
+    this.setRoomId(newRoomId);
+    this.setPin(num);
+    return newRoomId;
   }
 
   /**
-   * Retorna la URL Cloud Web universal (con room ID)
+   * Retorna la URL Cloud Web universal (con room ID, PIN sincronizado y IP local)
    */
   getCloudUrl() {
     const roomId = this.getRoomId();
+    const pin = this.getPin();
     const ip = this.getLocalIpAddress();
+    let url = `https://bible-remote-ixcoy.web.app/?room=${roomId}&pin=${pin}`;
     if (ip && ip !== '127.0.0.1') {
-      return `https://bible-remote-ixcoy.web.app/?room=${roomId}&ip=${ip}`;
+      url += `&ip=${ip}`;
     }
-    return `https://bible-remote-ixcoy.web.app/?room=${roomId}`;
+    return url;
   }
 
   /**
-   * Retorna la URL local directa (con room ID)
+   * Retorna la URL local directa (con room ID y PIN sincronizado)
    */
   getLocalUrl() {
     const ip = this.getLocalIpAddress();
     const roomId = this.getRoomId();
-    return `http://${ip}:${this.port}/?room=${roomId}`;
+    const pin = this.getPin();
+    return `http://${ip}:${this.port}/?room=${roomId}&pin=${pin}`;
   }
 
   /**
@@ -202,7 +217,7 @@ class RemoteControlService {
   }
 
   /**
-   * Establece un nuevo PIN de seguridad de 4 dígitos
+   * Establece un nuevo PIN de seguridad de 4 dígitos y sincroniza la Sala
    */
   setPin(pin) {
     const cleanPin = String(pin).trim();
@@ -216,6 +231,11 @@ class RemoteControlService {
           INSERT INTO settings (key, value) VALUES ('remote_control_pin', ?)
           ON CONFLICT(key) DO UPDATE SET value = excluded.value
         `).run(cleanPin);
+        // Sincronizar el roomId con el PIN para que nunca vayan separados
+        db.prepare(`
+          INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        `).run(`BIB-${cleanPin}`);
       }
     } catch (err) {
       console.warn('[RemoteControlService] Error al guardar PIN:', err.message);
@@ -226,11 +246,12 @@ class RemoteControlService {
   }
 
   /**
-   * Genera un nuevo PIN aleatorio de 4 dígitos
+   * Genera un nuevo PIN aleatorio de 4 dígitos y actualiza la Sala
    */
   generateNewPin() {
     const newPin = Math.floor(1000 + Math.random() * 9000).toString();
-    return this.setPin(newPin);
+    this.setPin(newPin);
+    return newPin;
   }
 
   /**

@@ -53,8 +53,11 @@ export class CloudRemoteRelay {
     window.addEventListener('control:room-updated', async (e) => {
       if (e.detail?.roomId) {
         this.roomId = String(e.detail.roomId).trim().toUpperCase();
-        this.reconnect();
       }
+      if (e.detail?.pin) {
+        this.pin = String(e.detail.pin).trim();
+      }
+      this.reconnect();
     });
 
     // Escuchar cambios de proyección para sincronizar la pantalla del celular

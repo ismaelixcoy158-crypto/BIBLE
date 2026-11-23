@@ -305,14 +305,15 @@ export class ControlController {
     if (!window.bibleAPI || !window.bibleAPI.control) return;
     try {
       const newRoom = await window.bibleAPI.control.generateNewRoomId();
-      if (this.controlRoomDisplay) {
-        this.controlRoomDisplay.textContent = newRoom;
-      }
+      const status = await window.bibleAPI.control.getStatus();
+      if (this.controlRoomDisplay) this.controlRoomDisplay.textContent = newRoom;
+      if (this.controlPinDisplay && status.pin) this.controlPinDisplay.textContent = status.pin;
       this.customRoomForm.style.display = 'none';
-      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: newRoom } }));
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: newRoom, pin: status?.pin } }));
+      window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: status?.pin } }));
       await this.refreshAll();
     } catch (err) {
-      alert('Error al regenerar Código de Sala: ' + err.message);
+      alert('Error al regenerar Código: ' + err.message);
     }
   }
 
@@ -325,11 +326,12 @@ export class ControlController {
 
     try {
       const savedRoom = await window.bibleAPI.control.setRoomId(room);
-      if (this.controlRoomDisplay) {
-        this.controlRoomDisplay.textContent = savedRoom;
-      }
+      const status = await window.bibleAPI.control.getStatus();
+      if (this.controlRoomDisplay) this.controlRoomDisplay.textContent = savedRoom;
+      if (this.controlPinDisplay && status.pin) this.controlPinDisplay.textContent = status.pin;
       this.customRoomForm.style.display = 'none';
-      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: savedRoom } }));
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: savedRoom, pin: status?.pin } }));
+      window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: status?.pin } }));
       await this.refreshAll();
     } catch (err) {
       alert('Error al guardar Código de Sala: ' + err.message);
@@ -340,11 +342,13 @@ export class ControlController {
     if (!window.bibleAPI || !window.bibleAPI.control) return;
     try {
       const newPin = await window.bibleAPI.control.generateNewPin();
-      if (this.controlPinDisplay) {
-        this.controlPinDisplay.textContent = newPin;
-      }
+      const status = await window.bibleAPI.control.getStatus();
+      if (this.controlPinDisplay) this.controlPinDisplay.textContent = newPin;
+      if (this.controlRoomDisplay && status?.roomId) this.controlRoomDisplay.textContent = status.roomId;
       this.customPinForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: status?.roomId, pin: newPin } }));
       window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: newPin } }));
+      await this.refreshAll();
     } catch (err) {
       alert('Error al regenerar PIN: ' + err.message);
     }
@@ -359,11 +363,13 @@ export class ControlController {
 
     try {
       const savedPin = await window.bibleAPI.control.setPin(pin);
-      if (this.controlPinDisplay) {
-        this.controlPinDisplay.textContent = savedPin;
-      }
+      const status = await window.bibleAPI.control.getStatus();
+      if (this.controlPinDisplay) this.controlPinDisplay.textContent = savedPin;
+      if (this.controlRoomDisplay && status?.roomId) this.controlRoomDisplay.textContent = status.roomId;
       this.customPinForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: status?.roomId, pin: savedPin } }));
       window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: savedPin } }));
+      await this.refreshAll();
     } catch (err) {
       alert('Error al guardar PIN: ' + err.message);
     }

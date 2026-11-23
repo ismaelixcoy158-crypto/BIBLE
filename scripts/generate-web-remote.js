@@ -679,7 +679,7 @@ const html = `<!DOCTYPE html>
         </svg>
       </div>
 
-      <div class="room-tag-pill" id="pinRoomTag">
+      <div class="room-tag-pill" id="pinRoomTag" style="display:none;">
         <svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
         <span id="pinRoomLabel">SALA: BIB-7842</span>
       </div>
@@ -690,13 +690,17 @@ const html = `<!DOCTYPE html>
       </div>
 
       <h1 class="pin-title">BIBLE Control</h1>
-      <p class="pin-subtitle" id="pinSubtitle">Ingresa el PIN de 4 dígitos de la laptop:</p>
+      <p class="pin-subtitle" id="pinSubtitle">Ingresa el código que muestra tu laptop:</p>
 
-      <div class="pin-display">
-        <div class="pin-dot" id="dot0"></div>
-        <div class="pin-dot" id="dot1"></div>
-        <div class="pin-dot" id="dot2"></div>
-        <div class="pin-dot" id="dot3"></div>
+      <!-- Entrada unificada: BIB - [ • • • • ] -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;">
+        <span style="font-size:1.6rem; font-weight:900; color:var(--accent-blue); letter-spacing:1px;">BIB -</span>
+        <div class="pin-display" style="margin-bottom:0;">
+          <div class="pin-dot" id="dot0"></div>
+          <div class="pin-dot" id="dot1"></div>
+          <div class="pin-dot" id="dot2"></div>
+          <div class="pin-dot" id="dot3"></div>
+        </div>
       </div>
 
       <div class="pin-error-msg" id="pinErrorMsg">PIN incorrecto. Intenta de nuevo.</div>
@@ -884,17 +888,27 @@ ${pahoCode}
   <!-- Lógica Central del Control Móvil Universal -->
   <script>
     (function() {
-      // 1. Detección de Código de Sala
+      // 1. Detección de Código de Sala y PIN sincronizados
       const urlParams = new URLSearchParams(window.location.search);
-      let currentRoomId = urlParams.get('room') || urlParams.get('r') || (window.location.hash ? window.location.hash.replace('#', '') : '') || localStorage.getItem('bible_remote_room') || 'BIB-7842';
+      const urlPin = urlParams.get('pin') || urlParams.get('p') || '';
+      let currentRoomId = urlParams.get('room') || urlParams.get('r') || (window.location.hash ? window.location.hash.replace('#', '') : '') || localStorage.getItem('bible_remote_room') || '';
       currentRoomId = currentRoomId.trim().toUpperCase();
-      localStorage.setItem('bible_remote_room', currentRoomId);
+
+      // Si viene PIN en la URL (al escanear QR de la laptop), auto-sincronizar sala y PIN
+      if (urlPin && /^\d{4}$/.test(urlPin)) {
+        if (!currentRoomId || !currentRoomId.endsWith(urlPin)) {
+          currentRoomId = 'BIB-' + urlPin;
+        }
+      }
+      if (currentRoomId) {
+        localStorage.setItem('bible_remote_room', currentRoomId);
+      }
 
       // Elementos de Sala en DOM
       const pinRoomLabel = document.getElementById('pinRoomLabel');
       const headerRoomBadge = document.getElementById('headerRoomBadge');
-      if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
-      if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
+      if (pinRoomLabel && currentRoomId) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
+      if (headerRoomBadge && currentRoomId) headerRoomBadge.textContent = currentRoomId;
 
       // 2. Estado de conexión
       const localIpDirect = urlParams.get('ip') || '';
@@ -1230,6 +1244,18 @@ ${pahoCode}
             enteredPin += key.dataset.num;
             updatePinDots();
             if (enteredPin.length === 4) {
+              // Sincronizar automáticamente la Sala BIB con los 4 dígitos ingresados
+              currentRoomId = 'BIB-' + enteredPin;
+              localStorage.setItem('bible_remote_room', currentRoomId);
+              if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
+              if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
+
+              // Suscribirse inmediatamente a la sala en el broker MQTT
+              if (mqttClient && isMqttConnected) {
+                try {
+                  mqttClient.subscribe('bible/room/' + currentRoomId + '/state', { qos: 1 });
+                } catch (e) {}
+              }
               setTimeout(verifyPin, 100);
             }
           }
@@ -1515,8 +1541,17 @@ ${pahoCode}
       // Iniciar conexión MQTT
       connectMqtt();
 
-      // Si ya hay PIN guardado, avanzar a pantalla principal
-      if (savedPin) {
+      // Auto-login instantáneo si se escaneó código QR con PIN incluido (?room=BIB-7842&pin=7842)
+      if (urlPin && /^\d{4}$/.test(urlPin)) {
+        enteredPin = urlPin;
+        savedPin = urlPin;
+        localStorage.setItem('bible_remote_pin', savedPin);
+        currentRoomId = urlParams.get('room') || ('BIB-' + urlPin);
+        currentRoomId = currentRoomId.trim().toUpperCase();
+        localStorage.setItem('bible_remote_room', currentRoomId);
+        updatePinDots();
+        setTimeout(verifyPin, 250);
+      } else if (savedPin && savedPin.length === 4) {
         showMainScreen();
       } else {
         showPinScreen();

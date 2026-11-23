@@ -70,6 +70,9 @@ describe('RemoteControlService — Control Remoto Móvil (Wi-Fi Local)', () => {
 
     const qrLocal = remoteControlService.getQrSvg('local');
     assert.ok(qrLocal.includes('<svg xmlns="http://www.w3.org/2000/svg"'));
+
+    // Restaurar PIN por defecto
+    remoteControlService.setPin('1234');
   });
 
   test('debe ejecutar acciones de control directamente con executeAction', () => {
