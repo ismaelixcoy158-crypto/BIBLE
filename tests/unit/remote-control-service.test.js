@@ -38,6 +38,57 @@ describe('RemoteControlService — Control Remoto Móvil (Wi-Fi Local)', () => {
     assert.equal(url, `http://${ip}:${remoteControlService.port}`);
   });
 
+  test('debe gestionar el Código de Sala único persistente (Room ID) para evitar confusiones', () => {
+    const roomId = remoteControlService.getRoomId();
+    assert.ok(typeof roomId === 'string' && roomId.length >= 4, 'Debe retornar un roomId');
+    assert.match(roomId, /^BIB-\d{4}$/, 'Debe tener formato estándar BIB-XXXX');
+
+    // Personalizar Código de Sala
+    const customRoom = remoteControlService.setRoomId('BIB-5555');
+    assert.equal(customRoom, 'BIB-5555');
+    assert.equal(remoteControlService.getRoomId(), 'BIB-5555');
+
+    // Debe rechazar códigos demasiado cortos o largos
+    assert.throws(() => remoteControlService.setRoomId('A'), /entre 4 y 16/);
+
+    // Regenerar Código de Sala
+    const randomRoom = remoteControlService.generateNewRoomId();
+    assert.match(randomRoom, /^BIB-\d{4}$/);
+    assert.equal(remoteControlService.getRoomId(), randomRoom);
+
+    // Enlaces Cloud y Local
+    const cloudUrl = remoteControlService.getCloudUrl();
+    assert.ok(cloudUrl.includes('https://ismaelixcoy158-crypto.github.io/BIBLE/remote/?room=BIB-'));
+
+    const localUrl = remoteControlService.getLocalUrl();
+    assert.ok(localUrl.includes('?room=BIB-'));
+
+    // Generar QR para ambos modos
+    const qrCloud = remoteControlService.getQrSvg('cloud');
+    assert.ok(qrCloud.includes('<svg xmlns="http://www.w3.org/2000/svg"'));
+    assert.ok(qrCloud.includes('viewBox='));
+
+    const qrLocal = remoteControlService.getQrSvg('local');
+    assert.ok(qrLocal.includes('<svg xmlns="http://www.w3.org/2000/svg"'));
+  });
+
+  test('debe ejecutar acciones de control directamente con executeAction', () => {
+    // Activar y desactivar blackout
+    const resBlackout1 = remoteControlService.executeAction('toggle-blackout');
+    assert.equal(resBlackout1.success, true);
+    assert.equal(resBlackout1.action, 'toggle-blackout');
+
+    const resBlackout2 = remoteControlService.executeAction('toggle-blackout');
+    assert.equal(resBlackout2.success, true);
+
+    // Next y prev
+    const resNext = remoteControlService.executeAction('next');
+    assert.equal(resNext.success, true);
+
+    const resPrev = remoteControlService.executeAction('prev');
+    assert.equal(resPrev.success, true);
+  });
+
   test('debe gestionar el PIN de 4 dígitos (consultar, personalizar y regenerar)', () => {
     assert.equal(remoteControlService.getPin(), '1234');
 

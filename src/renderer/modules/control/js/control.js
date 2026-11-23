@@ -1,25 +1,31 @@
 /**
  * BIBLE — ControlController
  * Controlador para la interfaz de escritorio del módulo de Control Remoto.
+ * Gestiona el Código de Sala exclusivo, PIN de 4 dígitos, QR inteligente y Cloud Relay.
  */
 export class ControlController {
   constructor() {
     this.refreshInterval = null;
     this.currentStatus = null;
+    this.activeMode = 'cloud'; // 'cloud' (recomendado) o 'local'
 
     // Elementos DOM
+    this.tabModeCloud = document.getElementById('tabModeCloud');
+    this.tabModeLocal = document.getElementById('tabModeLocal');
     this.qrCodeSvgContainer = document.getElementById('qrCodeSvgContainer');
     this.btnRefreshQr = document.getElementById('btnRefreshQr');
-    this.controlUrlInput = document.getElementById('controlUrlInput');
-    this.btnCopyUrl = document.getElementById('btnCopyUrl');
-    this.btnCopyUrlLabel = document.getElementById('btnCopyUrlLabel');
-    this.networkIpLabel = document.getElementById('networkIpLabel');
-    this.activeClientsCount = document.getElementById('activeClientsCount');
-    this.btnToggleServer = document.getElementById('btnToggleServer');
-    this.btnToggleServerText = document.getElementById('btnToggleServerText');
-    this.btnDownloadApk = document.getElementById('btnDownloadApk');
-    this.btnDownloadDesktop = document.getElementById('btnDownloadDesktop');
-    this.btnOpenDownloadCenter = document.getElementById('btnOpenDownloadCenter');
+    this.qrCardTitle = document.getElementById('qrCardTitle');
+    this.qrModeTag = document.getElementById('qrModeTag');
+    this.qrInstructionText = document.getElementById('qrInstructionText');
+
+    this.controlRoomDisplay = document.getElementById('controlRoomDisplay');
+    this.btnGenerateRoom = document.getElementById('btnGenerateRoom');
+    this.btnEditRoom = document.getElementById('btnEditRoom');
+    this.customRoomForm = document.getElementById('customRoomForm');
+    this.inputCustomRoom = document.getElementById('inputCustomRoom');
+    this.btnSaveCustomRoom = document.getElementById('btnSaveCustomRoom');
+    this.btnCancelCustomRoom = document.getElementById('btnCancelCustomRoom');
+
     this.controlPinDisplay = document.getElementById('controlPinDisplay');
     this.btnGeneratePin = document.getElementById('btnGeneratePin');
     this.btnEditPin = document.getElementById('btnEditPin');
@@ -27,6 +33,20 @@ export class ControlController {
     this.inputCustomPin = document.getElementById('inputCustomPin');
     this.btnSaveCustomPin = document.getElementById('btnSaveCustomPin');
     this.btnCancelCustomPin = document.getElementById('btnCancelCustomPin');
+
+    this.urlInputLabel = document.getElementById('urlInputLabel');
+    this.controlUrlInput = document.getElementById('controlUrlInput');
+    this.btnCopyUrl = document.getElementById('btnCopyUrl');
+    this.btnCopyUrlLabel = document.getElementById('btnCopyUrlLabel');
+    this.networkIpLabel = document.getElementById('networkIpLabel');
+    this.activeClientsCount = document.getElementById('activeClientsCount');
+    this.cloudRelayStatusLabel = document.getElementById('cloudRelayStatusLabel');
+    this.cloudBrokerLabel = document.getElementById('cloudBrokerLabel');
+
+    this.btnToggleServer = document.getElementById('btnToggleServer');
+    this.btnToggleServerText = document.getElementById('btnToggleServerText');
+    this.btnDownloadApk = document.getElementById('btnDownloadApk');
+    this.btnOpenDownloadCenter = document.getElementById('btnOpenDownloadCenter');
     this.controlServerStatusBadge = document.getElementById('controlServerStatusBadge');
     this.controlServerStatusText = document.getElementById('controlServerStatusText');
 
@@ -42,6 +62,10 @@ export class ControlController {
       this.refreshStatusOnly();
     }, 3500);
 
+    // Escuchar cambio de estado del Cloud Relay
+    this.onCloudStatusBound = (e) => this.onCloudRelayStatus(e.detail);
+    window.addEventListener('cloud-relay:status', this.onCloudStatusBound);
+
     // Escuchar cambio de módulo para limpiar intervalo
     window.addEventListener('module-switched', (e) => {
       if (e.detail?.module !== 'control') {
@@ -51,6 +75,14 @@ export class ControlController {
   }
 
   bindEvents() {
+    // Selector de modo Cloud vs Local
+    if (this.tabModeCloud) {
+      this.tabModeCloud.addEventListener('click', () => this.switchMode('cloud'));
+    }
+    if (this.tabModeLocal) {
+      this.tabModeLocal.addEventListener('click', () => this.switchMode('local'));
+    }
+
     if (this.btnRefreshQr) {
       this.btnRefreshQr.addEventListener('click', () => this.refreshQrCode());
     }
@@ -59,10 +91,40 @@ export class ControlController {
       this.btnCopyUrl.addEventListener('click', () => this.copyUrl());
     }
 
+    // Código de Sala
+    if (this.btnGenerateRoom) {
+      this.btnGenerateRoom.addEventListener('click', () => this.generateNewRoom());
+    }
+    if (this.btnEditRoom) {
+      this.btnEditRoom.addEventListener('click', () => {
+        this.customRoomForm.style.display = 'flex';
+        this.inputCustomRoom.value = this.controlRoomDisplay.textContent || '';
+        this.inputCustomRoom.focus();
+      });
+    }
+    if (this.btnCancelCustomRoom) {
+      this.btnCancelCustomRoom.addEventListener('click', () => {
+        this.customRoomForm.style.display = 'none';
+      });
+    }
+    if (this.btnSaveCustomRoom) {
+      this.btnSaveCustomRoom.addEventListener('click', () => this.saveCustomRoom());
+    }
+    if (this.inputCustomRoom) {
+      this.inputCustomRoom.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.saveCustomRoom();
+        } else if (e.key === 'Escape') {
+          this.customRoomForm.style.display = 'none';
+        }
+      });
+    }
+
+    // PIN de Seguridad
     if (this.btnGeneratePin) {
       this.btnGeneratePin.addEventListener('click', () => this.generateNewPin());
     }
-
     if (this.btnEditPin) {
       this.btnEditPin.addEventListener('click', () => {
         this.customPinForm.style.display = 'flex';
@@ -70,17 +132,14 @@ export class ControlController {
         this.inputCustomPin.focus();
       });
     }
-
     if (this.btnCancelCustomPin) {
       this.btnCancelCustomPin.addEventListener('click', () => {
         this.customPinForm.style.display = 'none';
       });
     }
-
     if (this.btnSaveCustomPin) {
       this.btnSaveCustomPin.addEventListener('click', () => this.saveCustomPin());
     }
-
     if (this.inputCustomPin) {
       this.inputCustomPin.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -95,6 +154,42 @@ export class ControlController {
     if (this.btnToggleServer) {
       this.btnToggleServer.addEventListener('click', () => this.toggleServer());
     }
+  }
+
+  switchMode(mode) {
+    if (this.activeMode === mode) return;
+    this.activeMode = mode;
+
+    if (mode === 'cloud') {
+      this.tabModeCloud?.classList.add('active');
+      this.tabModeLocal?.classList.remove('active');
+      if (this.qrModeTag) {
+        this.qrModeTag.textContent = 'Universal Cloud';
+        this.qrModeTag.className = 'tag-pill';
+      }
+      if (this.qrInstructionText) {
+        this.qrInstructionText.textContent = 'Abre la cámara nativa de tu teléfono Android o iPhone y apunta hacia este código. Se abrirá la consola web conectada a tu sala.';
+      }
+      if (this.urlInputLabel) {
+        this.urlInputLabel.textContent = 'Enlace Web Cloud Directo:';
+      }
+    } else {
+      this.tabModeCloud?.classList.remove('active');
+      this.tabModeLocal?.classList.add('active');
+      if (this.qrModeTag) {
+        this.qrModeTag.textContent = 'Local Wi-Fi';
+        this.qrModeTag.className = 'tag-pill tag-secure';
+      }
+      if (this.qrInstructionText) {
+        this.qrInstructionText.textContent = 'Apunta la cámara con el teléfono conectado al mismo Wi-Fi del templo para abrir el control local sin conexión a internet.';
+      }
+      if (this.urlInputLabel) {
+        this.urlInputLabel.textContent = 'Dirección en Red Local (Wi-Fi):';
+      }
+    }
+
+    this.refreshQrCode();
+    this.applyStatusToUI(this.currentStatus);
   }
 
   async refreshAll() {
@@ -118,7 +213,7 @@ export class ControlController {
   async refreshQrCode() {
     if (!window.bibleAPI || !window.bibleAPI.control) return;
     try {
-      const svg = await window.bibleAPI.control.getQrSvg();
+      const svg = await window.bibleAPI.control.getQrSvg(this.activeMode);
       if (this.qrCodeSvgContainer && svg) {
         this.qrCodeSvgContainer.innerHTML = svg;
       }
@@ -133,8 +228,12 @@ export class ControlController {
   applyStatusToUI(status) {
     if (!status) return;
 
-    if (this.controlUrlInput && status.url) {
-      this.controlUrlInput.value = status.url;
+    if (this.controlRoomDisplay && status.roomId) {
+      this.controlRoomDisplay.textContent = status.roomId;
+    }
+
+    if (this.controlUrlInput) {
+      this.controlUrlInput.value = this.activeMode === 'local' ? status.localUrl : status.cloudUrl;
     }
     if (this.networkIpLabel && status.ip) {
       this.networkIpLabel.textContent = status.ip;
@@ -148,23 +247,36 @@ export class ControlController {
     if (this.btnDownloadApk && status.apkUrl) {
       this.btnDownloadApk.href = status.apkUrl;
     }
-    if (this.btnDownloadDesktop && status.desktopUrl) {
-      this.btnDownloadDesktop.href = status.desktopUrl;
-    }
     if (this.btnOpenDownloadCenter && status.downloadCenterUrl) {
       this.btnOpenDownloadCenter.href = status.downloadCenterUrl;
     }
 
     if (status.isRunning) {
-      this.controlServerStatusBadge.className = 'status-chip chip-online';
-      this.controlServerStatusText.textContent = `Servidor Activo (Puerto ${status.port || 4545})`;
-      this.btnToggleServerText.textContent = 'Detener Servidor HTTP';
+      this.btnToggleServerText.textContent = 'Reiniciar Servidor HTTP';
     } else {
-      this.controlServerStatusBadge.className = 'status-chip';
-      this.controlServerStatusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
-      this.controlServerStatusBadge.style.color = '#b91c1c';
-      this.controlServerStatusText.textContent = 'Servidor Detenido';
       this.btnToggleServerText.textContent = 'Iniciar Servidor HTTP';
+    }
+  }
+
+  onCloudRelayStatus(detail) {
+    if (!detail) return;
+    if (this.cloudRelayStatusLabel) {
+      if (detail.connected) {
+        this.cloudRelayStatusLabel.textContent = '🟢 Conectado';
+        this.cloudRelayStatusLabel.style.color = 'var(--accent-green, #22c55e)';
+        if (this.controlServerStatusText) {
+          this.controlServerStatusText.textContent = `Cloud Relay Activo (${detail.broker || 'WSS'})`;
+        }
+      } else {
+        this.cloudRelayStatusLabel.textContent = '🟡 Conectando...';
+        this.cloudRelayStatusLabel.style.color = 'var(--accent-amber, #f59e0b)';
+        if (this.controlServerStatusText) {
+          this.controlServerStatusText.textContent = 'Reconectando Cloud Relay...';
+        }
+      }
+    }
+    if (this.cloudBrokerLabel && detail.broker) {
+      this.cloudBrokerLabel.textContent = detail.broker;
     }
   }
 
@@ -184,9 +296,43 @@ export class ControlController {
         }, 2000);
       }
     } catch (err) {
-      // Fallback manual de selección
       this.controlUrlInput.select();
       document.execCommand('copy');
+    }
+  }
+
+  async generateNewRoom() {
+    if (!window.bibleAPI || !window.bibleAPI.control) return;
+    try {
+      const newRoom = await window.bibleAPI.control.generateNewRoomId();
+      if (this.controlRoomDisplay) {
+        this.controlRoomDisplay.textContent = newRoom;
+      }
+      this.customRoomForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: newRoom } }));
+      await this.refreshAll();
+    } catch (err) {
+      alert('Error al regenerar Código de Sala: ' + err.message);
+    }
+  }
+
+  async saveCustomRoom() {
+    const room = (this.inputCustomRoom?.value || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    if (room.length < 4 || room.length > 16) {
+      alert('Por favor ingresa un Código de Sala de entre 4 y 16 caracteres (Ej: BIB-7842)');
+      return;
+    }
+
+    try {
+      const savedRoom = await window.bibleAPI.control.setRoomId(room);
+      if (this.controlRoomDisplay) {
+        this.controlRoomDisplay.textContent = savedRoom;
+      }
+      this.customRoomForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:room-updated', { detail: { roomId: savedRoom } }));
+      await this.refreshAll();
+    } catch (err) {
+      alert('Error al guardar Código de Sala: ' + err.message);
     }
   }
 
@@ -198,6 +344,7 @@ export class ControlController {
         this.controlPinDisplay.textContent = newPin;
       }
       this.customPinForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: newPin } }));
     } catch (err) {
       alert('Error al regenerar PIN: ' + err.message);
     }
@@ -216,6 +363,7 @@ export class ControlController {
         this.controlPinDisplay.textContent = savedPin;
       }
       this.customPinForm.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('control:pin-updated', { detail: { pin: savedPin } }));
     } catch (err) {
       alert('Error al guardar PIN: ' + err.message);
     }
@@ -240,6 +388,8 @@ export class ControlController {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
     }
+    if (this.onCloudStatusBound) {
+      window.removeEventListener('cloud-relay:status', this.onCloudStatusBound);
+    }
   }
 }
-

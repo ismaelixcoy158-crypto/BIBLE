@@ -534,6 +534,18 @@ function registerIpcHandlers() {
     return remoteControlService.getStatus();
   });
 
+  ipcMain.handle('control:get-room-id', async () => {
+    return remoteControlService.getRoomId();
+  });
+
+  ipcMain.handle('control:set-room-id', async (_event, roomId) => {
+    return remoteControlService.setRoomId(roomId);
+  });
+
+  ipcMain.handle('control:generate-new-room-id', async () => {
+    return remoteControlService.generateNewRoomId();
+  });
+
   ipcMain.handle('control:start-server', async () => {
     return remoteControlService.start();
   });
@@ -550,8 +562,12 @@ function registerIpcHandlers() {
     return remoteControlService.setPin(pin);
   });
 
-  ipcMain.handle('control:get-qr-svg', async () => {
-    return remoteControlService.getQrSvg();
+  ipcMain.handle('control:get-qr-svg', async (_event, mode = 'cloud') => {
+    return remoteControlService.getQrSvg(mode);
+  });
+
+  ipcMain.handle('control:execute-action', async (_event, action) => {
+    return remoteControlService.executeAction(action);
   });
 }
 

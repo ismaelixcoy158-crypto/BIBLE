@@ -165,14 +165,18 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     project: (payload) => ipcRenderer.invoke('countdown:project', payload)
   },
 
-  // Control Remoto (Vía Wi-Fi / Móvil)
+  // Control Remoto (Vía Wi-Fi / Móvil / Cloud)
   control: {
     getStatus: () => ipcRenderer.invoke('control:get-status'),
+    getRoomId: () => ipcRenderer.invoke('control:get-room-id'),
+    setRoomId: (roomId) => ipcRenderer.invoke('control:set-room-id', roomId),
+    generateNewRoomId: () => ipcRenderer.invoke('control:generate-new-room-id'),
     startServer: () => ipcRenderer.invoke('control:start-server'),
     stopServer: () => ipcRenderer.invoke('control:stop-server'),
     generateNewPin: () => ipcRenderer.invoke('control:generate-new-pin'),
     setPin: (pin) => ipcRenderer.invoke('control:set-pin', pin),
-    getQrSvg: () => ipcRenderer.invoke('control:get-qr-svg'),
+    getQrSvg: (mode = 'cloud') => ipcRenderer.invoke('control:get-qr-svg', mode),
+    executeAction: (action) => ipcRenderer.invoke('control:execute-action', action),
     onRemoteAction: (callback) => {
       const subscription = (_event, data) => callback(data);
       ipcRenderer.on('remote:action', subscription);

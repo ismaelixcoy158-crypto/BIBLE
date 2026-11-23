@@ -3,6 +3,8 @@
  * Coordina la navegación entre módulos, reloj maestro, atajos globales y la sincronización del monitor de proyección.
  */
 
+import { cloudRemoteRelay } from './cloud-remote-relay.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Elementos de la interfaz
   const tallyBadge = document.getElementById('tallyStatusBadge');
@@ -368,6 +370,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('[Shell] Acción de control remoto recibida:', action);
       window.dispatchEvent(new CustomEvent('remote-control:action', { detail: { action } }));
     });
+  }
+
+  // Inicializar Cloud Remote Relay para vincular la laptop con celulares en la nube
+  try {
+    cloudRemoteRelay.init();
+    window.cloudRemoteRelay = cloudRemoteRelay;
+  } catch (err) {
+    console.warn('[Shell] Error al inicializar Cloud Remote Relay:', err);
   }
 
   /**

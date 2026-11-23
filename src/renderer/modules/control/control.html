@@ -11,16 +11,28 @@
         </svg>
       </div>
       <div>
-        <h1 class="control-module-title">Control Remoto Móvil</h1>
-        <p class="control-module-subtitle">Controla la predicación, coritos, biblia y botones de pánico desde cualquier teléfono sin internet y sin instalar apps.</p>
+        <h1 class="control-module-title">Control Remoto Web y Móvil</h1>
+        <p class="control-module-subtitle">Apunta la cámara de cualquier celular (Android o iPhone) al código QR para controlar la predicación y púlpito al instante, sin instalar aplicaciones.</p>
       </div>
     </div>
     <div class="control-header-right">
       <div id="controlServerStatusBadge" class="status-chip chip-online">
         <span class="status-pulse-dot"></span>
-        <span id="controlServerStatusText">Servidor Activo (Puerto 4545)</span>
+        <span id="controlServerStatusText">Cloud Relay Activo (WSS)</span>
       </div>
     </div>
+  </div>
+
+  <!-- Selector de Modo de Conexión (Tabs) -->
+  <div class="control-mode-selector">
+    <button id="tabModeCloud" class="control-mode-tab active" type="button">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <span>Enlace Web Cloud / QR (Recomendado para Cualquier Celular)</span>
+    </button>
+    <button id="tabModeLocal" class="control-mode-tab" type="button">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      <span>Red Local Wi-Fi (Offline / Sin Internet)</span>
+    </button>
   </div>
 
   <!-- Contenido Principal: Tarjetas de Configuración y Código QR -->
@@ -43,20 +55,19 @@
             <path d="M21 12v.01"/>
             <path d="M12 21v-1"/>
           </svg>
-          <span class="card-title-text">Escaneo Rápido con Cámara</span>
+          <span class="card-title-text" id="qrCardTitle">Escaneo con Cámara del Móvil</span>
         </div>
-        <span class="tag-pill">Cero Internet</span>
+        <span class="tag-pill" id="qrModeTag">Universal Cloud</span>
       </div>
 
       <div class="qr-preview-wrapper">
         <div id="qrCodeSvgContainer" class="qr-svg-frame">
-          <!-- El SVG se renderiza dinámicamente aquí -->
           <div class="qr-loading-placeholder">Cargando código QR...</div>
         </div>
       </div>
 
-      <p class="qr-instruction-text">
-        Apunta la cámara de cualquier teléfono Android o iPhone conectado al Wi-Fi del templo para abrir el control instantáneamente.
+      <p class="qr-instruction-text" id="qrInstructionText">
+        Abre la cámara nativa de tu teléfono Android o iPhone y apunta hacia este código. Se abrirá la consola de control vinculada directamente a tu sala.
       </p>
 
       <button id="btnRefreshQr" class="btn btn-secondary btn-sm" style="width: 100%;">
@@ -65,79 +76,57 @@
       </button>
     </div>
 
-    <!-- Columna 2: Enlace Wi-Fi y Conexión -->
+    <!-- Columna 2: Código de Sala Único (Anti-Cruces) -->
     <div class="control-card">
       <div class="card-header-clean">
         <div class="card-title-wrap">
           <svg class="icon icon-sm" viewBox="0 0 24 24">
-            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-            <line x1="12" y1="20" x2="12.01" y2="20"/>
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="m9 12 2 2 4-4"/>
           </svg>
-          <span class="card-title-text">Dirección en Red Local (Wi-Fi)</span>
+          <span class="card-title-text">Código de Sala Único</span>
         </div>
+        <span class="tag-pill tag-secure">Sin Cruces</span>
       </div>
 
       <p class="card-body-description">
-        Si el teléfono no lee el código QR, abre cualquier navegador móvil (Chrome, Safari) e ingresa esta dirección:
+        Identificador exclusivo de esta laptop. Al escanear el QR, el teléfono se enlaza únicamente a tu pantalla para que nadie en otra iglesia interfiera con tu culto.
       </p>
 
-      <div class="url-copy-box">
-        <input type="text" id="controlUrlInput" class="input-url-display" readonly value="http://127.0.0.1:4545">
-        <button id="btnCopyUrl" class="btn btn-primary" title="Copiar enlace al portapapeles">
-          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-          <span id="btnCopyUrlLabel">Copiar</span>
+      <div class="room-display-wrapper">
+        <div class="room-badge-giant" id="controlRoomDisplay">BIB-7842</div>
+      </div>
+
+      <div class="pin-actions-row">
+        <button id="btnGenerateRoom" class="btn btn-secondary btn-sm" style="flex: 1;" title="Generar un nuevo código de sala aleatorio">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span>Regenerar Sala</span>
+        </button>
+        <button id="btnEditRoom" class="btn btn-secondary btn-sm" style="flex: 1;" title="Personalizar el código de sala">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Personalizar</span>
         </button>
       </div>
 
-      <div class="network-info-chips">
-        <div class="info-chip">
-          <span class="info-chip-label">IP Servidor:</span>
-          <span id="networkIpLabel" class="info-chip-val">127.0.0.1</span>
-        </div>
-        <div class="info-chip">
-          <span class="info-chip-label">Puerto:</span>
-          <span class="info-chip-val">4545</span>
-        </div>
-        <div class="info-chip">
-          <span class="info-chip-label">Dispositivos Activos:</span>
-          <span id="activeClientsCount" class="info-chip-val" style="color: var(--accent-primary); font-weight: 700;">0</span>
-        </div>
+      <div id="customRoomForm" class="custom-pin-form" style="display: none; margin-bottom: 12px;">
+        <input type="text" id="inputCustomRoom" maxlength="12" placeholder="Ej: BIB-7842" class="input-custom-pin" style="width: 140px; text-transform: uppercase;">
+        <button id="btnSaveCustomRoom" class="btn btn-primary btn-sm">Guardar</button>
+        <button id="btnCancelCustomRoom" class="btn btn-secondary btn-sm">Cancelar</button>
       </div>
 
-      <div class="server-action-box">
-        <button id="btnToggleServer" class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 10px;">
-          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-          <span id="btnToggleServerText">Reiniciar Servidor HTTP</span>
-        </button>
-
-        <!-- Centro de Descargas (APK Android + Paquete para otra PC) -->
-        <div class="apk-download-box" style="padding: 12px; background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main);">Descargas Disponibles</div>
-              <div style="font-size: 0.72rem; color: var(--text-muted);">APK Celular (89 KB) y Sistema PC (121 MB)</div>
-            </div>
-            <a id="btnOpenDownloadCenter" href="http://127.0.0.1:4545/download" target="_blank" class="tag-pill" style="text-decoration: none; cursor: pointer; background: rgba(59, 130, 246, 0.2); color: var(--accent-primary);">
-              Ver Centro Web
-            </a>
-          </div>
-          <div style="display: flex; gap: 6px;">
-            <a id="btnDownloadApk" href="http://127.0.0.1:4545/download/bible-control.apk" class="btn btn-primary btn-sm" download="bible-control.apk" style="text-decoration: none; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem;">
-              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Descargar APK</span>
-            </a>
-            <a id="btnDownloadDesktop" href="http://127.0.0.1:4545/download/bible-desktop-linux.tar.gz" class="btn btn-secondary btn-sm" download="bible-desktop-linux.tar.gz" style="text-decoration: none; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem;">
-              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
-              <span>Descargar PC</span>
-            </a>
-          </div>
+      <div class="network-info-chips" style="margin-top: auto;">
+        <div class="info-chip">
+          <span class="info-chip-label">Estado Enlace Cloud:</span>
+          <span id="cloudRelayStatusLabel" class="info-chip-val" style="color: var(--accent-green, #22c55e); font-weight: 700;">🟢 Conectado</span>
+        </div>
+        <div class="info-chip">
+          <span class="info-chip-label">Servidor WSS:</span>
+          <span id="cloudBrokerLabel" class="info-chip-val">broker.hivemq.com</span>
         </div>
       </div>
     </div>
 
-    <!-- Columna 3: PIN de Seguridad -->
+    <!-- Columna 3: PIN de Seguridad y Enlace Directo -->
     <div class="control-card">
       <div class="card-header-clean">
         <div class="card-title-wrap">
@@ -151,7 +140,7 @@
       </div>
 
       <p class="card-body-description">
-        Evita que miembros no autorizados conectados a la red Wi-Fi cambien las diapositivas o activen pantallas negras.
+        Código de desbloqueo para el teléfono del predicador o técnico.
       </p>
 
       <div class="pin-display-wrapper">
@@ -169,11 +158,50 @@
         </button>
       </div>
 
-      <div id="customPinForm" class="custom-pin-form" style="display: none;">
+      <div id="customPinForm" class="custom-pin-form" style="display: none; margin-bottom: 12px;">
         <input type="text" id="inputCustomPin" maxlength="4" placeholder="Ej: 5678" class="input-custom-pin" pattern="[0-9]*" inputmode="numeric">
         <button id="btnSaveCustomPin" class="btn btn-primary btn-sm">Guardar</button>
         <button id="btnCancelCustomPin" class="btn btn-secondary btn-sm">Cancelar</button>
       </div>
+
+      <!-- Enlace y Copiar -->
+      <div style="margin-top: auto;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;" id="urlInputLabel">Enlace de Conexión Directa:</div>
+        <div class="url-copy-box" style="margin-bottom: 8px;">
+          <input type="text" id="controlUrlInput" class="input-url-display" readonly value="https://ismaelixcoy158-crypto.github.io/BIBLE/remote/?room=BIB-7842">
+          <button id="btnCopyUrl" class="btn btn-primary btn-sm" title="Copiar enlace al portapapeles">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span id="btnCopyUrlLabel">Copiar</span>
+          </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--text-muted);">
+          <span>IP Local: <strong id="networkIpLabel" style="color: var(--text-main);">127.0.0.1</strong></span>
+          <span>Dispositivos Activos: <strong id="activeClientsCount" style="color: var(--accent-primary);">1</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Centro de Descargas y Acciones Adicionales -->
+  <div class="apk-download-box" style="padding: 14px 20px; background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+    <div>
+      <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">Instaladores y Centro de Descargas</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Para mayor comodidad, también puedes descargar la APK nativa para Android o llevar BIBLE a otra PC con Windows o Linux.</div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+      <a id="btnDownloadApk" href="http://127.0.0.1:4545/download/bible-control.apk" class="btn btn-primary btn-sm" download="bible-control.apk" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Descargar APK</span>
+      </a>
+      <a id="btnOpenDownloadCenter" href="http://127.0.0.1:4545/download" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Ver Todas las Descargas</span>
+      </a>
+      <button id="btnToggleServer" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+        <span id="btnToggleServerText">Servidor Local HTTP</span>
+      </button>
     </div>
   </div>
 
@@ -190,7 +218,7 @@
         <div class="feature-text-content">
           <h3 class="feature-item-title">Modo Predicador (Smart Pulpit Clicker)</h3>
           <p class="feature-item-desc">
-            Diseñado para que el pastor o predicador avance diapositivas desde su teléfono colocado en el atril con botones táctiles gigantes, vibración háptica de confirmación, cronómetro de sermón y miniatura de lectura en vivo de la diapositiva en pantalla.
+            Diseñado para que el pastor avance diapositivas y textos bíblicos desde su celular en el atril con botones táctiles gigantes, vibración háptica de confirmación, cronómetro de sermón y lectura en vivo de la diapositiva en pantalla.
           </p>
         </div>
       </div>
@@ -210,4 +238,3 @@
     </div>
   </div>
 </div>
-

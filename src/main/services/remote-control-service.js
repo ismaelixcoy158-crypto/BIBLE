@@ -84,19 +84,94 @@ class RemoteControlService {
   }
 
   /**
-   * Retorna la URL local de conexión
+   * Retorna la URL local de conexión (para compatibilidad hacia atrás)
    */
-  getUrl() {
+  getUrl(mode = 'local') {
+    if (mode === 'cloud') {
+      return this.getCloudUrl();
+    }
     const ip = this.getLocalIpAddress();
     return `http://${ip}:${this.port}`;
   }
 
   /**
-   * Genera el SVG del código QR para la URL actual
+   * Retorna el Código de Sala único persistente de esta laptop
    */
-  getQrSvg() {
-    const url = this.getUrl();
-    return QRCode.generateSVG(url, 2);
+  getRoomId() {
+    try {
+      const db = dbManager.getDb ? dbManager.getDb() : (dbManager.init && dbManager.init());
+      if (db) {
+        const row = db.prepare("SELECT value FROM settings WHERE key = 'remote_room_id'").get();
+        if (row && row.value && String(row.value).trim().length >= 4) {
+          return String(row.value).trim().toUpperCase();
+        }
+        // Generar un Código de Sala único inicial (ej: BIB-7842)
+        const newRoomId = `BIB-${Math.floor(1000 + Math.random() * 9000)}`;
+        db.prepare(`
+          INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        `).run(newRoomId);
+        return newRoomId;
+      }
+    } catch (err) {
+      console.warn('[RemoteControlService] Error al consultar roomId en settings:', err.message);
+    }
+    return 'BIB-7842';
+  }
+
+  /**
+   * Establece un Código de Sala personalizado
+   */
+  setRoomId(roomId) {
+    const clean = String(roomId || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    if (clean.length < 4 || clean.length > 16) {
+      throw new Error('El Código de Sala debe tener entre 4 y 16 caracteres');
+    }
+    try {
+      const db = dbManager.getDb ? dbManager.getDb() : (dbManager.init && dbManager.init());
+      if (db) {
+        db.prepare(`
+          INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        `).run(clean);
+      }
+    } catch (err) {
+      console.warn('[RemoteControlService] Error al guardar roomId:', err.message);
+    }
+    return clean;
+  }
+
+  /**
+   * Genera y guarda un nuevo Código de Sala aleatorio
+   */
+  generateNewRoomId() {
+    const newRoomId = `BIB-${Math.floor(1000 + Math.random() * 9000)}`;
+    return this.setRoomId(newRoomId);
+  }
+
+  /**
+   * Retorna la URL Cloud Web universal (con room ID)
+   */
+  getCloudUrl() {
+    const roomId = this.getRoomId();
+    return `https://ismaelixcoy158-crypto.github.io/BIBLE/remote/?room=${roomId}`;
+  }
+
+  /**
+   * Retorna la URL local directa (con room ID)
+   */
+  getLocalUrl() {
+    const ip = this.getLocalIpAddress();
+    const roomId = this.getRoomId();
+    return `http://${ip}:${this.port}/?room=${roomId}`;
+  }
+
+  /**
+   * Genera el SVG del código QR para la URL según el modo (cloud o local)
+   */
+  getQrSvg(mode = 'cloud') {
+    const targetUrl = mode === 'local' ? this.getUrl('local') : this.getCloudUrl();
+    return QRCode.generateSVG(targetUrl, 2);
   }
 
   /**
@@ -166,15 +241,23 @@ class RemoteControlService {
    * Estado completo del servidor para el módulo de escritorio y el cliente móvil
    */
   getStatus() {
+    const roomId = this.getRoomId();
+    const cloudUrl = this.getCloudUrl();
+    const localUrl = this.getLocalUrl();
+    const ip = this.getLocalIpAddress();
+
     return {
       isRunning: this.isRunning,
       port: this.port,
-      ip: this.getLocalIpAddress(),
+      ip: ip,
+      roomId: roomId,
+      cloudUrl: cloudUrl,
+      localUrl: localUrl,
       url: this.getUrl(),
-      downloadCenterUrl: `${this.getUrl()}/download`,
-      apkUrl: `${this.getUrl()}/download/bible-control.apk`,
-      desktopUrl: `${this.getUrl()}/download/bible-desktop-linux.tar.gz`,
-      windowsUrl: `${this.getUrl()}/download/bible-windows-setup.zip`,
+      downloadCenterUrl: `http://${ip}:${this.port}/download`,
+      apkUrl: `http://${ip}:${this.port}/download/bible-control.apk`,
+      desktopUrl: `http://${ip}:${this.port}/download/bible-desktop-linux.tar.gz`,
+      windowsUrl: `http://${ip}:${this.port}/download/bible-windows-setup.zip`,
       pin: this.getPin(),
       activeConnections: this.activeTokens.size,
       projection: projectionService.getState(),
@@ -241,6 +324,64 @@ class RemoteControlService {
         resolve(this.getStatus());
       }
     });
+  }
+
+  /**
+   * Ejecuta una acción de control (avanzar, retroceder, pánico F1-F4)
+   */
+  executeAction(action) {
+    let actionResult = null;
+
+    switch (action) {
+      case 'next':
+        // 1. Si la predicación está en curso, avanzar diapositiva en el servicio
+        if (preachingService.activePresentationState?.preachingId) {
+          actionResult = preachingService.nextSlide();
+        }
+        // 2. Reenviar al shell del operador para que la Biblia o Coritos avancen si están activos
+        if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
+          this.operatorWindow.webContents.send('remote:action', { action: 'next' });
+        }
+        break;
+
+      case 'prev':
+        // 1. Si la predicación está en curso, retroceder diapositiva en el servicio
+        if (preachingService.activePresentationState?.preachingId) {
+          actionResult = preachingService.prevSlide();
+        }
+        // 2. Reenviar al shell del operador para que la Biblia o Coritos retrocedan si están activos
+        if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
+          this.operatorWindow.webContents.send('remote:action', { action: 'prev' });
+        }
+        break;
+
+      case 'toggle-blackout':
+        actionResult = projectionService.toggleBlackout();
+        break;
+
+      case 'toggle-logo':
+        actionResult = projectionService.toggleLogo();
+        break;
+
+      case 'toggle-clear-text':
+        actionResult = projectionService.toggleClearText();
+        break;
+
+      case 'toggle-freeze':
+        actionResult = projectionService.toggleFreeze();
+        break;
+
+      default:
+        console.warn('[RemoteControlService] Acción desconocida:', action);
+        break;
+    }
+
+    return {
+      success: true,
+      action,
+      result: actionResult,
+      state: projectionService.getState()
+    };
   }
 
   /**
@@ -429,7 +570,8 @@ class RemoteControlService {
 
     // 3. Código QR en formato SVG vectorial
     if (pathname === '/api/qr' && req.method === 'GET') {
-      const svg = this.getQrSvg();
+      const mode = parsedUrl.searchParams.get('mode') || 'cloud';
+      const svg = this.getQrSvg(mode);
       res.writeHead(200, { 'Content-Type': 'image/svg+xml; charset=utf-8' });
       res.end(svg);
       return;
@@ -477,59 +619,10 @@ class RemoteControlService {
         }
 
         const action = body.action;
-        let actionResult = null;
-
-        switch (action) {
-          case 'next':
-            // 1. Si la predicación está en curso, avanzar diapositiva en el servicio
-            if (preachingService.activePresentationState?.preachingId) {
-              actionResult = preachingService.nextSlide();
-            }
-            // 2. Reenviar al shell del operador para que la Biblia o Coritos avancen si están activos
-            if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
-              this.operatorWindow.webContents.send('remote:action', { action: 'next' });
-            }
-            break;
-
-          case 'prev':
-            // 1. Si la predicación está en curso, retroceder diapositiva en el servicio
-            if (preachingService.activePresentationState?.preachingId) {
-              actionResult = preachingService.prevSlide();
-            }
-            // 2. Reenviar al shell del operador para que la Biblia o Coritos retrocedan si están activos
-            if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
-              this.operatorWindow.webContents.send('remote:action', { action: 'prev' });
-            }
-            break;
-
-          case 'toggle-blackout':
-            actionResult = projectionService.toggleBlackout();
-            break;
-
-          case 'toggle-logo':
-            actionResult = projectionService.toggleLogo();
-            break;
-
-          case 'toggle-clear-text':
-            actionResult = projectionService.toggleClearText();
-            break;
-
-          case 'toggle-freeze':
-            actionResult = projectionService.toggleFreeze();
-            break;
-
-          default:
-            console.warn('[RemoteControlService] Acción desconocida:', action);
-            break;
-        }
+        const resData = this.executeAction(action);
 
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.end(JSON.stringify({
-          success: true,
-          action,
-          result: actionResult,
-          state: projectionService.getState()
-        }));
+        res.end(JSON.stringify(resData));
       });
       return;
     }
