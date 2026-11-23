@@ -34,6 +34,8 @@ echo "4. Preparando resources/app..."
 APP_DIR="$OUT_DIR/resources/app"
 mkdir -p "$APP_DIR"
 cp -r "$ROOT_DIR/src" "$APP_DIR/"
+rm -rf "$APP_DIR/src/main/services/downloads"
+mkdir -p "$APP_DIR/src/main/services/downloads"
 cp "$ROOT_DIR/package.json" "$APP_DIR/"
 if [ -d "$ROOT_DIR/userData" ]; then
   cp -r "$ROOT_DIR/userData" "$APP_DIR/"
@@ -97,6 +99,7 @@ pause
 EOF
 
 echo "6. Empaquetando en ZIP para distribución..."
+rm -f "$ZIP_OUTPUT"
 cd "$BUILD_DIR"
 zip -q -r "$ZIP_OUTPUT" BIBLE/
 
