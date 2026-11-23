@@ -956,14 +956,13 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
       currentRoomId = currentRoomId.trim().toUpperCase();
 
       // Si viene PIN en la URL (al escanear QR de la laptop), auto-sincronizar sala y PIN
-      if (urlPin && /^d{4}$/.test(urlPin)) {
-        if (!currentRoomId || !currentRoomId.endsWith(urlPin)) {
-          currentRoomId = 'BIB-' + urlPin;
-        }
+      if (urlPin && urlPin.length === 4 && /^[0-9]+$/.test(urlPin)) {
+        currentRoomId = 'BIB-' + urlPin;
       }
-      if (currentRoomId) {
-        localStorage.setItem('bible_remote_room', currentRoomId);
+      if (!currentRoomId) {
+        currentRoomId = 'BIB-1234';
       }
+      localStorage.setItem('bible_remote_room', currentRoomId);
 
       // Elementos de Sala en DOM
       const pinRoomLabel = document.getElementById('pinRoomLabel');
@@ -1070,10 +1069,15 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         }
       }
 
-      function connectMqtt() {
-        if (isMqttConnected || !window.Paho || !window.Paho.MQTT || !currentRoomId) return;
+      function connectMqtt(onConnected) {
+        if (!window.Paho || !window.Paho.MQTT) return;
+        if (isMqttConnected && mqttClient) {
+          if (typeof onConnected === 'function') onConnected();
+          return;
+        }
         const broker = BROKERS[activeBrokerIdx];
-        const clientId = 'bible-phone-' + currentRoomId + '-' + Math.random().toString(36).substring(2, 7);
+        const targetRoom = currentRoomId || 'BIB-1234';
+        const clientId = 'bible-phone-' + targetRoom + '-' + Math.random().toString(36).substring(2, 7);
 
         try {
           mqttClient = new window.Paho.MQTT.Client(broker.host, broker.port, broker.path, clientId);
@@ -1083,7 +1087,7 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
             isMqttConnected = false;
             updateConnectionBadge(false);
             updatePinConnectionStatus(false, 'Reconectando con la nube...');
-            setTimeout(connectMqtt, 3000);
+            setTimeout(() => connectMqtt(), 3000);
           };
 
           mqttClient.onMessageArrived = (msg) => {
@@ -1100,11 +1104,17 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
             keepAliveInterval: 30,
             onSuccess: () => {
               isMqttConnected = true;
-              console.log('[MQTT] Conectado a ' + broker.name + ' para Sala: ' + currentRoomId);
+              console.log('[MQTT] Conectado a ' + broker.name + ' para Sala: ' + targetRoom);
               updateConnectionBadge(true, broker.name);
 
               // Suscribirse a actualizaciones de proyección de la laptop
-              mqttClient.subscribe('bible/room/' + currentRoomId + '/state', { qos: 1 });
+              mqttClient.subscribe('bible/room/' + targetRoom + '/state', {
+                qos: 1,
+                onSuccess: () => {
+                  console.log('[MQTT] Suscripción activa a sala ' + targetRoom);
+                  if (typeof onConnected === 'function') onConnected();
+                }
+              });
 
               // Enviar ping inicial para comprobar presencia de la laptop
               sendRelayCmd({ action: 'ping' });
@@ -1119,7 +1129,7 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
               isMqttConnected = false;
               updatePinConnectionStatus(false, 'Servidor ocupado, reintentando...');
               activeBrokerIdx = (activeBrokerIdx + 1) % BROKERS.length;
-              setTimeout(connectMqtt, 2500);
+              setTimeout(() => connectMqtt(onConnected), 2500);
             }
           });
         } catch (err) {
@@ -1171,10 +1181,14 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         if (payload.authenticated) {
           if (enteredPin) {
             savedPin = enteredPin;
-            localStorage.setItem('bible_remote_pin', savedPin);
-            enteredPin = '';
-            updatePinDots();
+          } else if (!savedPin && currentRoomId) {
+            savedPin = currentRoomId.replace('BIB-', '');
           }
+          if (savedPin) {
+            localStorage.setItem('bible_remote_pin', savedPin);
+          }
+          enteredPin = '';
+          updatePinDots();
           hapticVibrate(60);
           showMainScreen();
         }
@@ -1211,9 +1225,14 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
       async function verifyPin() {
         if (enteredPin.length !== 4) return;
 
+        const pinToVerify = enteredPin;
+        currentRoomId = 'BIB-' + pinToVerify;
+        localStorage.setItem('bible_remote_room', currentRoomId);
+        if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
+        if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
         if (pinSubtitle) pinSubtitle.textContent = 'Verificando con la laptop...';
 
-        // Timer de seguridad: si la laptop no responde en 4 segundos, avisar al usuario y limpiar puntos
+        // Timer de seguridad: si la laptop no responde en 5 segundos, avisar al usuario y limpiar puntos
         if (authTimeoutTimer) clearTimeout(authTimeoutTimer);
         authTimeoutTimer = setTimeout(() => {
           authTimeoutTimer = null;
@@ -1224,77 +1243,36 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
           enteredPin = '';
           updatePinDots();
           setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 5000);
-        }, 4000);
+        }, 5000);
 
-        // 1. Si tenemos IP local vía URL (?room=...&ip=...), probar primero por Wi-Fi directo
-        if (localIpDirect) {
+        const executeAuth = () => {
           try {
-            const controller = new AbortController();
-            const toId = setTimeout(() => controller.abort(), 1500);
-            const res = await fetch('http://' + localIpDirect + ':4545/api/auth', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ pin: enteredPin }),
-              signal: controller.signal
+            mqttClient.subscribe('bible/room/' + currentRoomId + '/state', {
+              qos: 1,
+              onSuccess: () => {
+                sendRelayCmd({ action: 'auth', pin: pinToVerify });
+                // Reintento preventivo a los 700ms por si hay congestión en red celular
+                setTimeout(() => {
+                  if (authTimeoutTimer && !mainScreen.classList.contains('active')) {
+                    sendRelayCmd({ action: 'auth', pin: pinToVerify });
+                  }
+                }, 700);
+              },
+              onFailure: () => {
+                sendRelayCmd({ action: 'auth', pin: pinToVerify });
+              }
             });
-            clearTimeout(toId);
-            const data = await res.json();
-            if (data && data.success && data.token) {
-              if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
-              hapticVibrate(60);
-              savedPin = enteredPin;
-              localStorage.setItem('bible_remote_pin', savedPin);
-              localStorage.setItem('bible_remote_token', data.token);
-              enteredPin = '';
-              updatePinDots();
-              showMainScreen();
-              return;
-            }
           } catch (e) {
-            // Wi-Fi local falló, continuar a Cloud Relay
+            sendRelayCmd({ action: 'auth', pin: pinToVerify });
           }
-        }
+        };
 
-        // 2. Prioridad Cloud Relay MQTT
-        if (isMqttConnected) {
-          sendRelayCmd({ action: 'auth', pin: enteredPin });
-          return;
-        }
-
-        // 3. Fallback: Vía Local HTTP si estamos en la misma máquina o IP local
-        if (isLocalHost && API_BASE) {
-          try {
-            const res = await fetch(API_BASE + '/api/auth', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ pin: enteredPin })
-            });
-            const data = await res.json();
-            if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
-            if (data.success && data.token) {
-              hapticVibrate(60);
-              savedPin = enteredPin;
-              localStorage.setItem('bible_remote_pin', savedPin);
-              localStorage.setItem('bible_remote_token', data.token);
-              enteredPin = '';
-              updatePinDots();
-              showMainScreen();
-            } else {
-              hapticVibrate([50, 50, 50]);
-              pinErrorMsg.textContent = data.error || 'PIN incorrecto. Intenta de nuevo.';
-              pinErrorMsg.classList.add('visible');
-              enteredPin = '';
-              updatePinDots();
-              setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3000);
-            }
-          } catch (err) {
-            if (authTimeoutTimer) { clearTimeout(authTimeoutTimer); authTimeoutTimer = null; }
-            pinErrorMsg.textContent = 'No se pudo conectar a la laptop. Verifica que esté en la misma red Wi-Fi.';
-            pinErrorMsg.classList.add('visible');
-            enteredPin = '';
-            updatePinDots();
-            setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 3500);
-          }
+        if (isMqttConnected && mqttClient) {
+          executeAuth();
+        } else {
+          connectMqtt(() => {
+            executeAuth();
+          });
         }
       }
 
@@ -1305,19 +1283,11 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
             enteredPin += key.dataset.num;
             updatePinDots();
             if (enteredPin.length === 4) {
-              // Sincronizar automáticamente la Sala BIB con los 4 dígitos ingresados
               currentRoomId = 'BIB-' + enteredPin;
               localStorage.setItem('bible_remote_room', currentRoomId);
               if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
               if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
-
-              // Suscribirse inmediatamente a la sala en el broker MQTT
-              if (mqttClient && isMqttConnected) {
-                try {
-                  mqttClient.subscribe('bible/room/' + currentRoomId + '/state', { qos: 1 });
-                } catch (e) {}
-              }
-              setTimeout(verifyPin, 100);
+              verifyPin();
             }
           }
         });
@@ -1399,39 +1369,51 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
       // ---------------- ACCIONES DE CONTROL ----------------
       async function sendAction(action) {
         hapticVibrate(40);
+        const activePin = savedPin || (currentRoomId ? currentRoomId.replace('BIB-', '') : '1234');
 
         // 1. Enviar vía Cloud Relay si está conectado
-        if (isMqttConnected) {
+        if (isMqttConnected && mqttClient && currentRoomId) {
           sendRelayCmd({
-            action,
-            pin: savedPin || enteredPin,
+            action: action,
+            pin: activePin,
             timestamp: Date.now()
           });
           return;
         }
 
-        // 2. Fallback vía Local HTTP REST
-        const authToken = localStorage.getItem('bible_remote_token');
-        try {
-          const res = await fetch(API_BASE + '/api/action', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Auth-Token': authToken || ''
-            },
-            body: JSON.stringify({ action })
+        // Si MQTT no está conectado, reconectar y enviar
+        connectMqtt(() => {
+          sendRelayCmd({
+            action: action,
+            pin: activePin,
+            timestamp: Date.now()
           });
-          if (res.status === 401) {
-            localStorage.removeItem('bible_remote_token');
-            showPinScreen();
-            return;
+        });
+
+        // Fallback local HTTP únicamente si estamos en protocolo http://
+        if (window.location.protocol === 'http:' && API_BASE) {
+          const authToken = localStorage.getItem('bible_remote_token');
+          try {
+            const res = await fetch(API_BASE + '/api/action', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Auth-Token': authToken || ''
+              },
+              body: JSON.stringify({ action, pin: activePin })
+            });
+            if (res.status === 401) {
+              localStorage.removeItem('bible_remote_token');
+              showPinScreen();
+              return;
+            }
+            const data = await res.json();
+            if (data && data.state) {
+              applyState(data.state);
+            }
+          } catch (err) {
+            console.warn('[Remote] Error enviando acción local:', err);
           }
-          const data = await res.json();
-          if (data && data.state) {
-            applyState(data.state);
-          }
-        } catch (err) {
-          console.warn('[Remote] Error enviando acción local:', err);
         }
       }
 
@@ -1599,11 +1581,11 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         }
       }
 
-      // Iniciar conexión MQTT
+      // Iniciar conexión MQTT de inmediato
       connectMqtt();
 
-      // Auto-login instantáneo si se escaneó código QR con PIN incluido (?room=BIB-7842&pin=7842)
-      if (urlPin && /^d{4}$/.test(urlPin)) {
+      // Auto-login instantáneo si se escaneó código QR con PIN incluido (?room=BIB-XXXX&pin=XXXX)
+      if (urlPin && urlPin.length === 4 && /^[0-9]+$/.test(urlPin)) {
         enteredPin = urlPin;
         savedPin = urlPin;
         localStorage.setItem('bible_remote_pin', savedPin);
@@ -1611,9 +1593,12 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         currentRoomId = currentRoomId.trim().toUpperCase();
         localStorage.setItem('bible_remote_room', currentRoomId);
         updatePinDots();
-        setTimeout(verifyPin, 250);
+        setTimeout(verifyPin, 150);
       } else if (savedPin && savedPin.length === 4) {
-        showMainScreen();
+        // Verificar PIN guardado de fondo con la laptop
+        enteredPin = savedPin;
+        updatePinDots();
+        setTimeout(verifyPin, 200);
       } else {
         showPinScreen();
       }

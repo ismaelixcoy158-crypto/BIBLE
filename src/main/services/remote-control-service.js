@@ -95,28 +95,11 @@ class RemoteControlService {
   }
 
   /**
-   * Retorna el Código de Sala único persistente de esta laptop
+   * Retorna el Código de Sala único persistente de esta laptop (siempre sincronizado con el PIN: BIB-XXXX)
    */
   getRoomId() {
-    try {
-      const db = dbManager.getDb ? dbManager.getDb() : (dbManager.init && dbManager.init());
-      if (db) {
-        const row = db.prepare("SELECT value FROM settings WHERE key = 'remote_room_id'").get();
-        if (row && row.value && String(row.value).trim().length >= 4) {
-          return String(row.value).trim().toUpperCase();
-        }
-        // Generar un Código de Sala único inicial (ej: BIB-7842)
-        const newRoomId = `BIB-${Math.floor(1000 + Math.random() * 9000)}`;
-        db.prepare(`
-          INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
-          ON CONFLICT(key) DO UPDATE SET value = excluded.value
-        `).run(newRoomId);
-        return newRoomId;
-      }
-    } catch (err) {
-      console.warn('[RemoteControlService] Error al consultar roomId en settings:', err.message);
-    }
-    return 'BIB-7842';
+    const pin = this.getPin();
+    return `BIB-${pin}`;
   }
 
   /**
@@ -127,26 +110,12 @@ class RemoteControlService {
     if (clean.length < 4 || clean.length > 16) {
       throw new Error('El Código de Sala debe tener entre 4 y 16 caracteres');
     }
-    try {
-      const db = dbManager.getDb ? dbManager.getDb() : (dbManager.init && dbManager.init());
-      if (db) {
-        db.prepare(`
-          INSERT INTO settings (key, value) VALUES ('remote_room_id', ?)
-          ON CONFLICT(key) DO UPDATE SET value = excluded.value
-        `).run(clean);
-
-        // Si el código termina en 4 dígitos (ej: BIB-7842), sincronizar el PIN para que nunca vayan separados
-        const match = clean.match(/\d{4}$/);
-        if (match) {
-          db.prepare(`
-            INSERT INTO settings (key, value) VALUES ('remote_control_pin', ?)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value
-          `).run(match[0]);
-        }
-      }
-    } catch (err) {
-      console.warn('[RemoteControlService] Error al guardar roomId:', err.message);
+    const match = clean.match(/\d{4}$/);
+    if (!match) {
+      throw new Error('El Código de Sala debe terminar en 4 dígitos numéricos (Ej: BIB-7842)');
     }
+    const pin = match[0];
+    this.setPin(pin);
     return clean;
   }
 
@@ -154,11 +123,8 @@ class RemoteControlService {
    * Genera y guarda un nuevo Código de Sala y PIN sincronizados
    */
   generateNewRoomId() {
-    const num = Math.floor(1000 + Math.random() * 9000).toString();
-    const newRoomId = `BIB-${num}`;
-    this.setRoomId(newRoomId);
-    this.setPin(num);
-    return newRoomId;
+    const newPin = this.generateNewPin();
+    return `BIB-${newPin}`;
   }
 
   /**
@@ -201,12 +167,16 @@ class RemoteControlService {
       const db = dbManager.getDb ? dbManager.getDb() : (dbManager.init && dbManager.init());
       if (db) {
         const row = db.prepare("SELECT value FROM settings WHERE key = 'remote_control_pin'").get();
-        if (row && row.value) {
+        if (row && row.value && /^\d{4}$/.test(String(row.value).trim())) {
           return String(row.value).trim();
         }
-        // Sembrar PIN por defecto '1234'
+        // Sembrar PIN por defecto '1234' y Sala 'BIB-1234'
         db.prepare(`
           INSERT INTO settings (key, value) VALUES ('remote_control_pin', '1234')
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        `).run();
+        db.prepare(`
+          INSERT INTO settings (key, value) VALUES ('remote_room_id', 'BIB-1234')
           ON CONFLICT(key) DO UPDATE SET value = excluded.value
         `).run();
       }

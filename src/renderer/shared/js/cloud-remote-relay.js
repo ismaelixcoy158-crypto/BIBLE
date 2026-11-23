@@ -203,10 +203,21 @@ export class CloudRemoteRelay {
 
     // Verificar PIN de seguridad para todas las acciones protegidas
     const inputPin = String(data.pin || '').trim();
-    const activePin = String(this.pin || '').trim();
+    let activePin = String(this.pin || '').trim();
 
     if (inputPin !== activePin) {
-      console.warn('[CloudRemoteRelay] Intento de acceso remoto con PIN inválido:', inputPin);
+      try {
+        const freshStatus = await window.bibleAPI.control.getStatus();
+        if (freshStatus && freshStatus.pin) {
+          this.pin = String(freshStatus.pin).trim();
+          this.roomId = freshStatus.roomId || `BIB-${this.pin}`;
+          activePin = this.pin;
+        }
+      } catch (e) {}
+    }
+
+    if (inputPin !== activePin) {
+      console.warn('[CloudRemoteRelay] Intento de acceso remoto con PIN inválido:', inputPin, 'esperado:', activePin);
       this.publishResponse({
         type: 'auth_response',
         success: false,
@@ -230,8 +241,6 @@ export class CloudRemoteRelay {
       if (window.bibleAPI?.control?.executeAction) {
         await window.bibleAPI.control.executeAction(data.action);
       }
-      // Reenviar evento local por si algún módulo en pantalla necesita refrescar
-      window.dispatchEvent(new CustomEvent('remote-control:action', { detail: { action: data.action } }));
     } catch (err) {
       console.warn('[CloudRemoteRelay] Error al ejecutar acción remota:', err);
     }
@@ -248,13 +257,14 @@ export class CloudRemoteRelay {
   async broadcastCurrentState(extra = {}) {
     if (!this.isConnected || !this.client || !this.roomId) return;
 
-    let projState = this.lastState;
-    if (!projState && window.bibleAPI?.projection?.getState) {
+    let projState = null;
+    if (window.bibleAPI?.projection?.getState) {
       try {
         projState = await window.bibleAPI.projection.getState();
         this.lastState = projState;
       } catch (e) {}
     }
+    if (!projState) projState = this.lastState;
 
     let preachingState = null;
     try {

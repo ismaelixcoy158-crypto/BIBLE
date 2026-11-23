@@ -1304,9 +1304,23 @@ export class BibleController {
     // Control Remoto Móvil (Wi-Fi)
     window.addEventListener('remote-control:action', (e) => {
       if (e.detail?.action === 'next') {
-        this.nextVerse();
+        if (!this.isCurrentlyProjecting) {
+          if (this.selectedVerseIndex < 0 && this.currentVerses?.length > 0) {
+            this.selectedVerseIndex = 0;
+          }
+          this.projectSelectedVerse();
+        } else {
+          this.nextVerse();
+        }
       } else if (e.detail?.action === 'prev') {
-        this.prevVerse();
+        if (!this.isCurrentlyProjecting) {
+          if (this.selectedVerseIndex < 0 && this.currentVerses?.length > 0) {
+            this.selectedVerseIndex = 0;
+          }
+          this.projectSelectedVerse();
+        } else {
+          this.prevVerse();
+        }
       }
     });
   }
