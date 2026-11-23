@@ -154,7 +154,7 @@ class RemoteControlService {
    */
   getCloudUrl() {
     const roomId = this.getRoomId();
-    return `https://ismaelixcoy158-crypto.github.io/BIBLE/remote/?room=${roomId}`;
+    return `https://bible-remote-ixcoy.web.app/?room=${roomId}`;
   }
 
   /**

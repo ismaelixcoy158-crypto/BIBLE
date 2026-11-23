@@ -58,7 +58,7 @@ describe('RemoteControlService — Control Remoto Móvil (Wi-Fi Local)', () => {
 
     // Enlaces Cloud y Local
     const cloudUrl = remoteControlService.getCloudUrl();
-    assert.ok(cloudUrl.includes('https://ismaelixcoy158-crypto.github.io/BIBLE/remote/?room=BIB-'));
+    assert.ok(cloudUrl.includes('https://bible-remote-ixcoy.web.app/?room=BIB-'));
 
     const localUrl = remoteControlService.getLocalUrl();
     assert.ok(localUrl.includes('?room=BIB-'));
