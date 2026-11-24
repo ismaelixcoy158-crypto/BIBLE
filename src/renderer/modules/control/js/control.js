@@ -66,6 +66,15 @@ export class ControlController {
     this.onCloudStatusBound = (e) => this.onCloudRelayStatus(e.detail);
     window.addEventListener('cloud-relay:status', this.onCloudStatusBound);
 
+    // Refrescar estado inmediato si el relay ya estaba conectado antes de abrir la pestaña
+    if (window.cloudRemoteRelay) {
+      this.onCloudRelayStatus({
+        connected: Boolean(window.cloudRemoteRelay.isConnected),
+        broker: window.cloudRemoteRelay.brokers[window.cloudRemoteRelay.currentBrokerIdx]?.name || 'EMQX',
+        roomId: window.cloudRemoteRelay.roomId
+      });
+    }
+
     // Escuchar cambio de módulo para limpiar intervalo
     window.addEventListener('module-switched', (e) => {
       if (e.detail?.module !== 'control') {

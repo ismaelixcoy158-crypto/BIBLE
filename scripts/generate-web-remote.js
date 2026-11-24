@@ -1048,15 +1048,13 @@ ${pahoCode}
 
               // Suscribirse a actualizaciones de proyección de la laptop
               mqttClient.subscribe('bible/room/' + targetRoom + '/state', {
-                qos: 1,
+                qos: 0,
                 onSuccess: () => {
                   console.log('[MQTT] Suscripción activa a sala ' + targetRoom);
+                  sendRelayCmd({ action: 'ping' });
                   if (typeof onConnected === 'function') onConnected();
                 }
               });
-
-              // Enviar ping inicial para comprobar presencia de la laptop
-              sendRelayCmd({ action: 'ping' });
 
               // Si ya tenemos PIN guardado, autenticar automáticamente
               if (savedPin) {
@@ -1083,7 +1081,7 @@ ${pahoCode}
           const payload = JSON.stringify(cmdObj);
           const msg = new window.Paho.MQTT.Message(payload);
           msg.destinationName = topic;
-          msg.qos = 1;
+          msg.qos = 0;
           mqttClient.send(msg);
         } catch (err) {
           console.warn('[MQTT] Error enviando comando:', err);
@@ -1170,32 +1168,37 @@ ${pahoCode}
         if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
         if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
         if (pinSubtitle) pinSubtitle.textContent = 'Verificando con la laptop...';
+        if (pinErrorMsg) pinErrorMsg.classList.remove('visible');
 
-        // Timer de seguridad: si la laptop no responde en 5 segundos, avisar al usuario y limpiar puntos
+        // Timer de seguridad: si la laptop no responde en 6 segundos, avisar al usuario y limpiar puntos
         if (authTimeoutTimer) clearTimeout(authTimeoutTimer);
         authTimeoutTimer = setTimeout(() => {
           authTimeoutTimer = null;
           hapticVibrate([60, 40, 60]);
           if (pinSubtitle) pinSubtitle.textContent = 'Ingresa el PIN de 4 dígitos de la laptop:';
-          pinErrorMsg.textContent = '⚠️ La laptop no responde. Verifica que BIBLE esté abierto en la computadora con la Sala: ' + currentRoomId;
+          pinErrorMsg.textContent = '⚠️ La laptop no responde aún. Verifica que BIBLE esté abierto en la computadora con la Sala ' + currentRoomId;
           pinErrorMsg.classList.add('visible');
           enteredPin = '';
           updatePinDots();
           setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 5000);
-        }, 5000);
+        }, 6000);
 
         const executeAuth = () => {
           try {
             mqttClient.subscribe('bible/room/' + currentRoomId + '/state', {
-              qos: 1,
+              qos: 0,
               onSuccess: () => {
-                sendRelayCmd({ action: 'auth', pin: pinToVerify });
-                // Reintento preventivo a los 700ms por si hay congestión en red celular
-                setTimeout(() => {
-                  if (authTimeoutTimer && !mainScreen.classList.contains('active')) {
-                    sendRelayCmd({ action: 'auth', pin: pinToVerify });
+                console.log('[MQTT] Suscripción activa a sala ' + currentRoomId);
+                let authAttempts = 0;
+                const tryAuth = () => {
+                  if (!authTimeoutTimer || mainScreen.classList.contains('active')) return;
+                  authAttempts++;
+                  sendRelayCmd({ action: 'auth', pin: pinToVerify });
+                  if (authAttempts < 3) {
+                    setTimeout(tryAuth, 800);
                   }
-                }, 700);
+                };
+                tryAuth();
               },
               onFailure: () => {
                 sendRelayCmd({ action: 'auth', pin: pinToVerify });

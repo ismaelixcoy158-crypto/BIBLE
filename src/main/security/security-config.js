@@ -139,7 +139,7 @@ class SecurityConfig {
             "media-src 'self' bible-media: http: https: blob:; " +
             "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; " +
             "child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; " +
-            "connect-src 'self' http: https: blob: data: https://www.youtube.com; " +
+            "connect-src 'self' http: https: ws: wss: blob: data: https://www.youtube.com; " +
             "font-src 'self';"
           ]
         }

@@ -112,7 +112,7 @@ export class CloudRemoteRelay {
 
           // Suscribirse a órdenes remotas para esta sala
           const cmdTopic = `bible/room/${this.roomId}/cmd`;
-          this.client.subscribe(cmdTopic, { qos: 1 });
+          this.client.subscribe(cmdTopic, { qos: 0 });
 
           // Anunciar presencia inmediata de la laptop en la sala
           this.publishResponse({
@@ -302,7 +302,7 @@ export class CloudRemoteRelay {
       const topic = `bible/room/${this.roomId}/state`;
       const msg = new window.Paho.MQTT.Message(JSON.stringify(payloadObj));
       msg.destinationName = topic;
-      msg.qos = 1;
+      msg.qos = 0;
       this.client.send(msg);
     } catch (err) {
       console.warn('[CloudRemoteRelay] Error al publicar respuesta:', err);
