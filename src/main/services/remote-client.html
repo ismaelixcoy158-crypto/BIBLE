@@ -1220,62 +1220,37 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         });
       }
 
-      async function verifyPin() {
-        if (enteredPin.length !== 4) return;
-
-        const pinToVerify = enteredPin;
-        currentRoomId = 'BIB-' + pinToVerify;
+      function enterRemote(pin) {
+        if (!pin || pin.length !== 4) return;
+        savedPin = pin;
+        localStorage.setItem('bible_remote_pin', savedPin);
+        currentRoomId = 'BIB-' + pin;
         localStorage.setItem('bible_remote_room', currentRoomId);
         if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
         if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
-        if (pinSubtitle) pinSubtitle.textContent = 'Verificando con la laptop...';
-        if (pinErrorMsg) pinErrorMsg.classList.remove('visible');
+        enteredPin = '';
+        updatePinDots();
+        showMainScreen();
 
-        // Timer de seguridad: si la laptop no responde en 6 segundos, avisar al usuario y limpiar puntos
-        if (authTimeoutTimer) clearTimeout(authTimeoutTimer);
-        authTimeoutTimer = setTimeout(() => {
-          authTimeoutTimer = null;
-          hapticVibrate([60, 40, 60]);
-          if (pinSubtitle) pinSubtitle.textContent = 'Ingresa el PIN de 4 dígitos de la laptop:';
-          pinErrorMsg.textContent = '⚠️ La laptop no responde aún. Verifica que BIBLE esté abierto en la computadora con la Sala ' + currentRoomId;
-          pinErrorMsg.classList.add('visible');
-          enteredPin = '';
-          updatePinDots();
-          setTimeout(() => { pinErrorMsg.classList.remove('visible'); }, 5000);
-        }, 6000);
-
-        const executeAuth = () => {
+        const subscribeAndSync = () => {
+          if (!mqttClient || !isMqttConnected) return;
           try {
             mqttClient.subscribe('bible/room/' + currentRoomId + '/state', {
               qos: 0,
               onSuccess: () => {
                 console.log('[MQTT] Suscripción activa a sala ' + currentRoomId);
-                let authAttempts = 0;
-                const tryAuth = () => {
-                  if (!authTimeoutTimer || mainScreen.classList.contains('active')) return;
-                  authAttempts++;
-                  sendRelayCmd({ action: 'auth', pin: pinToVerify });
-                  if (authAttempts < 3) {
-                    setTimeout(tryAuth, 800);
-                  }
-                };
-                tryAuth();
-              },
-              onFailure: () => {
-                sendRelayCmd({ action: 'auth', pin: pinToVerify });
+                sendRelayCmd({ action: 'auth', pin: savedPin });
               }
             });
           } catch (e) {
-            sendRelayCmd({ action: 'auth', pin: pinToVerify });
+            sendRelayCmd({ action: 'auth', pin: savedPin });
           }
         };
 
         if (isMqttConnected && mqttClient) {
-          executeAuth();
+          subscribeAndSync();
         } else {
-          connectMqtt(() => {
-            executeAuth();
-          });
+          connectMqtt(subscribeAndSync);
         }
       }
 
@@ -1286,11 +1261,8 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
             enteredPin += key.dataset.num;
             updatePinDots();
             if (enteredPin.length === 4) {
-              currentRoomId = 'BIB-' + enteredPin;
-              localStorage.setItem('bible_remote_room', currentRoomId);
-              if (pinRoomLabel) pinRoomLabel.textContent = 'SALA: ' + currentRoomId;
-              if (headerRoomBadge) headerRoomBadge.textContent = currentRoomId;
-              verifyPin();
+              const code = enteredPin;
+              enterRemote(code);
             }
           }
         });
@@ -1584,24 +1556,27 @@ set qos(a){this._setQos(a)},get retained(){return this._getRetained()},set retai
         }
       }
 
+      // Clic en la insignia de Sala en el header para cambiar de sala o PIN fácilmente
+      if (headerRoomBadge) {
+        headerRoomBadge.style.cursor = 'pointer';
+        headerRoomBadge.title = 'Toca para desconectar o cambiar PIN';
+        headerRoomBadge.addEventListener('click', () => {
+          localStorage.removeItem('bible_remote_pin');
+          savedPin = '';
+          enteredPin = '';
+          updatePinDots();
+          showPinScreen();
+        });
+      }
+
       // Iniciar conexión MQTT de inmediato
       connectMqtt();
 
-      // Auto-login instantáneo si se escaneó código QR con PIN incluido (?room=BIB-XXXX&pin=XXXX)
+      // Acceso directo instantáneo si viene del QR (?room=BIB-XXXX&pin=XXXX)
       if (urlPin && urlPin.length === 4 && /^[0-9]+$/.test(urlPin)) {
-        enteredPin = urlPin;
-        savedPin = urlPin;
-        localStorage.setItem('bible_remote_pin', savedPin);
-        currentRoomId = urlParams.get('room') || ('BIB-' + urlPin);
-        currentRoomId = currentRoomId.trim().toUpperCase();
-        localStorage.setItem('bible_remote_room', currentRoomId);
-        updatePinDots();
-        setTimeout(verifyPin, 150);
+        enterRemote(urlPin);
       } else if (savedPin && savedPin.length === 4) {
-        // Verificar PIN guardado de fondo con la laptop
-        enteredPin = savedPin;
-        updatePinDots();
-        setTimeout(verifyPin, 200);
+        enterRemote(savedPin);
       } else {
         showPinScreen();
       }
