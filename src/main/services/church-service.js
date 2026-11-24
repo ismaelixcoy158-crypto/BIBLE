@@ -71,7 +71,7 @@ class ChurchService {
       title: 'Seleccionar Logotipo de la Iglesia',
       properties: ['openFile'],
       filters: [
-        { name: 'Imágenes', extensions: ['png', 'jpg', 'jpeg', 'webp', 'svg'] }
+        { name: 'Imágenes', extensions: ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif', 'bmp', 'jfif', 'avif', 'ico'] }
       ]
     });
 

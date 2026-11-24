@@ -23,7 +23,13 @@ class SpotsService {
       const db = dbManager.getInstance();
       this.repo = new SpotsRepository(db);
 
-      const userData = app.getPath('userData');
+      let userData;
+      try {
+        userData = (app && typeof app.getPath === 'function') ? app.getPath('userData') : null;
+      } catch {}
+      if (!userData) {
+        userData = path.join(process.cwd(), 'userData');
+      }
       this.spotsDir = path.join(userData, 'media', 'spots');
       if (!fs.existsSync(this.spotsDir)) {
         fs.mkdirSync(this.spotsDir, { recursive: true });
@@ -129,7 +135,7 @@ class SpotsService {
       filters: [
         { 
           name: 'Todos los Formatos Compatibles', 
-          extensions: ['mp4', 'webm', 'mkv', 'avi', 'mov', 'm4v', 'mpg', 'mpeg', 'wmv', 'flv', 'ts', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp'] 
+          extensions: ['mp4', 'webm', 'mkv', 'avi', 'mov', 'm4v', 'mpg', 'mpeg', 'wmv', 'flv', 'ts', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'jfif', 'avif', 'ico'] 
         },
         { 
           name: 'Videos (MP4, WebM, MKV, AVI, MOV, M4V, WMV)', 
@@ -137,7 +143,7 @@ class SpotsService {
         },
         { 
           name: 'Imágenes (PNG, JPG, JPEG, WEBP, GIF, SVG, BMP)', 
-          extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp'] 
+          extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg', 'bmp', 'jfif', 'avif', 'ico'] 
         }
       ]
     });

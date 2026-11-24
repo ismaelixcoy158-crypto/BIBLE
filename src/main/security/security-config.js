@@ -1,6 +1,7 @@
-const { session, protocol } = require('electron');
+const { session, protocol, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { pathToFileURL } = require('url');
 
 /**
  * BIBLE — SecurityConfig
@@ -32,7 +33,7 @@ class SecurityConfig {
    */
   static apply(mediaDirectory) {
     // 1. Manejador del protocolo bible-media://
-    protocol.handle('bible-media', (request) => {
+    protocol.handle('bible-media', async (request) => {
       try {
         const urlObj = new URL(request.url);
         // Soporta bible-media://backgrounds/bg_123.jpg, bible-media://branding/logo.png, etc.
@@ -57,14 +58,26 @@ class SecurityConfig {
           }
         }
 
-        // Validación estricta: la ruta debe residir dentro de mediaDirectory
-        if (!resolvedPath.startsWith(path.resolve(mediaDirectory))) {
+        // Validación estricta con tolerancia a mayúsculas/minúsculas de unidades en Windows (C:\ vs c:\)
+        const normMediaDir = path.resolve(mediaDirectory).toLowerCase();
+        const normResolved = path.resolve(resolvedPath).toLowerCase();
+        if (!normResolved.startsWith(normMediaDir)) {
           console.error('[Security] Acceso denegado fuera del directorio multimedia:', resolvedPath);
           return new Response('Acceso no autorizado', { status: 403 });
         }
 
         if (!fs.existsSync(resolvedPath)) {
           return new Response('Archivo no encontrado', { status: 404 });
+        }
+
+        // Método nativo recomendado en Electron: net.fetch con file://
+        // Gestiona rangos (seek de video), streaming y mime types de forma nativa en Chromium
+        if (net && typeof net.fetch === 'function') {
+          try {
+            return await net.fetch(pathToFileURL(resolvedPath).toString());
+          } catch (netErr) {
+            console.warn('[Security] net.fetch falló, usando lectura directa:', netErr.message);
+          }
         }
 
         const ext = path.extname(resolvedPath).toLowerCase();
@@ -76,6 +89,9 @@ class SecurityConfig {
           '.gif': 'image/gif',
           '.svg': 'image/svg+xml',
           '.bmp': 'image/bmp',
+          '.jfif': 'image/jpeg',
+          '.avif': 'image/avif',
+          '.ico': 'image/x-icon',
           '.mp4': 'video/mp4',
           '.webm': 'video/webm',
           '.mkv': 'video/x-matroska',

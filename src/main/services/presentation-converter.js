@@ -2,6 +2,17 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+function isCommandAvailable(cmd) {
+  try {
+    const isWin = process.platform === 'win32';
+    const checkCmd = isWin ? `where ${cmd}` : `which ${cmd}`;
+    execSync(checkCmd, { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * BIBLE — PresentationConverter
  * Conversor de presentaciones PDF, PowerPoint (PPTX/PPT) e imágenes.
@@ -31,6 +42,13 @@ class PresentationConverter {
     try {
       // 1. Si es archivo de PowerPoint (PPTX o PPT), convertir primero a PDF mediante LibreOffice headless
       if (ext === '.pptx' || ext === '.ppt') {
+        if (!isCommandAvailable('libreoffice')) {
+          throw new Error(
+            'Para convertir presentaciones PowerPoint (.pptx / .ppt) se requiere LibreOffice instalado en la laptop.\n\n' +
+            'Solución fácil: En PowerPoint elige "Guardar como" y selecciona formato Imágenes (PNG o JPG), luego importa esas imágenes directamente en BIBLE sin librerías externas.'
+          );
+        }
+
         fs.mkdirSync(tempDir, { recursive: true });
         const profileDir = path.join(tempDir, 'lo_profile');
         fs.mkdirSync(profileDir, { recursive: true });
@@ -48,6 +66,13 @@ class PresentationConverter {
       }
 
       // 2. Extraer diapositivas desde el PDF como imágenes PNG con pdftoppm
+      if (!isCommandAvailable('pdftoppm')) {
+        throw new Error(
+          'Para convertir archivos PDF se requiere la librería de sistema pdftoppm (Poppler).\n\n' +
+          'Solución recomendada: Selecciona directamente las imágenes de las diapositivas (PNG, JPG, etc.) o exporta el PDF a fotos e impórtalas en BIBLE al instante sin librerías adicionales.'
+        );
+      }
+
       const slidePrefix = path.join(targetDir, 'slide');
       const pdftoppmCmd = `pdftoppm -png -r 150 "${workingPdfPath}" "${slidePrefix}"`;
       execSync(pdftoppmCmd, { stdio: 'pipe', timeout: 60000 });
@@ -112,7 +137,7 @@ class PresentationConverter {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    const validExts = ['.png', '.jpg', '.jpeg', '.webp'];
+    const validExts = ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.jfif', '.svg', '.avif', '.tif', '.tiff', '.ico'];
     const filteredPaths = filePaths.filter(fp => validExts.includes(path.extname(fp).toLowerCase()));
 
     // Ordenar naturalmente por nombre

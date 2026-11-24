@@ -96,10 +96,10 @@ class PreachingService {
       title: 'Importar Presentación de Predicación (PDF, PowerPoint o Imágenes)',
       properties: ['openFile', 'multiSelections'],
       filters: [
-        { name: 'Todos los formatos compatibles (*.pdf, *.pptx, *.ppt, *.png, *.jpg)', extensions: ['pdf', 'pptx', 'ppt', 'png', 'jpg', 'jpeg', 'webp'] },
+        { name: 'Todos los formatos compatibles (*.pdf, *.pptx, *.ppt, *.png, *.jpg, *.jpeg, *.webp, *.bmp, *.gif)', extensions: ['pdf', 'pptx', 'ppt', 'png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'jfif', 'svg', 'avif'] },
+        { name: 'Imágenes de diapositivas (*.png, *.jpg, *.jpeg, *.webp, *.bmp, *.gif)', extensions: ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'jfif', 'svg', 'avif'] },
         { name: 'Documentos PDF (*.pdf)', extensions: ['pdf'] },
-        { name: 'Presentaciones PowerPoint (*.pptx, *.ppt)', extensions: ['pptx', 'ppt'] },
-        { name: 'Imágenes de diapositivas (*.png, *.jpg, *.jpeg, *.webp)', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
+        { name: 'Presentaciones PowerPoint (*.pptx, *.ppt)', extensions: ['pptx', 'ppt'] }
       ]
     });
 
@@ -118,8 +118,9 @@ class PreachingService {
     let originalFilename = path.basename(firstPath);
     let slidesData = [];
 
+    const SUPPORTED_IMAGE_EXTS = ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.jfif', '.svg', '.avif', '.tif', '.tiff', '.ico'];
     // Caso A: Se seleccionó una lista de imágenes
-    const isImages = filePaths.every(fp => ['.png', '.jpg', '.jpeg', '.webp'].includes(path.extname(fp).toLowerCase()));
+    const isImages = filePaths.every(fp => SUPPORTED_IMAGE_EXTS.includes(path.extname(fp).toLowerCase()));
     if (isImages && filePaths.length >= 1) {
       fileType = 'images';
       if (filePaths.length > 1) {

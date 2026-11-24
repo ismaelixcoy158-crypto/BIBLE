@@ -37,9 +37,9 @@ class BackgroundService {
       title: 'Seleccionar Fondo de Proyección (Imagen o Video)',
       properties: ['openFile'],
       filters: [
-        { name: 'Multimedia (Imágenes y Videos)', extensions: ['jpg', 'jpeg', 'png', 'webp', 'mp4', 'webm'] },
-        { name: 'Imágenes (*.jpg, *.png, *.webp)', extensions: ['jpg', 'jpeg', 'png', 'webp'] },
-        { name: 'Videos (*.mp4, *.webm)', extensions: ['mp4', 'webm'] }
+        { name: 'Multimedia (Imágenes y Videos)', extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg', 'jfif', 'avif', 'mp4', 'webm', 'mov', 'mkv', 'avi', 'm4v'] },
+        { name: 'Imágenes (*.jpg, *.png, *.webp, *.gif, *.bmp, *.svg)', extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg', 'jfif', 'avif'] },
+        { name: 'Videos (*.mp4, *.webm, *.mov, *.mkv)', extensions: ['mp4', 'webm', 'mov', 'mkv', 'avi', 'm4v'] }
       ]
     });
 
