@@ -106,8 +106,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (displayModeLabel) {
           if (secondaryDisplay) {
             displayModeLabel.textContent = `Proyector HDMI (${secondaryDisplay.bounds.width}x${secondaryDisplay.bounds.height})`;
+            displayModeLabel.style.color = 'var(--accent-green, #22c55e)';
           } else {
-            displayModeLabel.textContent = 'Modo 1 Pantalla (Ventana Flotante)';
+            displayModeLabel.textContent = '1 Pantalla (Presiona Win + P y elige "Extender")';
+            displayModeLabel.style.color = 'var(--text-muted)';
           }
         }
       } catch (err) {
@@ -116,12 +118,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
   checkDisplays();
+  setInterval(checkDisplays, 4000);
 
   if (btnTogglePublic) {
     btnTogglePublic.addEventListener('click', async () => {
-      // Intentar alternar visibilidad de la ventana pública si existe método
-      if (window.bibleAPI && window.bibleAPI.projection && window.bibleAPI.projection.toggleWindow) {
-        window.bibleAPI.projection.toggleWindow();
+      if (window.bibleAPI?.projection?.toggleWindow) {
+        await window.bibleAPI.projection.toggleWindow();
+        checkDisplays();
       }
     });
   }
@@ -535,6 +538,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.key === 'F4') {
       e.preventDefault();
       window.bibleAPI.projection.toggleFreeze();
+      return;
+    }
+    if (e.key === 'F5') {
+      e.preventDefault();
+      if (window.bibleAPI?.projection?.toggleWindow) {
+        window.bibleAPI.projection.toggleWindow();
+        checkDisplays();
+      }
       return;
     }
 

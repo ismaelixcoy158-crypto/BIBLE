@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('bibleAPI', {
     updateFontSize: (fontSize) => ipcRenderer.invoke('projection:update-font-size', fontSize),
     updateFontFamily: (fontFamily) => ipcRenderer.invoke('projection:update-font-family', fontFamily),
     getState: () => ipcRenderer.invoke('projection:get-state'),
+    toggleWindow: () => ipcRenderer.invoke('projection:toggle-window'),
 
     // Eventos recibidos desde el proceso principal
     onStateUpdate: (callback) => {

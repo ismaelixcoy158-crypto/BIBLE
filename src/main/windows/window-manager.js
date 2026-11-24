@@ -56,6 +56,9 @@ class WindowManager {
       path.join(__dirname, '../../renderer/shared/shell.html')
     );
 
+    // Abrir maximizado para que ocupe toda la pantalla del operador
+    this.operatorWindow.maximize();
+
     this.operatorWindow.on('closed', () => {
       this.operatorWindow = null;
       // Si se cierra el panel del operador, se cierra la aplicación
@@ -84,9 +87,11 @@ class WindowManager {
       y: targetDisplay.bounds.y + (isSingleMonitor ? 100 : 0),
       width: isSingleMonitor ? 960 : targetDisplay.bounds.width,
       height: isSingleMonitor ? 540 : targetDisplay.bounds.height,
-      frame: isSingleMonitor, // Con marco solo en desarrollo con un monitor
-      fullscreen: !isSingleMonitor, // Pantalla completa real en monitor secundario
+      frame: isSingleMonitor, // Con marco solo en desarrollo con un solo monitor
+      fullscreen: !isSingleMonitor, // Pantalla completa en monitor secundario
       skipTaskbar: !isSingleMonitor,
+      alwaysOnTop: !isSingleMonitor,
+      autoHideMenuBar: true,
       resizable: true,
       minWidth: 480,
       minHeight: 270,
@@ -105,6 +110,12 @@ class WindowManager {
       path.join(__dirname, '../../renderer/projection/projection.html')
     );
 
+    if (!isSingleMonitor && secondaryDisplay) {
+      this.publicWindow.setMenuBarVisibility(false);
+      this.publicWindow.setBounds(secondaryDisplay.bounds);
+      this.publicWindow.setFullScreen(true);
+    }
+
     this.publicWindow.on('closed', () => {
       this.publicWindow = null;
     });
@@ -113,23 +124,60 @@ class WindowManager {
   }
 
   /**
-   * Escucha eventos de conexión / desconexión HDMI
+   * Alterna la visibilidad de la ventana pública o la envía en pantalla completa al proyector
+   */
+  togglePublicWindow() {
+    if (!this.publicWindow || this.publicWindow.isDestroyed()) {
+      this.createPublicWindow();
+      return true;
+    }
+    const { secondaryDisplay } = this.getDisplays();
+    if (secondaryDisplay) {
+      // Re-alinear y forzar pantalla completa limpia en el proyector / TV
+      this.publicWindow.setFullScreen(false);
+      this.publicWindow.setBounds(secondaryDisplay.bounds);
+      this.publicWindow.setMenuBarVisibility(false);
+      this.publicWindow.setFullScreen(true);
+      this.publicWindow.show();
+      if (this.operatorWindow && !this.operatorWindow.isDestroyed()) {
+        this.operatorWindow.focus();
+      }
+      return true;
+    } else {
+      // Modo 1 monitor: alternar mostrar u ocultar la ventana flotante
+      if (this.publicWindow.isVisible()) {
+        this.publicWindow.hide();
+        return false;
+      } else {
+        this.publicWindow.show();
+        return true;
+      }
+    }
+  }
+
+  /**
+   * Escucha eventos de conexión / desconexión HDMI o cambios de pantalla
    */
   setupDisplayListeners(projectionService) {
-    screen.on('display-added', (event, newDisplay) => {
-      console.log('[WindowManager] Nuevo display detectado:', newDisplay.id);
+    const handleDisplayChange = () => {
+      const { secondaryDisplay, displays } = this.getDisplays();
+      console.log('[WindowManager] Actualización de pantallas:', displays.length, 'detectadas');
       if (this.publicWindow && !this.publicWindow.isDestroyed()) {
-        // Mover la ventana pública automáticamente a la nueva pantalla conectada
-        this.publicWindow.setBounds(newDisplay.bounds);
-        this.publicWindow.setFullScreen(true);
+        if (secondaryDisplay) {
+          console.log('[WindowManager] Proyector secundario activo, moviendo proyección a pantalla completa');
+          this.publicWindow.setFullScreen(false);
+          this.publicWindow.setBounds(secondaryDisplay.bounds);
+          this.publicWindow.setMenuBarVisibility(false);
+          this.publicWindow.setFullScreen(true);
+          this.publicWindow.show();
+        }
         if (projectionService) projectionService.emitState();
       }
-    });
+    };
 
-    screen.on('display-removed', (event, oldDisplay) => {
-      console.warn('[WindowManager] Pantalla desconectada:', oldDisplay.id);
-      // Mantener la ventana activa sin cerrarla para no perder el estado
-    });
+    screen.on('display-added', handleDisplayChange);
+    screen.on('display-metrics-changed', handleDisplayChange);
+    screen.on('display-removed', handleDisplayChange);
   }
 
   getWindows() {

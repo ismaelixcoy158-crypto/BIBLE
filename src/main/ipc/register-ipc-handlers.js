@@ -87,6 +87,10 @@ function registerIpcHandlers() {
     return projectionService.getState();
   });
 
+  ipcMain.handle('projection:toggle-window', async () => {
+    return windowManager.togglePublicWindow();
+  });
+
   // --- 2. BASE DE DATOS Y CONFIGURACIÓN ---
   ipcMain.handle('db:get-setting', async (_event, key) => {
     if (typeof key !== 'string') return null;
